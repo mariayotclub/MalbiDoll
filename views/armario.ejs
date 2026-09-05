@@ -3,14 +3,59 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/public/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Readex+Pro:wght@160..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <script src="/scripts/trocarCat.js" defer></script>
     <title>Personalize sua boneca</title>
 </head>
 
-<body>
-    <div id="bonecaContainer" class="bonecaContainer" style="width: 794px; height: 1123px;">
+<body class="bodyPersonalizar">
+     <div class="quadrado">
+        <div> 
+            <text class="titulo">Corpo</text>
+        </div>
+        <div> 
+            <text class="titulo">Rostos</text>
+        </div>
+        <div> 
+            <text class="titulo">Cabelos</text>
+        </div>
+        <div> 
+            <text class="titulo">Partes de Cima</text>
+        </div>
+        <div> 
+            <text class="titulo">Vestidos</text>
+        </div>
+        <div> 
+            <text class="titulo">Partes de Baixo</text>
+        </div>
+        <div> 
+            <text class="titulo">Meias</text>
+        </div>
+        <div> 
+            <text class="titulo">Acessórios</text>
+        </div>
+        <div> 
+            <text class="titulo">Extras</text>
+        </div>
+     </div>
+     <div class="botoes">
+        <button class="corpo categoria" onclick="trocarCat(this)"></button>
+        <button class="rosto categoria" onclick="trocarCat(this)"></button>
+        <button class="cabelo categoria" onclick="trocarCat(this)"></button>
+        <button class="top categoria" onclick="trocarCat(this)"></button>
+        <button class="vestido categoria" onclick="trocarCat(this)"></button>
+        <button class="bottom categoria" onclick="trocarCat(this)"></button>
+        <button class="meia categoria" onclick="trocarCat(this)"></button>
+        <button class="acessorio categoria" onclick="trocarCat(this)"></button>
+        <button class="extras categoria" onclick="trocarCat(this)"></button>
+     </div>
+    <div id="bonecaContainer" class="bonecaContainer" style="width: 635px; height: 893px;">
         <script class="oi" src="/scripts/personalizaCorpo.js" defer></script>
     </div>
+   
 
 </body>
 
