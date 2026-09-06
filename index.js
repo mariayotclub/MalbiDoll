@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+require("dotenv").config();
 
 const app = express();
 const PORT = 3000;
