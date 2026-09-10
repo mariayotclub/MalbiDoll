@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-require("dotenv").config();
+import "dotenv/config";
 
 const app = express();
 const PORT = 3000;
@@ -21,3 +21,4 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+
