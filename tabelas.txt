@@ -14,12 +14,37 @@ VALUES
     ('Bottoms'),
     ('Meias'),
     ('Sapatos'),
-    ('Acessórios'),
+    ('Acessórios');
 
 	INSERT INTO categoria (nome)
 VALUES
     ('Maquiagens'),
     ('Extras');
+
+    INSERT INTO subcategoria (nome, categoria_id)
+VALUES
+    ('Fem', 1),
+    ('Masc', 1),
+    ('N', 1),
+    ('Olhos', 2)
+    ('Narizes', 2)
+    ('Bocas', 2)
+    ('CabeloCurto', 3)
+    ('CabeloMedio', 3)
+    ('CabeloComprido', 3)
+    ('CabeloPreso', 3)
+    ('Sombras', 4)
+    ('Delineados', 4)
+    ('Labios', 4)
+    ('Blush', 4)
+    ('PinturaFacial', 4)
+    ('Camisas', 5)
+    ('Jaquetas', 5)
+    ('Moletons', 5)
+    ('VestidoCurto', 6)
+    ('VestidoMedio', 6)
+    ('VestidoLongo', 6)
+
 
 
 CREATE TABLE subcategoria (
@@ -30,7 +55,6 @@ CREATE TABLE subcategoria (
     FOREIGN KEY (categoria_id)
         REFERENCES categoria(id)
 );
-
 
 CREATE TABLE itens (
     id SERIAL PRIMARY KEY,
