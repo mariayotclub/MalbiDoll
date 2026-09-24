@@ -1,69 +1,101 @@
+-- 1. Remoção Limpa das Tabelas Existentes (caso já existam no banco)
+DROP TABLE IF EXISTS itens CASCADE;
+DROP TABLE IF EXISTS subcategoria CASCADE;
+DROP TABLE IF EXISTS categoria CASCADE;
+
+-- 2. Criação da Tabela Categoria
 CREATE TABLE categoria (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
-
-INSERT INTO categoria (nome)
-VALUES
+-- 3. Inserção de Categorias
+INSERT INTO categoria (nome) VALUES
     ('Corpo'),
     ('Rosto'),
     ('Cabelo'),
+    ('Maquiagens'),
     ('Top'),
     ('Vestidos'),
     ('Bottoms'),
     ('Meias'),
     ('Sapatos'),
-    ('Acessórios');
-
-	INSERT INTO categoria (nome)
-VALUES
-    ('Maquiagens'),
+    ('Acessórios'),
     ('Extras');
 
-    INSERT INTO subcategoria (nome, categoria_id)
-VALUES
-    ('Fem', 1),
-    ('Masc', 1),
-    ('N', 1),
-    ('Olhos', 2)
-    ('Narizes', 2)
-    ('Bocas', 2)
-    ('CabeloCurto', 3)
-    ('CabeloMedio', 3)
-    ('CabeloComprido', 3)
-    ('CabeloPreso', 3)
-    ('Sombras', 4)
-    ('Delineados', 4)
-    ('Labios', 4)
-    ('Blush', 4)
-    ('PinturaFacial', 4)
-    ('Camisas', 5)
-    ('Jaquetas', 5)
-    ('Moletons', 5)
-    ('VestidoCurto', 6)
-    ('VestidoMedio', 6)
-    ('VestidoLongo', 6)
-
-
-
+-- 4. Criação da Tabela Subcategoria
 CREATE TABLE subcategoria (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE,
     categoria_id INTEGER NOT NULL,
-
-    FOREIGN KEY (categoria_id)
-        REFERENCES categoria(id)
+    FOREIGN KEY (categoria_id) REFERENCES categoria(id) ON DELETE CASCADE
 );
 
+-- 5. Inserção Segura de Subcategorias associando pelo NOME da categoria
+INSERT INTO subcategoria (nome, categoria_id) VALUES
+    -- Corpo
+    ('Fem', (SELECT id FROM categoria WHERE nome = 'Corpo')),
+    ('Masc', (SELECT id FROM categoria WHERE nome = 'Corpo')),
+    ('N', (SELECT id FROM categoria WHERE nome = 'Corpo')),
+    
+    -- Rosto
+    ('Olhos', (SELECT id FROM categoria WHERE nome = 'Rosto')),
+    ('Narizes', (SELECT id FROM categoria WHERE nome = 'Rosto')),
+    ('Bocas', (SELECT id FROM categoria WHERE nome = 'Rosto')),
+    
+    -- Cabelo
+    ('CabeloCurto', (SELECT id FROM categoria WHERE nome = 'Cabelo')),
+    ('CabeloMedio', (SELECT id FROM categoria WHERE nome = 'Cabelo')),
+    ('CabeloComprido', (SELECT id FROM categoria WHERE nome = 'Cabelo')),
+    ('CabeloPreso', (SELECT id FROM categoria WHERE nome = 'Cabelo')),
+    
+    -- Maquiagens
+    ('Sombras', (SELECT id FROM categoria WHERE nome = 'Maquiagens')),
+    ('Delineados', (SELECT id FROM categoria WHERE nome = 'Maquiagens')),
+    ('Labios', (SELECT id FROM categoria WHERE nome = 'Maquiagens')),
+    ('Blush', (SELECT id FROM categoria WHERE nome = 'Maquiagens')),
+    ('PinturaFacial', (SELECT id FROM categoria WHERE nome = 'Maquiagens')),
+    
+    -- Top
+    ('Camisas', (SELECT id FROM categoria WHERE nome = 'Top')),
+    ('Jaquetas', (SELECT id FROM categoria WHERE nome = 'Top')),
+    ('Moletons', (SELECT id FROM categoria WHERE nome = 'Top')),
+    
+    -- Vestidos
+    ('VestidoCurto', (SELECT id FROM categoria WHERE nome = 'Vestidos')),
+    ('VestidoMedio', (SELECT id FROM categoria WHERE nome = 'Vestidos')),
+    ('VestidoLongo', (SELECT id FROM categoria WHERE nome = 'Vestidos')),
+    
+    -- Bottoms
+    ('Calcas', (SELECT id FROM categoria WHERE nome = 'Bottoms')),
+    ('Saias', (SELECT id FROM categoria WHERE nome = 'Bottoms')),
+    ('Shorts', (SELECT id FROM categoria WHERE nome = 'Bottoms')),
+    
+    -- Meias
+    ('MeiaCalca', (SELECT id FROM categoria WHERE nome = 'Meias')),
+    ('MeiaMedia', (SELECT id FROM categoria WHERE nome = 'Meias')),
+    ('MeiaCurta', (SELECT id FROM categoria WHERE nome = 'Meias')),
+    
+    -- Sapatos
+    ('SapatoAlto', (SELECT id FROM categoria WHERE nome = 'Sapatos')),
+    ('SapatoCurto', (SELECT id FROM categoria WHERE nome = 'Sapatos')),
+    
+    -- Acessórios
+    ('Piercing', (SELECT id FROM categoria WHERE nome = 'Acessórios')),
+    ('Aneis', (SELECT id FROM categoria WHERE nome = 'Acessórios')),
+    ('Colares', (SELECT id FROM categoria WHERE nome = 'Acessórios')),
+    ('Pulseira', (SELECT id FROM categoria WHERE nome = 'Acessórios')),
+    ('Oculos', (SELECT id FROM categoria WHERE nome = 'Acessórios')),
+    ('Luvas', (SELECT id FROM categoria WHERE nome = 'Acessórios'));
+
+-- 6. Criação da Tabela Itens
 CREATE TABLE itens (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-	descricao VARCHAR(200),
-    preco DECIMAL(10, 2) NOT NULL,
-    imagem TEXT,
+    descricao VARCHAR(200),
+    preco DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    imagem TEXT NOT NULL,
+    z_index INTEGER NOT NULL DEFAULT 1,
     subcategoria_id INTEGER NOT NULL,
-
-    FOREIGN KEY (subcategoria_id)
-        REFERENCES subcategoria(id)
+    FOREIGN KEY (subcategoria_id) REFERENCES subcategoria(id) ON DELETE CASCADE
 );
