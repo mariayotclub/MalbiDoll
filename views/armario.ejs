@@ -13,106 +13,208 @@
 
 <body class="bodyPersonalizar">
 
-     <div class="quadrado">
+    <div class="quadrado">
 
         <div id="catCorpo">
             <div>
                 <text class="titulo">Corpo</text>
             </div>
-            <div>
-                
+
+            <div class="linhaSubCat">
+                <button id="Fem" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Masc" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="N" class="categoria" onclick="trocarsubCat(this)"></button>
             </div>
+
+            <div class="displayItens" id="catFem"></div>
+            <div class="displayItens" id="catMasc"></div>
+            <div class="displayItens" id="catN"></div>
         </div>
+
 
         <div id="catRosto">
             <div>
                 <text class="titulo">Rostos</text>
             </div>
-            <div>
-                
+
+            <div class="linhaSubCat">
+                <button id="Olhos" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Narizes" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Bocas" class="categoria" onclick="trocarsubCat(this)"></button>
             </div>
+
+            <div class="displayItens" id="catOlhos"></div>
+            <div class="displayItens" id="catNarizes"></div>
+            <div class="displayItens" id="catBocas"></div>
         </div>
+
 
         <div id="catCabelo">
             <div>
                 <text class="titulo">Cabelos</text>
             </div>
-            <div>
-                
+
+            <div class="linhaSubCat">
+                <button id="CabeloCurto" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="CabeloMedio" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="CabeloComprido" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="CabeloPreso" class="categoria" onclick="trocarsubCat(this)"></button>
             </div>
+
+            <div class="displayItens" id="catCabeloCurto"></div>
+            <div class="displayItens" id="catCabeloMedio"></div>
+            <div class="displayItens" id="catCabeloComprido"></div>
+            <div class="displayItens" id="catCabeloPreso"></div>
         </div>
+
+        <div id="catMaquiagem">
+            <div>
+                <text class="titulo">Maquiagem</text>
+            </div>
+
+            <div class="linhaSubCat">
+                <button id="Sombras" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Delineados" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Labios" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Blush" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="PinturaFacial" class="categoria" onclick="trocarsubCat(this)"></button>
+            </div>
+
+            <div class="displayItens" id="catSombras"></div>
+            <div class="displayItens" id="catDelineados"></div>
+            <div class="displayItens" id="catLabios"></div>
+            <div class="displayItens" id="catBlush"></div>
+            <div class="displayItens" id="catPinturaFacial"></div>
+        </div>
+
 
         <div id="catTop">
             <div>
                 <text class="titulo">Partes de cima</text>
             </div>
-            <div>
-                
+
+            <div class="linhaSubCat">
+                <button id="Camisas" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Jaquetas" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Moletons" class="categoria" onclick="trocarsubCat(this)"></button>
             </div>
+
+            <div class="displayItens" id="catCamisas"></div>
+            <div class="displayItens" id="catJaquetas"></div>
+            <div class="displayItens" id="catMoletons"></div>
         </div>
+
 
         <div id="catVestido">
             <div>
                 <text class="titulo">Vestidos</text>
             </div>
-            <div>
-                
+
+            <div class="linhaSubCat">
+                <button id="VestidoCurto" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="VestidoMedio" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="VestidoLongo" class="categoria" onclick="trocarsubCat(this)"></button>
             </div>
+
+            <div class="displayItens" id="catVestidoCurto"></div>
+            <div class="displayItens" id="catVestidoMedio"></div>
+            <div class="displayItens" id="catVestidoLongo"></div>
         </div>
+
 
         <div id="catBottom">
             <div>
                 <text class="titulo">Partes de baixo</text>
             </div>
-            <div>
-                
+
+            <div class="linhaSubCat">
+                <button id="BottomCalcas" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="BottomShorts" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="BottomSaias" class="categoria" onclick="trocarsubCat(this)"></button>
             </div>
+
+            <div class="displayItens" id="catBottomCalcas"></div>
+            <div class="displayItens" id="catBottomShorts"></div>
+            <div class="displayItens" id="catBottomSaias"></div>
+
+            <div class="displayItens" id="catBottomSaiasCurta"></div>
+            <div class="displayItens" id="catBottomSaiasMedia"></div>
+            <div class="displayItens" id="catBottomSaiasLonga"></div>
         </div>
+
 
         <div id="catMeia">
             <div>
                 <text class="titulo">Meias</text>
             </div>
-            <div>
-                
+
+            <div class="linhaSubCat">
+                <button id="MeiaCalca" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="MeiaMedia" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="MeiaCurta" class="categoria" onclick="trocarsubCat(this)"></button>
             </div>
+
+            <div class="displayItens" id="catMeiaCalca"></div>
+            <div class="displayItens" id="catMeiaMedia"></div>
+            <div class="displayItens" id="catMeiaCurta"></div>
         </div>
+
 
         <div id="catSapato">
             <div>
                 <text class="titulo">Sapatos</text>
             </div>
-            <div>
-                
+
+            <div class="linhaSubCat">
+                <button id="SapatoAltos" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="SapatoBaixos" class="categoria" onclick="trocarsubCat(this)"></button>
             </div>
+
+            <div class="displayItens" id="catSapatoAltos"></div>
+            <div class="displayItens" id="catSapatoBaixos"></div>
         </div>
+
 
         <div id="catAcessorio">
             <div>
                 <text class="titulo">Acessorios</text>
             </div>
-            <div>
-                
+
+            <div class="linhaSubCat">
+                <button id="Piercings" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Aneis" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Colares" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Pulseiras" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Oculos" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Luvas" class="categoria" onclick="trocarsubCat(this)"></button>
             </div>
+
+            <div class="displayItens" id="catPiercings"></div>
+            <div class="displayItens" id="catAneis"></div>
+            <div class="displayItens" id="catColares"></div>
+            <div class="displayItens" id="catPulseiras"></div>
+            <div class="displayItens" id="catOculos"></div>
+            <div class="displayItens" id="catLuvas"></div>
         </div>
+
 
         <div id="catExtra">
             <div>
                 <text class="titulo">Extras</text>
             </div>
-            <div>
-                
+
+            <div class="linhaSubCat">
             </div>
         </div>
 
-        
+    </div>
 
-     </div>
 
-     <div class="botoes">
+    <div class="botoes">
         <button id="Corpo" class="categoria" onclick="trocarCat(this)"></button>
         <button id="Rosto" class="categoria" onclick="trocarCat(this)"></button>
         <button id="Cabelo" class="categoria" onclick="trocarCat(this)"></button>
+        <button id="Maquiagem" class="categoria" onclick="trocarCat(this)"></button>
         <button id="Top" class="categoria" onclick="trocarCat(this)"></button>
         <button id="Vestido" class="categoria" onclick="trocarCat(this)"></button>
         <button id="Bottom" class="categoria" onclick="trocarCat(this)"></button>
@@ -120,11 +222,12 @@
         <button id="Sapato" class="categoria" onclick="trocarCat(this)"></button>
         <button id="Acessorio" class="categoria" onclick="trocarCat(this)"></button>
         <button id="Extra" class="categoria" onclick="trocarCat(this)"></button>
-     </div>
+    </div>
+
+    
     <div id="bonecaContainer" class="bonecaContainer" style="width: 635px; height: 893px;">
         <script class="oi" src="/scripts/personalizaCorpo.js" defer></script>
     </div>
-   
 
 </body>
 
