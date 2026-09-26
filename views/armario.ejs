@@ -7,209 +7,987 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Readex+Pro:wght@160..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
+    
+    <!-- CSS DO CROPPER.JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+    
+    <!-- JS DO CROPPER.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js" defer></script>
+
     <script src="/scripts/trocarCat.js" defer></script>
+    <script src="/scripts/modalItem.js" defer></script>
+    <script src="/scripts/imgCrop.js" defer></script>
+    <!-- SCRIPT DE EXCLUSÃO DE ITENS SEPARADO -->
+    <script src="/scripts/delItens.js" defer></script>
+
     <title>Personalize sua boneca</title>
 </head>
 
 <body class="bodyPersonalizar">
 
+    <!-- Dicionário de tradução que formata os nomes para a Lista de Seleção (Modal) -->
+    <script>
+        const traducoesSubcat = {
+            "Fem": "Feminino", "Masc": "Masculino", "N": "Neutro",
+            "CabeloCurto": "Curtos", "CabeloMedio": "Médios", "CabeloComprido": "Compridos", "CabeloPreso": "Presos",
+            "Sombras": "Sombras", "Delineados": "Delineados", "Labios": "Lábios", "Blush": "Blush", "PinturaFacial": "Pintura Facial",
+            "VestidoCurto": "Curtos", "VestidoMedio": "Médios", "VestidoLongo": "Longos",
+            "Calcas": "Calças", "Saias": "Saias", "Shorts": "Shorts",
+            "MeiaCalca": "Meia Calça", "MeiaMedia": "Médias", "MeiaCurta": "Curtas",
+            "SapatoAlto": "Altos", "SapatoCurto": "Baixos",
+            "Piercing": "Piercings", "Aneis": "Anéis", "Oculos": "Óculos", "Pulseira": "Pulseiras"
+        };
+
+        const catData = <%- JSON.stringify(categorias) %>;
+        catData.forEach(cat => {
+            cat.subcategorias.forEach(sub => {
+                if(traducoesSubcat[sub.nome]) {
+                    sub.nome = traducoesSubcat[sub.nome]; // Altera para o nome legível no Modal
+                }
+            });
+        });
+        window.categoriasData = catData;
+    </script>
+
+    <!-- HELPER EJS PARA BUSCAR SUB_ID E FILTRAR ITENS -->
+    <% 
+      function getSubId(nomeSub) {
+        for (let cat of categorias) {
+          let achou = cat.subcategorias.find(s => s.nome.toLowerCase() === nomeSub.toLowerCase());
+          if (achou) return { catId: cat.id, subId: achou.id };
+        }
+        return { catId: null, subId: null };
+      }
+    %>
+
     <div class="quadrado">
 
+        <!-- CORPO -->
         <div id="catCorpo">
-            <div>
-                <text class="titulo">Corpo</text>
+            <div class="titulo-container">
+                <div class="titulo">Corpo</div>
+                <div class="subtitulo">Feminino</div>
             </div>
 
             <div class="linhaSubCat">
-                <button id="Fem" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="Masc" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="N" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Fem" class="categoria" data-nome="Feminino" onclick="trocarsubCat(this)"></button>
+                <button id="Masc" class="categoria" data-nome="Masculino" onclick="trocarsubCat(this)"></button>
+                <button id="N" class="categoria" data-nome="Neutro" onclick="trocarsubCat(this)"></button>
             </div>
 
-            <div class="displayItens" id="catFem"></div>
-            <div class="displayItens2" id="catMasc"></div>
-            <div class="displayItens3" id="catN"></div>
+            <% let infoFem = getSubId('Fem'); %>
+            <div class="displayItens" id="catFem">
+                <% itens.filter(i => i.subcategoria_id === infoFem.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoFem.catId %>" data-subcategoria-id="<%= infoFem.subId %>">+</button>
+            </div>
+
+            <% let infoMasc = getSubId('Masc'); %>
+            <div class="displayItens" id="catMasc">
+                <% itens.filter(i => i.subcategoria_id === infoMasc.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoMasc.catId %>" data-subcategoria-id="<%= infoMasc.subId %>">+</button>
+            </div>
+
+            <% let infoN = getSubId('N'); %>
+            <div class="displayItens" id="catN">
+                <% itens.filter(i => i.subcategoria_id === infoN.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoN.catId %>" data-subcategoria-id="<%= infoN.subId %>">+</button>
+            </div>
         </div>
 
 
+        <!-- ROSTO -->
         <div id="catRosto">
-            <div>
-                <text class="titulo">Rostos</text>
+            <div class="titulo-container">
+                <div class="titulo">Rostos</div>
+                <div class="subtitulo">Olhos</div>
             </div>
 
             <div class="linhaSubCat">
-                <button id="Olhos" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="Narizes" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="Bocas" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Olhos" class="categoria" data-nome="Olhos" onclick="trocarsubCat(this)"></button>
+                <button id="Narizes" class="categoria" data-nome="Narizes" onclick="trocarsubCat(this)"></button>
+                <button id="Bocas" class="categoria" data-nome="Bocas" onclick="trocarsubCat(this)"></button>
             </div>
 
-            <div class="displayItens2" id="catOlhos"></div>
-            <div class="displayItens" id="catNarizes"></div>
-            <div class="displayItens" id="catBocas"></div>
+            <% let infoOlhos = getSubId('Olhos'); %>
+            <div class="displayItens" id="catOlhos">
+                <% itens.filter(i => i.subcategoria_id === infoOlhos.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoOlhos.catId %>" data-subcategoria-id="<%= infoOlhos.subId %>">+</button>
+            </div>
+
+            <% let infoNarizes = getSubId('Narizes'); %>
+            <div class="displayItens" id="catNarizes">
+                <% itens.filter(i => i.subcategoria_id === infoNarizes.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoNarizes.catId %>" data-subcategoria-id="<%= infoNarizes.subId %>">+</button>
+            </div>
+
+            <% let infoBocas = getSubId('Bocas'); %>
+            <div class="displayItens" id="catBocas">
+                <% itens.filter(i => i.subcategoria_id === infoBocas.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoBocas.catId %>" data-subcategoria-id="<%= infoBocas.subId %>">+</button>
+            </div>
         </div>
 
 
+        <!-- CABELO -->
         <div id="catCabelo">
-            <div>
-                <text class="titulo">Cabelos</text>
+            <div class="titulo-container">
+                <div class="titulo">Cabelos</div>
+                <div class="subtitulo">Curtos</div>
             </div>
 
             <div class="linhaSubCat">
-                <button id="CabeloCurto" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="CabeloMedio" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="CabeloComprido" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="CabeloPreso" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="CabeloCurto" class="categoria" data-nome="Curtos" onclick="trocarsubCat(this)"></button>
+                <button id="CabeloMedio" class="categoria" data-nome="Médios" onclick="trocarsubCat(this)"></button>
+                <button id="CabeloComprido" class="categoria" data-nome="Compridos" onclick="trocarsubCat(this)"></button>
+                <button id="CabeloPreso" class="categoria" data-nome="Presos" onclick="trocarsubCat(this)"></button>
             </div>
 
-            <div class="displayItens3" id="catCabeloCurto"></div>
-            <div class="displayItens" id="catCabeloMedio"></div>
-            <div class="displayItens" id="catCabeloComprido"></div>
-            <div class="displayItens" id="catCabeloPreso"></div>
+            <% let infoCabCurto = getSubId('CabeloCurto'); %>
+            <div class="displayItens" id="catCabeloCurto">
+                <% itens.filter(i => i.subcategoria_id === infoCabCurto.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoCabCurto.catId %>" data-subcategoria-id="<%= infoCabCurto.subId %>">+</button>
+            </div>
+
+            <% let infoCabMedio = getSubId('CabeloMedio'); %>
+            <div class="displayItens" id="catCabeloMedio">
+                <% itens.filter(i => i.subcategoria_id === infoCabMedio.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoCabMedio.catId %>" data-subcategoria-id="<%= infoCabMedio.subId %>">+</button>
+            </div>
+
+            <% let infoCabComp = getSubId('CabeloComprido'); %>
+            <div class="displayItens" id="catCabeloComprido">
+                <% itens.filter(i => i.subcategoria_id === infoCabComp.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoCabComp.catId %>" data-subcategoria-id="<%= infoCabComp.subId %>">+</button>
+            </div>
+
+            <% let infoCabPreso = getSubId('CabeloPreso'); %>
+            <div class="displayItens" id="catCabeloPreso">
+                <% itens.filter(i => i.subcategoria_id === infoCabPreso.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoCabPreso.catId %>" data-subcategoria-id="<%= infoCabPreso.subId %>">+</button>
+            </div>
         </div>
 
+
+        <!-- MAQUIAGEM -->
         <div id="catMaquiagem">
-            <div>
-                <text class="titulo">Maquiagem</text>
+            <div class="titulo-container">
+                <div class="titulo">Maquiagem</div>
+                <div class="subtitulo">Sombras</div>
             </div>
 
             <div class="linhaSubCat">
-                <button id="Sombras" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="Delineados" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="Labios" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="Blush" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="PinturaFacial" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Sombras" class="categoria" data-nome="Sombras" onclick="trocarsubCat(this)"></button>
+                <button id="Delineados" class="categoria" data-nome="Delineados" onclick="trocarsubCat(this)"></button>
+                <button id="Labios" class="categoria" data-nome="Lábios" onclick="trocarsubCat(this)"></button>
+                <button id="Blush" class="categoria" data-nome="Blush" onclick="trocarsubCat(this)"></button>
+                <button id="PinturaFacial" class="categoria" data-nome="Pintura Facial" onclick="trocarsubCat(this)"></button>
             </div>
 
-            <div class="displayItens" id="catSombras"></div>
-            <div class="displayItens" id="catDelineados"></div>
-            <div class="displayItens" id="catLabios"></div>
-            <div class="displayItens" id="catBlush"></div>
-            <div class="displayItens" id="catPinturaFacial"></div>
+            <% let infoSombras = getSubId('Sombras'); %>
+            <div class="displayItens" id="catSombras">
+                <% itens.filter(i => i.subcategoria_id === infoSombras.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoSombras.catId %>" data-subcategoria-id="<%= infoSombras.subId %>">+</button>
+            </div>
+
+            <% let infoDelineados = getSubId('Delineados'); %>
+            <div class="displayItens" id="catDelineados">
+                <% itens.filter(i => i.subcategoria_id === infoDelineados.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoDelineados.catId %>" data-subcategoria-id="<%= infoDelineados.subId %>">+</button>
+            </div>
+
+            <% let infoLabios = getSubId('Labios'); %>
+            <div class="displayItens" id="catLabios">
+                <% itens.filter(i => i.subcategoria_id === infoLabios.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoLabios.catId %>" data-subcategoria-id="<%= infoLabios.subId %>">+</button>
+            </div>
+
+            <% let infoBlush = getSubId('Blush'); %>
+            <div class="displayItens" id="catBlush">
+                <% itens.filter(i => i.subcategoria_id === infoBlush.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoBlush.catId %>" data-subcategoria-id="<%= infoBlush.subId %>">+</button>
+            </div>
+
+            <% let infoPintura = getSubId('PinturaFacial'); %>
+            <div class="displayItens" id="catPinturaFacial">
+                <% itens.filter(i => i.subcategoria_id === infoPintura.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoPintura.catId %>" data-subcategoria-id="<%= infoPintura.subId %>">+</button>
+            </div>
         </div>
 
 
+        <!-- TOP -->
         <div id="catTop">
-            <div>
-                <text class="titulo">Partes de cima</text>
+            <div class="titulo-container">
+                <div class="titulo">Partes de cima</div>
+                <div class="subtitulo">Camisas</div>
             </div>
 
             <div class="linhaSubCat">
-                <button id="Camisas" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="Jaquetas" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="Moletons" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Camisas" class="categoria" data-nome="Camisas" onclick="trocarsubCat(this)"></button>
+                <button id="Jaquetas" class="categoria" data-nome="Jaquetas" onclick="trocarsubCat(this)"></button>
+                <button id="Moletons" class="categoria" data-nome="Moletons" onclick="trocarsubCat(this)"></button>
             </div>
 
-            <div class="displayItens" id="catCamisas"></div>
-            <div class="displayItens" id="catJaquetas"></div>
-            <div class="displayItens" id="catMoletons"></div>
+            <% let infoCamisas = getSubId('Camisas'); %>
+            <div class="displayItens" id="catCamisas">
+                <% itens.filter(i => i.subcategoria_id === infoCamisas.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoCamisas.catId %>" data-subcategoria-id="<%= infoCamisas.subId %>">+</button>
+            </div>
+
+            <% let infoJaquetas = getSubId('Jaquetas'); %>
+            <div class="displayItens" id="catJaquetas">
+                <% itens.filter(i => i.subcategoria_id === infoJaquetas.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoJaquetas.catId %>" data-subcategoria-id="<%= infoJaquetas.subId %>">+</button>
+            </div>
+
+            <% let infoMoletons = getSubId('Moletons'); %>
+            <div class="displayItens" id="catMoletons">
+                <% itens.filter(i => i.subcategoria_id === infoMoletons.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoMoletons.catId %>" data-subcategoria-id="<%= infoMoletons.subId %>">+</button>
+            </div>
         </div>
 
 
+        <!-- VESTIDOS -->
         <div id="catVestido">
-            <div>
-                <text class="titulo">Vestidos</text>
+            <div class="titulo-container">
+                <div class="titulo">Vestidos</div>
+                <div class="subtitulo">Curtos</div>
             </div>
 
             <div class="linhaSubCat">
-                <button id="VestidoCurto" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="VestidoMedio" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="VestidoLongo" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="VestidoCurto" class="categoria" data-nome="Curtos" onclick="trocarsubCat(this)"></button>
+                <button id="VestidoMedio" class="categoria" data-nome="Médios" onclick="trocarsubCat(this)"></button>
+                <button id="VestidoLongo" class="categoria" data-nome="Longos" onclick="trocarsubCat(this)"></button>
             </div>
 
-            <div class="displayItens" id="catVestidoCurto"></div>
-            <div class="displayItens" id="catVestidoMedio"></div>
-            <div class="displayItens" id="catVestidoLongo"></div>
+            <% let infoVesCurto = getSubId('VestidoCurto'); %>
+            <div class="displayItens" id="catVestidoCurto">
+                <% itens.filter(i => i.subcategoria_id === infoVesCurto.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoVesCurto.catId %>" data-subcategoria-id="<%= infoVesCurto.subId %>">+</button>
+            </div>
+
+            <% let infoVesMedio = getSubId('VestidoMedio'); %>
+            <div class="displayItens" id="catVestidoMedio">
+                <% itens.filter(i => i.subcategoria_id === infoVesMedio.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoVesMedio.catId %>" data-subcategoria-id="<%= infoVesMedio.subId %>">+</button>
+            </div>
+
+            <% let infoVesLongo = getSubId('VestidoLongo'); %>
+            <div class="displayItens" id="catVestidoLongo">
+                <% itens.filter(i => i.subcategoria_id === infoVesLongo.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoVesLongo.catId %>" data-subcategoria-id="<%= infoVesLongo.subId %>">+</button>
+            </div>
         </div>
 
 
+        <!-- BOTTOMS -->
         <div id="catBottom">
-            <div>
-                <text class="titulo">Partes de baixo</text>
+            <div class="titulo-container">
+                <div class="titulo">Partes de baixo</div>
+                <div class="subtitulo">Calças</div>
             </div>
 
             <div class="linhaSubCat">
-                <button id="BottomCalcas" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="BottomShorts" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="BottomSaias" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="BottomCalcas" class="categoria" data-nome="Calças" onclick="trocarsubCat(this)"></button>
+                <button id="BottomShorts" class="categoria" data-nome="Shorts" onclick="trocarsubCat(this)"></button>
+                <button id="BottomSaias" class="categoria" data-nome="Saias" onclick="trocarsubCat(this)"></button>
             </div>
 
-            <div class="displayItens" id="catBottomCalcas"></div>
-            <div class="displayItens" id="catBottomShorts"></div>
-            <div class="displayItens" id="catBottomSaias"></div>
+            <% let infoCalcas = getSubId('Calcas'); %>
+            <div class="displayItens" id="catBottomCalcas">
+                <% itens.filter(i => i.subcategoria_id === infoCalcas.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoCalcas.catId %>" data-subcategoria-id="<%= infoCalcas.subId %>">+</button>
+            </div>
 
-            <div class="displayItens" id="catBottomSaiasCurta"></div>
-            <div class="displayItens" id="catBottomSaiasMedia"></div>
-            <div class="displayItens" id="catBottomSaiasLonga"></div>
+            <% let infoShorts = getSubId('Shorts'); %>
+            <div class="displayItens" id="catBottomShorts">
+                <% itens.filter(i => i.subcategoria_id === infoShorts.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoShorts.catId %>" data-subcategoria-id="<%= infoShorts.subId %>">+</button>
+            </div>
+
+            <% let infoSaias = getSubId('Saias'); %>
+            <div class="displayItens" id="catBottomSaias">
+                <% itens.filter(i => i.subcategoria_id === infoSaias.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoSaias.catId %>" data-subcategoria-id="<%= infoSaias.subId %>">+</button>
+            </div>
         </div>
 
 
+        <!-- MEIAS -->
         <div id="catMeia">
-            <div>
-                <text class="titulo">Meias</text>
+            <div class="titulo-container">
+                <div class="titulo">Meias</div>
+                <div class="subtitulo">Meia Calça</div>
             </div>
 
             <div class="linhaSubCat">
-                <button id="MeiaCalca" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="MeiaMedia" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="MeiaCurta" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="MeiaCalca" class="categoria" data-nome="Meia Calça" onclick="trocarsubCat(this)"></button>
+                <button id="MeiaMedia" class="categoria" data-nome="Médias" onclick="trocarsubCat(this)"></button>
+                <button id="MeiaCurta" class="categoria" data-nome="Curtas" onclick="trocarsubCat(this)"></button>
             </div>
 
-            <div class="displayItens" id="catMeiaCalca"></div>
-            <div class="displayItens" id="catMeiaMedia"></div>
-            <div class="displayItens" id="catMeiaCurta"></div>
+            <% let infoMeiaCalca = getSubId('MeiaCalca'); %>
+            <div class="displayItens" id="catMeiaCalca">
+                <% itens.filter(i => i.subcategoria_id === infoMeiaCalca.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoMeiaCalca.catId %>" data-subcategoria-id="<%= infoMeiaCalca.subId %>">+</button>
+            </div>
+
+            <% let infoMeiaMedia = getSubId('MeiaMedia'); %>
+            <div class="displayItens" id="catMeiaMedia">
+                <% itens.filter(i => i.subcategoria_id === infoMeiaMedia.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoMeiaMedia.catId %>" data-subcategoria-id="<%= infoMeiaMedia.subId %>">+</button>
+            </div>
+
+            <% let infoMeiaCurta = getSubId('MeiaCurta'); %>
+            <div class="displayItens" id="catMeiaCurta">
+                <% itens.filter(i => i.subcategoria_id === infoMeiaCurta.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoMeiaCurta.catId %>" data-subcategoria-id="<%= infoMeiaCurta.subId %>">+</button>
+            </div>
         </div>
 
 
+        <!-- SAPATOS -->
         <div id="catSapato">
-            <div>
-                <text class="titulo">Sapatos</text>
+            <div class="titulo-container">
+                <div class="titulo">Sapatos</div>
+                <div class="subtitulo">Altos</div>
             </div>
 
             <div class="linhaSubCat">
-                <button id="SapatoAltos" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="SapatoBaixos" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="SapatoAltos" class="categoria" data-nome="Altos" onclick="trocarsubCat(this)"></button>
+                <button id="SapatoBaixos" class="categoria" data-nome="Baixos" onclick="trocarsubCat(this)"></button>
             </div>
 
-            <div class="displayItens" id="catSapatoAltos"></div>
-            <div class="displayItens" id="catSapatoBaixos"></div>
+            <% let infoSapAlto = getSubId('SapatoAlto'); %>
+            <div class="displayItens" id="catSapatoAltos">
+                <% itens.filter(i => i.subcategoria_id === infoSapAlto.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoSapAlto.catId %>" data-subcategoria-id="<%= infoSapAlto.subId %>">+</button>
+            </div>
+
+            <% let infoSapCurto = getSubId('SapatoCurto'); %>
+            <div class="displayItens" id="catSapatoBaixos">
+                <% itens.filter(i => i.subcategoria_id === infoSapCurto.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoSapCurto.catId %>" data-subcategoria-id="<%= infoSapCurto.subId %>">+</button>
+            </div>
         </div>
 
 
+        <!-- ACESSÓRIOS -->
         <div id="catAcessorio">
-            <div>
-                <text class="titulo">Acessorios</text>
+            <div class="titulo-container">
+                <div class="titulo">Acessórios</div>
+                <div class="subtitulo">Piercings</div>
             </div>
 
             <div class="linhaSubCat">
-                <button id="Piercings" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="Aneis" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="Colares" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="Pulseiras" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="Oculos" class="categoria" onclick="trocarsubCat(this)"></button>
-                <button id="Luvas" class="categoria" onclick="trocarsubCat(this)"></button>
+                <button id="Piercings" class="categoria" data-nome="Piercings" onclick="trocarsubCat(this)"></button>
+                <button id="Aneis" class="categoria" data-nome="Anéis" onclick="trocarsubCat(this)"></button>
+                <button id="Colares" class="categoria" data-nome="Colares" onclick="trocarsubCat(this)"></button>
+                <button id="Pulseiras" class="categoria" data-nome="Pulseiras" onclick="trocarsubCat(this)"></button>
+                <button id="Oculos" class="categoria" data-nome="Óculos" onclick="trocarsubCat(this)"></button>
+                <button id="Luvas" class="categoria" data-nome="Luvas" onclick="trocarsubCat(this)"></button>
             </div>
 
-            <div class="displayItens" id="catPiercings"></div>
-            <div class="displayItens" id="catAneis"></div>
-            <div class="displayItens" id="catColares"></div>
-            <div class="displayItens" id="catPulseiras"></div>
-            <div class="displayItens" id="catOculos"></div>
-            <div class="displayItens" id="catLuvas"></div>
+            <% let infoPiercing = getSubId('Piercing'); %>
+            <div class="displayItens" id="catPiercings">
+                <% itens.filter(i => i.subcategoria_id === infoPiercing.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoPiercing.catId %>" data-subcategoria-id="<%= infoPiercing.subId %>">+</button>
+            </div>
+
+            <% let infoAneis = getSubId('Aneis'); %>
+            <div class="displayItens" id="catAneis">
+                <% itens.filter(i => i.subcategoria_id === infoAneis.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoAneis.catId %>" data-subcategoria-id="<%= infoAneis.subId %>">+</button>
+            </div>
+
+            <% let infoColares = getSubId('Colares'); %>
+            <div class="displayItens" id="catColares">
+                <% itens.filter(i => i.subcategoria_id === infoColares.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoColares.catId %>" data-subcategoria-id="<%= infoColares.subId %>">+</button>
+            </div>
+
+            <% let infoPulseiras = getSubId('Pulseira'); %>
+            <div class="displayItens" id="catPulseiras">
+                <% itens.filter(i => i.subcategoria_id === infoPulseiras.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoPulseiras.catId %>" data-subcategoria-id="<%= infoPulseiras.subId %>">+</button>
+            </div>
+
+            <% let infoOculos = getSubId('Oculos'); %>
+            <div class="displayItens" id="catOculos">
+                <% itens.filter(i => i.subcategoria_id === infoOculos.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoOculos.catId %>" data-subcategoria-id="<%= infoOculos.subId %>">+</button>
+            </div>
+
+            <% let infoLuvas = getSubId('Luvas'); %>
+            <div class="displayItens" id="catLuvas">
+                <% itens.filter(i => i.subcategoria_id === infoLuvas.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoLuvas.catId %>" data-subcategoria-id="<%= infoLuvas.subId %>">+</button>
+            </div>
         </div>
 
 
+        <!-- EXTRAS -->
         <div id="catExtra">
-            <div>
-                <text class="titulo">Extras</text>
+            <div class="titulo-container">
+                <div class="titulo">Extras</div>
+                <div class="subtitulo">Geral</div>
             </div>
 
             <div class="linhaSubCat">
+            </div>
+
+            <% let infoGeral = getSubId('Geral'); %>
+            <div class="displayItens" id="catGeral" style="display: flex;">
+                <% itens.filter(i => i.subcategoria_id === infoGeral.subId).forEach(item => { %>
+                    <div class="item-card">
+                        <button class="btn-deletar-item" data-id="<%= item.id %>" title="Excluir item">&times;</button>
+                        <div class="svg-wrapper">
+                            <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                <img src="<%= item.imagem %>" alt="<%= item.nome %>" style="width: 100%; height: 100%; object-fit: contain;" />
+                            <% } else { %>
+                                <%- item.imagem %>
+                            <% } %>
+                        </div>
+                        <div class="item-info">
+                            <p><%= item.nome %></p>
+                            <small>R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></small>
+                        </div>
+                    </div>
+                <% }) %>
+                <button class="btn-card-add btn-abrir-modal" data-categoria-id="<%= infoGeral.catId %>" data-subcategoria-id="<%= infoGeral.subId %>">+</button>
             </div>
         </div>
 
     </div>
 
 
+    <!-- MENU DE BOTÕES LATERAIS -->
     <div class="botoes">
         <button id="Corpo" class="categoria" onclick="trocarCat(this)"></button>
         <button id="Rosto" class="categoria" onclick="trocarCat(this)"></button>
@@ -227,6 +1005,86 @@
     
     <div id="bonecaContainer" class="bonecaContainer" style="width: 635px; height: 893px;">
         <script class="oi" src="/scripts/personalizaCorpo.js" defer></script>
+    </div>
+
+
+    <!-- MODAL ÚNICO DE CADASTRO -->
+    <div id="modalItem" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Cadastrar Novo Item</h3>
+                <button id="btnFecharModal" class="close-btn">&times;</button>
+            </div>
+
+            <form id="formCadastrarItem" action="/armario/item" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="categoria_select">Categoria:</label>
+                    <select id="categoria_select" required>
+                        <% categorias.forEach(cat => { %>
+                            <option value="<%= cat.id %>"><%= cat.nome %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="subcategoria_id">Subcategoria:</label>
+                    <select id="subcategoria_id" name="subcategoria_id" required>
+                        <option value="">Selecione primeiro uma Categoria</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="nome">Nome do Item:</label>
+                    <input type="text" id="nome" name="nome" required placeholder="Ex: Camiseta Rosa">
+                </div>
+
+                <div class="form-group">
+                    <label for="descricao">Descrição:</label>
+                    <textarea id="descricao" name="descricao" rows="2" placeholder="Opcional"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="preco">Preço (R$):</label>
+                    <input type="number" id="preco" name="preco" step="0.01" value="0.00">
+                </div>
+
+                <div class="form-group">
+                    <label for="imagemInput">Arquivo Imagem (.SVG):</label>
+                    <input type="file" id="imagemInput" accept=".svg" required>
+                    <input type="hidden" id="imagemProcessada" name="imagem">
+                </div>
+
+                <!-- ÁREA DE PRÉ-VISUALIZAÇÃO DO CROPPER -->
+                <div class="form-group" id="containerCropper" style="display: none; text-align: center;">
+                    <label>Ajuste o enquadramento para o Card:</label>
+                    <div style="max-width: 100%; height: 180px; margin: 0 auto; overflow: hidden; background: #eee;">
+                        <img id="imagePreview" style="max-width: 100%; display: block;" />
+                    </div>
+                    <small style="color: #666; margin-top: 4px; display: block;">Arraste para mover ou dê zoom</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="z_index">Camada (Z-Index):</label>
+                    <input type="number" id="z_index" name="z_index" value="1">
+                </div>
+
+                <button type="submit" class="btn-modal-salvar">Salvar Item</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CUSTOMIZADO DE CONFIRMAÇÃO DE EXCLUSÃO -->
+    <div id="modalConfirmacao" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="text-align: center; width: 320px;">
+            <div class="modal-header" style="justify-content: center;">
+                <h3 style="margin: 0;">Excluir Item</h3>
+            </div>
+            <p style="margin: 15px 0; color: #1a4d38; font-weight: 500;">Tem certeza de que deseja excluir este item?</p>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button type="button" id="btnCancelarExclusao" class="btn-modal-salvar" style="background-color: #ccc; border-color: #888; margin-top: 0;">Cancelar</button>
+                <button type="button" id="btnConfirmarExclusao" class="btn-modal-salvar" style="background-color: #e63946; color: #fff; border-color: #b71c1c; margin-top: 0;">Excluir</button>
+            </div>
+        </div>
     </div>
 
 </body>

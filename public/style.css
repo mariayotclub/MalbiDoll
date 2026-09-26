@@ -1,93 +1,325 @@
 .bodyPersonalizar {
     background-color: #e7e7e7;
     background-image: url(assets/gradiente.png);
-    background-size:155vh;
+    background-size: 155vh;
     background-position: 126vh;
-    
-
 }
 
 html, body {
     margin: 0%;
     overflow: hidden;
-    height:100%;
+    height: 100%;
     font-family: "Readex Pro", sans-serif;
 }
 
+/* Div quadrado no tamanho original */
 .quadrado {
     position: absolute;
-    margin-top: 1%;
-    margin-left: 45%;
-    height: 95%;
-    width: 54%;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 5%; 
+    height: 90vh;
+    width: 45vw; 
     background-color: #e7e7e7;
     border: 3px solid #bebebe;
-    border-radius: 8%;
+    border-radius: 35px;
     display: flex;
-
 }
 
+/* Menu de botões laterais */
 .botoes {
     position: absolute;
-    height: 100vh;
-    width: 5%;
-    margin-left: 40%;
-
-    display:flex;
+    top: 50%;
+    transform: translateY(-50%);
+    right: calc(5% + 45vw + 12px); 
+    display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
-    padding-top: 40px;
-    
-    
+    gap: 12px;
+    z-index: 10;
 }
 
-button {
-    background-color: #3a6057;
-    width: 70px;
-    height: 70px;
+button.categoria {
+    background-color: #1a4d38;
+    width: 55px;
+    height: 55px;
     border-radius: 100%;
-    border-color: #3a6057;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
 }
-.titulo {
+
+button.categoria:hover {
+    transform: scale(1.08);
+}
+
+/* ==========================================
+   TÍTULOS E SUBTÍTULOS
+   ========================================== */
+.titulo-container {
     position: absolute;
-    font-size: 60px;
-    font-weight: bold;
-    font-family: "Readex Pro", sans-serif;
-    color: #3a6057;
+    top: 25px;
     width: 100%;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.titulo {
+    font-size: 48px;
+    font-weight: bold;
+    font-family: "Fredoka", sans-serif;
+    color: #1a4d38;
+    margin: 0;
+    line-height: 1;
+}
+
+.subtitulo {
+    font-size: 18px;
+    font-weight: 500;
+    font-family: "Readex Pro", sans-serif;
+    color: #1a4d38;
+    margin-top: 5px;
 }
 
 .linhaSubCat {
-    position:absolute;
-    padding-top: 100px;
+    position: absolute;
+    top: 100px;
     display: flex;
-    gap: 30px;
+    gap: 20px;
     left: 50%;
     transform: translateX(-50%);
-   
 }
 
+.linhaSubCat button {
+    width: 45px;
+    height: 45px;
+    border-radius: 100%;
+    background-color: #1a4d38;
+    border: none;
+    cursor: pointer;
+}
+
+/* ==========================================
+   DISPLAY DOS ITENS (4 COLUNAS / CARDS LARGOS RETANGULARES)
+   ========================================== */
 .displayItens {
     position: absolute;
-    background-color: aqua;
-    width: 100px;
-    height: 50px;
+    top: 175px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92%;
+    height: calc(100% - 195px);
+    overflow-y: auto;
+    
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Exatamente 4 colunas */
+    gap: 12px;
+    justify-items: center;
+    padding: 10px;
+    box-sizing: border-box;
     z-index: 2;
 }
 
-.displayItens2 {
-    position: absolute;
-    background-color: rgb(76, 0, 255);
-    width: 100px;
-    height: 50px;
-    z-index: 2;
+/* Card Visual do Item (Um pouco mais largo, mantendo formato retangular) */
+.item-card {
+    position: relative;
+    box-sizing: border-box;
+    width: 135px;
+    height: 165px;
+    background-color: #ffffff;
+    border: 2px solid #1c241f;
+    border-radius: 0;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
-.displayItens3 {
+
+/* Botão 'X' de exclusão */
+.btn-deletar-item {
     position: absolute;
-    background-color: rgb(0, 255, 34);
-    width: 100px;
-    height: 50px;
-    z-index: 2;
+    top: 3px;
+    right: 3px;
+    width: 18px;
+    height: 18px;
+    background-color: #e63946;
+    color: #ffffff;
+    border: 1px solid #1c241f;
+    border-radius: 0;
+    font-size: 11px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.item-card:hover .btn-deletar-item {
+    opacity: 1;
+}
+
+/* Container interno da Imagem do Card proporcional ao novo formato */
+.svg-wrapper {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #1a4d38;
+    background-color: #f7f9f8;
+    box-sizing: border-box;
+    padding: 3px;
+    overflow: hidden;
+}
+
+.svg-wrapper svg,
+.svg-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.item-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.item-card p {
+    font-size: 12px;
+    color: #1a4d38;
+    margin: 0;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    text-align: left;
+}
+
+.item-card small {
+    font-size: 11px;
+    color: #1a4d38;
+    font-weight: bold;
+    margin-top: 2px;
+    text-align: left;
+}
+
+/* Botão Card Add (+) ajustado no mesmo formato largo retangular */
+.btn-card-add {
+    box-sizing: border-box;
+    width: 135px;
+    height: 165px;
+    background-color: #ffffff;
+    border: 2px solid #1c241f;
+    border-radius: 0;
+    color: #1a4d38;
+    font-size: 42px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-card-add:hover {
+    background-color: #f0f4f2;
+}
+
+/* ==========================================
+   ESTILOS DO MODAL DE CADASTRO
+   ========================================== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 0;
+    border: 2px solid #1c241f;
+    width: 380px;
+    max-width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Readex Pro', sans-serif;
+    color: #333;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-family: 'Fredoka', sans-serif;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #888;
+}
+
+.form-group {
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 4px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.form-group input, 
+.form-group select, 
+.form-group textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 0;
+    font-size: 13px;
+}
+
+.btn-modal-salvar {
+    width: 100%;
+    height: auto;
+    font-size: 16px;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #eef2f0;
+    border: 2px solid #1c241f;
+    border-radius: 0;
+    color: #1a4d38;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-modal-salvar:hover {
+    background-color: #e0e7e3;
 }
