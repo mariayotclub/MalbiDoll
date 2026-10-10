@@ -15,7 +15,7 @@ html, body {
 /* Div quadrado no tamanho original */
 .quadrado {
     position: absolute;
-    top: 50%;
+    top: 46%;
     transform: translateY(-50%);
     right: 5%; 
     height: 90vh;
@@ -29,7 +29,7 @@ html, body {
 /* Menu de botões laterais */
 .botoes {
     position: absolute;
-    top: 50%;
+    top: 46%;
     transform: translateY(-50%);
     right: calc(5% + 45vw + 12px); 
     display: flex;
@@ -102,7 +102,7 @@ button.categoria:hover {
 }
 
 /* ==========================================
-   DISPLAY DOS ITENS (4 COLUNAS / CARDS LARGOS RETANGULARES)
+   DISPLAY DOS ITENS (CORRIGIDO PARA FLEXBOX + WRAP)
    ========================================== */
 .displayItens {
     position: absolute;
@@ -112,22 +112,25 @@ button.categoria:hover {
     width: 92%;
     height: calc(100% - 195px);
     overflow-y: auto;
+    overflow-x: hidden; /* Remove barra de rolagem lateral indesejada */
     
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* Exatamente 4 colunas */
-    gap: 12px;
-    justify-items: center;
+    display: flex;
+    flex-wrap: wrap;        /* Faz os itens quebrarem para a linha de baixo automaticamente */
+    align-content: flex-start; /* Alinha as linhas no topo da caixa */
+    justify-content: flex-start; /* Alinha os cards organizados à esquerda */
+    gap: 12px;              /* Espaçamento perfeito entre os cards e o botão */
     padding: 10px;
     box-sizing: border-box;
     z-index: 2;
 }
 
-/* Card Visual do Item (Um pouco mais largo, mantendo formato retangular) */
+/* Card Visual do Item */
 .item-card {
     position: relative;
     box-sizing: border-box;
-    width: 135px;
-    height: 165px;
+    width: 170px;  
+    height: 208px; 
+    flex-shrink: 0; /* Impede estritamente que o card seja comprimido */
     background-color: #ffffff;
     border: 2px solid #1c241f;
     border-radius: 0;
@@ -157,18 +160,46 @@ button.categoria:hover {
     align-items: center;
     cursor: pointer;
     opacity: 0;
+    pointer-events: none; /* Só deixa clicar no hover */
     transition: opacity 0.2s ease;
     z-index: 10;
 }
 
-.item-card:hover .btn-deletar-item {
+/* Botão de Edição */
+.btn-editar-item {
+    position: absolute;
+    top: 24px; /* Logo abaixo do botão de excluir */
+    right: 3px;
+    width: 18px;
+    height: 18px;
+    background-color: #007bff; /* Azul */
+    color: #ffffff;
+    border: 1px solid #1c241f;
+    border-radius: 0;
+    font-size: 11px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none; /* Só deixa clicar no hover */
+    transition: opacity 0.2s ease;
+    z-index: 10;
+    text-decoration: none;
+}
+
+/* Revela ambos os botões e permite clique ao passar o rato no card */
+.item-card:hover .btn-deletar-item,
+.item-card:hover .btn-editar-item {
     opacity: 1;
+    pointer-events: auto;
 }
 
 /* Container interno da Imagem do Card proporcional ao novo formato */
 .svg-wrapper {
     width: 100%;
-    height: 100px;
+    height: 125px; 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -214,11 +245,12 @@ button.categoria:hover {
     text-align: left;
 }
 
-/* Botão Card Add (+) ajustado no mesmo formato largo retangular */
+/* Botão Card Add (+) ajustado exatamente ao mesmo tamanho para quebrar junto */
 .btn-card-add {
     box-sizing: border-box;
-    width: 135px;
-    height: 165px;
+    width: 170px;  /* Ajustado para acompanhar a largura dos cards */
+    height: 208px; /* Ajustado para acompanhar a altura dos cards */
+    flex-shrink: 0; /* Impede que o botão seja comprimido */
     background-color: #ffffff;
     border: 2px solid #1c241f;
     border-radius: 0;
@@ -239,6 +271,9 @@ button.categoria:hover {
 /* ==========================================
    ESTILOS DO MODAL DE CADASTRO
    ========================================== */
+/* ==========================================
+   ESTILOS DOS MODAIS (CADASTRO, EDIÇÃO, CONFIRMAÇÃO)
+   ========================================== */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -253,73 +288,135 @@ button.categoria:hover {
 }
 
 .modal-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 0;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
     border: 2px solid #1c241f;
-    width: 380px;
+    width: 400px;
     max-width: 90%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     font-family: 'Readex Pro', sans-serif;
-    color: #333;
+    color: #1a4d38;
+    box-sizing: border-box;
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
 }
 
 .modal-header h3 {
     margin: 0;
     font-family: 'Fredoka', sans-serif;
+    font-size: 22px;
+    color: #1a4d38;
 }
 
 .close-btn {
     background: transparent;
     border: none;
-    font-size: 22px;
+    font-size: 24px;
+    font-weight: bold;
     cursor: pointer;
-    color: #888;
+    color: #1a4d38;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #e63946;
 }
 
 .form-group {
-    margin-bottom: 12px;
+    margin-bottom: 15px;
     display: flex;
     flex-direction: column;
 }
 
 .form-group label {
-    margin-bottom: 4px;
-    font-size: 13px;
-    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a4d38;
 }
 
 .form-group input, 
 .form-group select, 
 .form-group textarea {
-    padding: 8px;
+    padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 0;
-    font-size: 13px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: 'Readex Pro', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.form-group input:focus, 
+.form-group select:focus, 
+.form-group textarea:focus {
+    border-color: #1a4d38;
 }
 
 .btn-modal-salvar {
     width: 100%;
-    height: auto;
     font-size: 16px;
-    padding: 10px;
+    padding: 12px;
     margin-top: 10px;
-    background-color: #eef2f0;
+    background-color: #1a4d38;
     border: 2px solid #1c241f;
-    border-radius: 0;
-    color: #1a4d38;
+    border-radius: 6px;
+    color: #ffffff;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, transform 0.1s;
 }
 
 .btn-modal-salvar:hover {
-    background-color: #e0e7e3;
+    background-color: #266b4e;
+}
+
+.btn-modal-salvar:active {
+    transform: scale(0.98);
+}
+
+.tabPreco {
+    position: absolute;
+    top: calc(46% + 45vh + 12px); /* Mantém logo abaixo da div quadrado */
+    transform: translateY(0);
+    right: 5%;
+    width: 45vw;
+    background-color: #ffffff;
+    border: 3px solid #bebebe;
+    border-radius: 20px;
+    padding: 15px 20px;
+    box-sizing: border-box;
+    
+    /* Alterado para manter os itens próximos (à esquerda) */
+    display: flex;
+    justify-content: flex-start; 
+    align-items: center;
+    gap: 10px; /* Cria um espacinho elegante e controlado exatamente entre o texto e o preço */
+    
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+}
+
+.preco-titulo {
+    font-size: 16px;
+    font-weight: bold;
+    color: #1a4d38;
+    font-family: "Readex Pro", sans-serif;
+}
+
+.preco-valor {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1a4d38;
+    font-family: "Fredoka", sans-serif;
 }

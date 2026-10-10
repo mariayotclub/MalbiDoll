@@ -1,0 +1,63 @@
+     <div id="modalItem" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Cadastrar Novo Item</h3>
+                <button id="btnFecharModal" class="close-btn">&times;</button>
+            </div>
+
+            <form id="formCadastrarItem" action="/armario/item" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="categoria_select">Categoria:</label>
+                    <select id="categoria_select" required>
+                        <% categorias.forEach(cat => { %>
+                            <option value="<%= cat.id %>"><%= cat.nome %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="subcategoria_id">Subcategoria:</label>
+                    <select id="subcategoria_id" name="subcategoria_id" required>
+                        <option value="">Selecione primeiro uma Categoria</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="nome">Nome do Item:</label>
+                    <input type="text" id="nome" name="nome" required placeholder="Ex: Camiseta Rosa">
+                </div>
+
+                <div class="form-group">
+                    <label for="descricao">Descrição:</label>
+                    <textarea id="descricao" name="descricao" rows="2" placeholder="Opcional"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="preco">Preço (R$):</label>
+                    <input type="number" id="preco" name="preco" step="0.01" value="0.00">
+                </div>
+
+                <div class="form-group">
+                    <label for="imagemInput">Arquivo Imagem (.SVG):</label>
+                    <input type="file" id="imagemInput" accept=".svg" required>
+                    <input type="hidden" id="imagemProcessada" name="imagem">
+                </div>
+
+                <!-- ÁREA DE PRÉ-VISUALIZAÇÃO DO CROPPER -->
+                <div class="form-group" id="containerCropper" style="display: none; text-align: center;">
+                    <label>Ajuste o enquadramento para o Card:</label>
+                    <div style="max-width: 100%; height: 180px; margin: 0 auto; overflow: hidden; background: #eee;">
+                        <img id="imagePreview" style="max-width: 100%; display: block;" />
+                    </div>
+                    <small style="color: #666; margin-top: 4px; display: block;">Arraste para mover ou dê zoom</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="z_index">Camada (Z-Index):</label>
+                    <input type="number" id="z_index" name="z_index" value="1">
+                </div>
+
+                <button type="submit" class="btn-modal-salvar">Salvar Item</button>
+            </form>
+        </div>
+    </div>

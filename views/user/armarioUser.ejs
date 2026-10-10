@@ -1,0 +1,301 @@
+<%
+    const admin = typeof isAdmin !== 'undefined' && isAdmin === true;
+
+    // [ID do botão, nome exibido, nome da subcategoria no banco]
+    const abas = [
+        {
+            id: 'Corpo',
+            titulo: 'Corpo',
+            subs: [
+                ['Fem', 'Feminino', 'Fem'],
+                ['Masc', 'Masculino', 'Masc'],
+                ['N', 'Neutro', 'N']
+            ]
+        },
+        {
+            id: 'Rosto',
+            titulo: 'Rostos',
+            subs: [
+                ['Olhos', 'Olhos', 'Olhos'],
+                ['Narizes', 'Narizes', 'Narizes'],
+                ['Bocas', 'Bocas', 'Bocas']
+            ]
+        },
+        {
+            id: 'Cabelo',
+            titulo: 'Cabelos',
+            subs: [
+                ['CabeloCurto', 'Curtos', 'CabeloCurto'],
+                ['CabeloMedio', 'Médios', 'CabeloMedio'],
+                ['CabeloComprido', 'Compridos', 'CabeloComprido'],
+                ['CabeloPreso', 'Presos', 'CabeloPreso']
+            ]
+        },
+        {
+            id: 'Maquiagem',
+            titulo: 'Maquiagem',
+            subs: [
+                ['Sombras', 'Sombras', 'Sombras'],
+                ['Delineados', 'Delineados', 'Delineados'],
+                ['Labios', 'Lábios', 'Labios'],
+                ['Blush', 'Blush', 'Blush'],
+                ['PinturaFacial', 'Pintura Facial', 'PinturaFacial']
+            ]
+        },
+        {
+            id: 'Top',
+            titulo: 'Partes de cima',
+            subs: [
+                ['Camisas', 'Camisas', 'Camisas'],
+                ['Jaquetas', 'Jaquetas', 'Jaquetas'],
+                ['Moletons', 'Moletons', 'Moletons']
+            ]
+        },
+        {
+            id: 'Vestido',
+            titulo: 'Vestidos',
+            subs: [
+                ['VestidoCurto', 'Curtos', 'VestidoCurto'],
+                ['VestidoMedio', 'Médios', 'VestidoMedio'],
+                ['VestidoLongo', 'Longos', 'VestidoLongo']
+            ]
+        },
+        {
+            id: 'Bottom',
+            titulo: 'Partes de baixo',
+            subs: [
+                ['BottomCalcas', 'Calças', 'Calcas'],
+                ['BottomShorts', 'Shorts', 'Shorts'],
+                ['BottomSaias', 'Saias', 'Saias']
+            ]
+        },
+        {
+            id: 'Meia',
+            titulo: 'Meias',
+            subs: [
+                ['MeiaCalca', 'Meia Calça', 'MeiaCalca'],
+                ['MeiaMedia', 'Médias', 'MeiaMedia'],
+                ['MeiaCurta', 'Curtas', 'MeiaCurta']
+            ]
+        },
+        {
+            id: 'Sapato',
+            titulo: 'Sapatos',
+            subs: [
+                ['SapatoAltos', 'Altos', 'SapatoAlto'],
+                ['SapatoBaixos', 'Baixos', 'SapatoCurto']
+            ]
+        },
+        {
+            id: 'Acessorio',
+            titulo: 'Acessórios',
+            subs: [
+                ['Piercings', 'Piercings', 'Piercing'],
+                ['Aneis', 'Anéis', 'Aneis'],
+                ['Colares', 'Colares', 'Colares'],
+                ['Pulseiras', 'Pulseiras', 'Pulseira'],
+                ['Oculos', 'Óculos', 'Oculos'],
+                ['Luvas', 'Luvas', 'Luvas']
+            ]
+        },
+        {
+            id: 'Extra',
+            titulo: 'Extras',
+            subs: [
+                ['Geral', 'Geral', 'Geral']
+            ]
+        }
+    ];
+
+    function getSubId(nomeSub) {
+        for (const categoria of categorias) {
+            const sub = categoria.subcategorias.find(
+                s => s.nome.toLowerCase() === nomeSub.toLowerCase()
+            );
+
+            if (sub) {
+                return { catId: categoria.id, subId: sub.id };
+            }
+        }
+
+        return { catId: null, subId: null };
+    }
+
+    const traducoesSubcat = {};
+
+    abas.forEach(aba => {
+        aba.subs.forEach(([, nomeExibido, nomeBanco]) => {
+            traducoesSubcat[nomeBanco] = nomeExibido;
+        });
+    });
+
+    const categoriasModal = categorias.map(categoria => ({
+        ...categoria,
+        subcategorias: categoria.subcategorias.map(sub => ({
+            ...sub,
+            nome: traducoesSubcat[sub.nome] || sub.nome
+        }))
+    }));
+%>
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Readex+Pro:wght@160..700&display=swap"
+        rel="stylesheet"
+    >
+    <link rel="stylesheet" href="/style.css">
+
+    <script src="/scripts/trocarCat.js" defer></script>
+    <script src="/scripts/personalizaCorpo.js" defer></script>
+
+    <% if (admin) { %>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+        >
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"
+            defer
+        ></script>
+        <script src="/scripts/modalItem.js" defer></script>
+        <script src="/scripts/imgCrop.js" defer></script>
+        <script src="/scripts/delItens.js" defer></script>
+    <% } %>
+
+    <title>Personalize sua boneca</title>
+</head>
+
+<body class="bodyPersonalizar">
+    <% if (admin) { %>
+        <script>
+            window.categoriasData = <%- JSON.stringify(categoriasModal).replace(/</g, '\\u003c') %>;
+        </script>
+    <% } %>
+
+    <div class="quadrado">
+        <% abas.forEach(aba => { %>
+            <div id="cat<%= aba.id %>">
+                <div class="titulo-container">
+                    <div class="titulo"><%= aba.titulo %></div>
+                    <div class="subtitulo"><%= aba.subs[0][1] %></div>
+                </div>
+
+                <div class="linhaSubCat">
+                    <% aba.subs.forEach(([id, nomeExibido]) => { %>
+                        <button
+                            type="button"
+                            id="<%= id %>"
+                            class="categoria"
+                            data-nome="<%= nomeExibido %>"
+                            aria-label="<%= nomeExibido %>"
+                            title="<%= nomeExibido %>"
+                            onclick="trocarsubCat(this)"
+                        ></button>
+                    <% }) %>
+                </div>
+
+                <% aba.subs.forEach(([id, nomeExibido, nomeBanco]) => {
+                    const info = getSubId(nomeBanco);
+                    const itensSubcategoria = itens.filter(
+                        item => String(item.subcategoria_id) === String(info.subId)
+                    );
+                %>
+                    <div class="displayItens" id="cat<%= id %>">
+                        <% itensSubcategoria.forEach(item => { %>
+                            <div class="item-card">
+                                <% if (admin) { %>
+                                    <button
+                                        type="button"
+                                        class="btn-deletar-item"
+                                        data-id="<%= item.id %>"
+                                        title="Excluir item"
+                                    >&times;</button>
+
+                                    <button
+                                        type="button"
+                                        class="btn-editar-item btn-abrir-modal-editar"
+                                        data-id="<%= item.id %>"
+                                        data-nome="<%= item.nome %>"
+                                        data-preco="<%= parseFloat(item.preco).toFixed(2) %>"
+                                        data-descricao="<%= item.descricao || '' %>"
+                                        data-zindex="<%= item.z_index %>"
+                                        data-cat="<%= item.categoria_id %>"
+                                        data-subcat="<%= item.subcategoria_id %>"
+                                        title="Editar item"
+                                    >E</button>
+                                <% } %>
+
+                                <div class="svg-wrapper">
+                                    <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
+                                        <img
+                                            src="<%= item.imagem %>"
+                                            alt="<%= item.nome %>"
+                                            style="width: 100%; height: 100%; object-fit: contain;"
+                                        >
+                                    <% } else { %>
+                                        <%- item.imagem %>
+                                    <% } %>
+                                </div>
+
+                                <div class="item-info">
+                                    <p><%= item.nome %></p>
+                                    <small>
+                                        R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %>
+                                    </small>
+                                </div>
+                            </div>
+                        <% }) %>
+
+                        <% if (admin) { %>
+                            <button
+                                type="button"
+                                class="btn-card-add btn-abrir-modal"
+                                data-categoria-id="<%= info.catId %>"
+                                data-subcategoria-id="<%= info.subId %>"
+                                title="Adicionar item"
+                            >+</button>
+                        <% } %>
+                    </div>
+                <% }) %>
+            </div>
+        <% }) %>
+    </div>
+
+    <div class="botoes">
+        <% abas.forEach(aba => { %>
+            <button
+                type="button"
+                id="<%= aba.id %>"
+                class="categoria"
+                aria-label="<%= aba.titulo %>"
+                title="<%= aba.titulo %>"
+                onclick="trocarCat(this)"
+            ></button>
+        <% }) %>
+    </div>
+
+    <div
+        id="bonecaContainer"
+        class="bonecaContainer"
+        style="width: 635px; height: 893px;"
+    ></div>
+
+    <% if (admin) { %>
+        <%- include('../../components/modalCadastro') %>
+        <%- include('../../components/modalConfirmacao') %>
+        <%- include('../../components/modalEdicao') %>
+    <% } %>
+
+    <div class="tabPreco">
+        <span class="preco-titulo">Preço Total:</span>
+        <span id="valorTotal" class="preco-valor">R$ 150,00</span>
+    </div>
+</body>
+</html>

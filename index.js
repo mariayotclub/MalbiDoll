@@ -22,13 +22,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Registro das Rotas do Armário
-app.use(armarioRoutes);
-
 // Rota raiz (redireciona para o armário por padrão)
 app.get('/', (req, res) => {
-  res.redirect('/armario');
+  res.render('home');
 });
+
+app.use(armarioRoutes);
 
 // Inicialização do servidor
 app.listen(PORT, () => {

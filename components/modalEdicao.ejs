@@ -1,0 +1,62 @@
+ <div id="modalEditarItem" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Item</h3>
+                <button id="btnFecharModalEditar" class="close-btn">&times;</button>
+            </div>
+
+            <!-- O 'action' será preenchido via JavaScript -->
+            <form id="formEditarItem" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="edit_categoria_select">Categoria:</label>
+                    <select id="edit_categoria_select" required>
+                        <% categorias.forEach(cat => { %>
+                            <option value="<%= cat.id %>"><%= cat.nome %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_subcategoria_id">Subcategoria:</label>
+                    <select id="edit_subcategoria_id" name="subcategoria_id" required>
+                        <option value="">Selecione primeiro uma Categoria</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_nome">Nome do Item:</label>
+                    <input type="text" id="edit_nome" name="nome" required placeholder="Ex: Camiseta Rosa">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_descricao">Descrição:</label>
+                    <textarea id="edit_descricao" name="descricao" rows="2" placeholder="Opcional"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_preco">Preço (R$):</label>
+                    <input type="number" id="edit_preco" name="preco" step="0.01" value="0.00">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_imagemInput">Nova Imagem (Opcional, .SVG):</label>
+                    <input type="file" id="edit_imagemInput" accept=".svg">
+                    <input type="hidden" id="edit_imagemProcessada" name="imagem">
+                </div>
+
+                <div class="form-group" id="edit_containerCropper" style="display: none; text-align: center;">
+                    <label>Ajuste o enquadramento para o Card:</label>
+                    <div style="max-width: 100%; height: 180px; margin: 0 auto; overflow: hidden; background: #eee;">
+                        <img id="edit_imagePreview" style="max-width: 100%; display: block;" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_z_index">Camada (Z-Index):</label>
+                    <input type="number" id="edit_z_index" name="z_index" value="1">
+                </div>
+
+                <button type="submit" class="btn-modal-salvar">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
