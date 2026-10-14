@@ -1,24 +1,11 @@
-// Variáveis do Cropper para o Cadastro
+
 let cropperCadastro = null;
-const imagemInput = document.getElementById('imagemInput');
-const imagePreview = document.getElementById('imagePreview');
-const containerCropper = document.getElementById('containerCropper');
-const inputImagemProcessada = document.getElementById('imagemProcessada');
-const formCadastrarItem = document.getElementById('formCadastrarItem');
-
-// Variáveis do Cropper para a Edição
 let cropperEdicao = null;
-const editImagemInput = document.getElementById('edit_imagemInput');
-const editImagePreview = document.getElementById('edit_imagePreview');
-const editContainerCropper = document.getElementById('edit_containerCropper');
-const editInputImagemProcessada = document.getElementById('edit_imagemProcessada');
-const formEditarItem = document.getElementById('formEditarItem');
 
-// Configuração padrão do Cropper (proporção exata da bordinha do card)
 const cropperOptions = {
     aspectRatio: 122 / 110,
     viewMode: 2,
-    dragMode: 'crop',
+    dragMode: "crop",
     autoCropArea: 1,
     restore: false,
     guides: true,
@@ -26,94 +13,115 @@ const cropperOptions = {
     highlight: false,
     cropBoxMovable: true,
     cropBoxResizable: true,
-    toggleDragModeOnDblclick: false,
+    toggleDragModeOnDblclick: false
 };
 
-// ==========================================
-// 1. LÓGICA DE CROPPER PARA O MODAL DE CADASTRO
-// ==========================================
-if (imagemInput) {
-    imagemInput.addEventListener('change', (e) => {
-        const files = e.target.files;
-        if (files && files.length > 0) {
-            const file = files[0];
-            const reader = new FileReader();
+function configurarCropper(inputId, previewId, containerId, tipo) {
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+    const container = document.getElementById(containerId);
 
-            reader.onload = function (event) {
-                imagePreview.src = event.target.result;
-                containerCropper.style.display = 'block';
+    if (!input || !preview || !container) return;
 
-                if (cropperCadastro) {
-                    cropperCadastro.destroy();
+    input.addEventListener("change", evento => {
+        const arquivo = evento.target.files?.[0];
+
+        if (!arquivo) return;
+
+        if (arquivo.type !== "image/svg+xml" ||
+            !arquivo.name.toLowerCase().endsWith(".svg")) {
+            alert("Selecione um arquivo SVG.");
+            input.value = "";
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            const cropperAnterior = tipo === "cadastro"
+                ? cropperCadastro
+                : cropperEdicao;
+
+            if (cropperAnterior) {
+                cropperAnterior.destroy();
+            }
+
+            preview.onload = () => {
+                container.style.display = "block";
+
+                const novoCropper = new Cropper(
+                    preview,
+                    cropperOptions
+                );
+
+                if (tipo === "cadastro") {
+                    cropperCadastro = novoCropper;
+                } else {
+                    cropperEdicao = novoCropper;
                 }
-
-                cropperCadastro = new Cropper(imagePreview, cropperOptions);
             };
 
-            reader.readAsDataURL(file);
-        }
+            preview.src = reader.result;
+        };
+
+        reader.readAsDataURL(arquivo);
     });
 }
 
-if (formCadastrarItem) {
-    formCadastrarItem.addEventListener('submit', function (e) {
-        if (cropperCadastro) {
-            e.preventDefault();
+configurarCropper(
+    "imagemInput",
+    "imagePreview",
+    "containerCropper",
+    "cadastro"
+);
 
-            const canvas = cropperCadastro.getCroppedCanvas({
-                width: 268,
-                height: 276
-            });
+configurarCropper(
+    "edit_imagemInput",
+    "edit_imagePreview",
+    "edit_containerCropper",
+    "edicao"
+);
 
-            const croppedDataUrl = canvas.toDataURL('image/png');
-            inputImagemProcessada.value = croppedDataUrl;
+function configurarEnvio(formId, inputId, tipo) {
+    const formulario = document.getElementById(formId);
+    const inputProcessado = document.getElementById(inputId);
 
-            formCadastrarItem.submit();
+    if (!formulario || !inputProcessado) return;
+
+    formulario.addEventListener("submit", evento => {
+        const cropper = tipo === "cadastro"
+            ? cropperCadastro
+            : cropperEdicao;
+
+        if (!cropper) return;
+
+        evento.preventDefault();
+
+        const canvas = cropper.getCroppedCanvas({
+            width: 268,
+            height: 276
+        });
+
+        if (!canvas) {
+            alert("Não foi possível gerar a miniatura.");
+            return;
         }
+
+        inputProcessado.value = canvas.toDataURL("image/png");
+
+        // O SVG original permanece no input file.
+        HTMLFormElement.prototype.submit.call(formulario);
     });
 }
 
-// ==========================================
-// 2. LÓGICA DE CROPPER PARA O MODAL DE EDIÇÃO
-// ==========================================
-if (editImagemInput) {
-    editImagemInput.addEventListener('change', (e) => {
-        const files = e.target.files;
-        if (files && files.length > 0) {
-            const file = files[0];
-            const reader = new FileReader();
+configurarEnvio(
+    "formCadastrarItem",
+    "imagemProcessada",
+    "cadastro"
+);
 
-            reader.onload = function (event) {
-                editImagePreview.src = event.target.result;
-                editContainerCropper.style.display = 'block';
-
-                if (cropperEdicao) {
-                    cropperEdicao.destroy();
-                }
-
-                cropperEdicao = new Cropper(editImagePreview, cropperOptions);
-            };
-
-            reader.readAsDataURL(file);
-        }
-    });
-}
-
-if (formEditarItem) {
-    formEditarItem.addEventListener('submit', function (e) {
-        // Só intercepta e recorta se o usuário tiver feito upload de uma nova imagem no modal de edição
-        if (cropperEdicao) {
-            e.preventDefault();
-
-            const canvas = cropperEdicao.getCroppedCanvas({
-                width: 268,
-                height: 276
-            });
-
-            const croppedDataUrl = canvas.toDataURL('image/png');
-            editInputImagemProcessada.value = croppedDataUrl;
-
-            formEditarItem.submit();
-        }
-    });
-}
+configurarEnvio(
+    "formEditarItem",
+    "edit_imagemProcessada",
+    "edicao"
+);

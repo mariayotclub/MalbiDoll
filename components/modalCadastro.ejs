@@ -35,15 +35,20 @@
                 <div class="form-group">
                     <label for="preco">Preço (R$):</label>
                     <input type="number" id="preco" name="preco" step="0.01" value="0.00">
-                </div>
+                </div> 
 
-                <div class="form-group">
-                    <label for="imagemInput">Arquivo Imagem (.SVG):</label>
-                    <input type="file" id="imagemInput" accept=".svg" required>
-                    <input type="hidden" id="imagemProcessada" name="imagem">
+                <div class="campo-formulario">
+                    <label for="imagemInput">SVG do item</label>
+                    <input
+                        type="file"
+                        id="imagemInput"
+                        name="imagem"
+                        accept=".svg,image/svg+xml"
+                        required
+                    >
                 </div>
-
-                <!-- ÁREA DE PRÉ-VISUALIZAÇÃO DO CROPPER -->
+                
+                <input type="hidden" id="imagemProcessada" name="imagemProcessada">
                 <div class="form-group" id="containerCropper" style="display: none; text-align: center;">
                     <label>Ajuste o enquadramento para o Card:</label>
                     <div style="max-width: 100%; height: 180px; margin: 0 auto; overflow: hidden; background: #eee;">

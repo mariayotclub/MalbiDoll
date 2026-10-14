@@ -1,9 +1,11 @@
+
 import { Router } from 'express';
 import armarioController from '../controllers/armarioController.js';
 import upload from '../middlewares/upload.js';
 
 const router = Router();
 
+router.get('/api/itens/:id/svg', armarioController.obterSvg);
 router.get('/armario', armarioController.exibirArmario);
 router.get('/personalizar', armarioController.exibirArmario);
 router.get('/armarioUser', armarioController.exibirArmario);

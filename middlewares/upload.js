@@ -1,21 +1,22 @@
-import multer from 'multer';
-
-// Guarda o arquivo temporariamente na memória RAM para podermos ler como texto
+import multer from "multer";
 const storage = multer.memoryStorage();
 
-// Filtra para aceitar apenas arquivos SVG
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype === 'image/svg+xml' || file.originalname.endsWith('.svg')) {
+    const extensaoValida = file.originalname
+        .toLowerCase()
+        .endsWith(".svg");
+    const mimeValido = file.mimetype === "image/svg+xml";
+    if (!extensaoValida || !mimeValido) {
+        return cb(new Error("Apenas arquivos SVG são permitidos."));
+    }
     cb(null, true);
-  } else {
-    cb(new Error('Apenas arquivos no formato .SVG são permitidos!'), false);
-  }
 };
-
-const upload = multer({ 
-  storage, 
-  fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 } // Limite opcional de 2MB por arquivo
+const upload = multer({
+    storage,
+    fileFilter,
+    limits: {
+        fileSize: 10 * 1024 * 1024,
+        files: 1
+    }
 });
-
 export default upload;

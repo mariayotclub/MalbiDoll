@@ -12,6 +12,11 @@ html, body {
     font-family: "Readex Pro", sans-serif;
 }
 
+#bonecaContainer {
+    position: relative;
+    transform: translate(160px, -10px);
+}
+
 /* Div quadrado no tamanho original */
 .quadrado {
     position: absolute;
@@ -419,4 +424,26 @@ button.categoria:hover {
     font-weight: bold;
     color: #1a4d38;
     font-family: "Fredoka", sans-serif;
+}
+
+.setaVoltar {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #234D35;
+    text-decoration: none;
+    z-index: 1000;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.setaVoltar:hover {
+    transform: translateX(-5px);
+}
+/* Lineart vetorizada (fill), comum a todos os SVGs da boneca. */
+#bonecaContainer svg path.line {
+    fill: #1B1263 !important;
 }

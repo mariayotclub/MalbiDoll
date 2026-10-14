@@ -107,8 +107,9 @@
         }
     ];
 
-    function getSubId(nomeSub) {
+    function getSubId(nomeSub, nomeCategoria) {
         for (const categoria of categorias) {
+            if (categoria.nome !== nomeCategoria) continue;
             const sub = categoria.subcategorias.find(
                 s => s.nome.toLowerCase() === nomeSub.toLowerCase()
             );
@@ -153,6 +154,19 @@
     <link rel="stylesheet" href="/style.css">
 
     <script src="/scripts/trocarCat.js" defer></script>
+
+    <div
+        id="dadosCorpoPadrao"
+        data-corpo="<%= JSON.stringify(corpoPadrao ?? null) %>"
+        hidden>
+    </div>
+
+    <script>
+        window.corpoPadrao = JSON.parse(
+            document.getElementById("dadosCorpoPadrao").dataset.corpo
+        );
+    </script>
+
     <script src="/scripts/personalizaCorpo.js" defer></script>
 
     <% if (admin) { %>
@@ -173,9 +187,25 @@
 </head>
 
 <body class="bodyPersonalizar">
+
+    <a href="/" class="setaVoltar" aria-label="Voltar para a página inicial">
+        <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5"></path>
+            <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+    </a>
+
     <% if (admin) { %>
+        <div
+            id="categoriasData"
+            data-categorias="<%= JSON.stringify(categoriasModal) %>"
+            hidden>
+        </div>
+
         <script>
-            window.categoriasData = <%- JSON.stringify(categoriasModal).replace(/</g, '\\u003c') %>;
+            window.categoriasData = JSON.parse(
+                document.getElementById("categoriasData").dataset.categorias
+            );
         </script>
     <% } %>
 
@@ -202,14 +232,19 @@
                 </div>
 
                 <% aba.subs.forEach(([id, nomeExibido, nomeBanco]) => {
-                    const info = getSubId(nomeBanco);
+                    const nomesCategorias = { Maquiagem: "Maquiagens", Vestido: "Vestidos", Bottom: "Bottoms", Meia: "Meias", Sapato: "Sapatos", Acessorio: "Acessórios", Extra: "Extras" };
+                    const info = getSubId(nomeBanco, nomesCategorias[aba.id] || aba.id);
                     const itensSubcategoria = itens.filter(
                         item => String(item.subcategoria_id) === String(info.subId)
                     );
                 %>
                     <div class="displayItens" id="cat<%= id %>">
                         <% itensSubcategoria.forEach(item => { %>
-                            <div class="item-card">
+                            <div class="item-card"
+                                data-id="<%= item.id %>"
+                                data-categoria="<%= aba.id %>"
+                                data-subcategoria="<%= nomeBanco %>"
+                                data-zindex="<%= item.z_index %>">
                                 <% if (admin) { %>
                                     <button
                                         type="button"
@@ -233,14 +268,10 @@
                                 <% } %>
 
                                 <div class="svg-wrapper">
-                                    <% if (item.imagem && item.imagem.startsWith('data:image')) { %>
-                                        <img
-                                            src="<%= item.imagem %>"
-                                            alt="<%= item.nome %>"
-                                            style="width: 100%; height: 100%; object-fit: contain;"
-                                        >
+                                    <% if (item.miniatura) { %>
+                                        <img src="<%= item.miniatura %>" alt="<%= item.nome %>" style="width:100%;height:100%;object-fit:contain;">
                                     <% } else { %>
-                                        <%- item.imagem %>
+                                        <span>Sem miniatura</span>
                                     <% } %>
                                 </div>
 

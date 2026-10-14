@@ -38,12 +38,17 @@
                     <input type="number" id="edit_preco" name="preco" step="0.01" value="0.00">
                 </div>
 
-                <div class="form-group">
-                    <label for="edit_imagemInput">Nova Imagem (Opcional, .SVG):</label>
-                    <input type="file" id="edit_imagemInput" accept=".svg">
-                    <input type="hidden" id="edit_imagemProcessada" name="imagem">
+                <div class="campo-formulario">
+                    <label for="edit_imagemInput">Novo SVG</label>
+                    <input
+                        type="file"
+                        id="edit_imagemInput"
+                        name="imagem"
+                        accept=".svg,image/svg+xml"
+                    >
                 </div>
 
+                <input type="hidden" id="edit_imagemProcessada" name="imagemProcessada">
                 <div class="form-group" id="edit_containerCropper" style="display: none; text-align: center;">
                     <label>Ajuste o enquadramento para o Card:</label>
                     <div style="max-width: 100%; height: 180px; margin: 0 auto; overflow: hidden; background: #eee;">
