@@ -1,20 +1,12 @@
 <header class="cabecalho">
-    <a href="/" class="cabecalho-logo">
-        <img src="/assets/logoMalbi_branco.svg" alt="Logo Malbi Doll">
-        <span>Malbi Doll</span>
-    </a>
-    <nav class="cabecalho-menu">
-        <a href="/" type="a">Home</a>
-        <a href="/personalizar">Personalizar</a>
-        <a type="a">Bonecas</a>
-        <a type="a">Sobre</a>
-    </nav>
-    <div class="cabecalho-icones">
-        <button type="a" aria-label="Perfil">
-            <i data-lucide="user-round"></i>
-        </button>
-        <button type="a" aria-label="Carrinho">
-            <i data-lucide="shopping-cart"></i>
-        </button>
-    </div>
+  <a href="/" class="cabecalho-logo"><img src="/assets/logoMalbi_branco.svg" alt="Logo Malbi Doll"><span>Malbi Doll</span></a>
+  <nav class="cabecalho-menu" aria-label="Navegação principal">
+    <a href="/">Home</a><a href="/personalizar">Personalizar</a><a href="/bonecas">Bonecas</a><a href="/sobre">Sobre</a>
+  </nav>
+  <div class="cabecalho-icones">
+    <a class="cabecalho-auth cabecalho-auth-cadastro" href="/cadastro">Sign in</a>
+    <a class="cabecalho-auth cabecalho-auth-login" href="/login">Log in</a>
+    <button type="button" data-abrir-perfil aria-label="Abrir perfil" aria-controls="perfilPainel" aria-expanded="false"><i data-lucide="user-round"></i></button>
+    <button type="button" data-abrir-carrinho aria-label="Abrir carrinho"><i data-lucide="shopping-cart"></i></button>
+  </div>
 </header>

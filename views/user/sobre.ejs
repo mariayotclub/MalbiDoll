@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Conheça a Malbi Doll: bonecas de pano personalizáveis, feitas com carinho e representatividade.">
+  <title>Sobre Nós | Malbi Doll</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/styleCabecalho.css">
+  <link rel="stylesheet" href="/styles/views.css">
+  <link rel="stylesheet" href="/styles/loja.css">
+  <script src="/scripts/carrinho.js" defer></script>
+</head>
+<body>
+  <%- include('../../components/cabecalho') %>
+
+  <main class="sobre-pagina">
+    <section class="sobre-hero" aria-labelledby="titulo-marca">
+      <div class="sobre-marca">
+        <img src="/assets/logoMalbi_verde.svg" alt="" class="sobre-logo">
+        <h1 id="titulo-marca">Malbi Doll</h1>
+      </div>
+      <p class="sobre-etiqueta">SOBRE NÓS</p>
+      <h2>Mais do que bonecas,<br><span>histórias feitas à mão</span></h2>
+      <div class="sobre-introducao">
+        <p>Na <strong>Malbi Doll</strong>, acreditamos que brincar é uma forma de expressão, de pertencimento e de afeto. Nascemos da vontade de transformar o imaginário em realidade, criando um espaço onde cada criança (e cada adulto com alma de criança!) pode ver a si mesmo refletido no brinquedo que abraça.</p>
+        <p>Nós criamos <strong>bonecas de pano personalizáveis e interativas</strong>. Aqui, a criatividade não tem limites: através da nossa plataforma interativa, você participa ativamente da criação da boneca dos seus sonhos — escolhendo desde os traços físicos até os mínimos detalhes do vestuário e acessórios.</p>
+      </div>
+    </section>
+
+    <section class="sobre-diferenciais" aria-labelledby="titulo-diferenciais">
+      <div class="sobre-conteudo">
+        <p class="sobre-etiqueta">NOSSO JEITO DE CRIAR</p>
+        <h2 id="titulo-diferenciais">O que nos torna únicos?</h2>
+        <div class="sobre-cards">
+          <article class="sobre-card">
+            <div class="sobre-card-numero">01</div>
+            <h3>Personalização Completa e Variada</h3>
+            <p>Na Malbi Doll, cada boneca é única como quem a cria. São inúmeras opções de combinações para que o resultado final seja a expressão exata da personalidade ou da carinha de quem vai recebê-la.</p>
+          </article>
+          <article class="sobre-card">
+            <div class="sobre-card-numero">02</div>
+            <h3>Inclusão e Representatividade</h3>
+            <p>Acreditamos que todos merecem se reconhecer no mundo ao seu redor. Por isso, nossa linha de bonecas abraça a diversidade em todas as suas formas, celebrando diferentes tons de pele, texturas de cabelo, características físicas e acessórios que acolhem a pluralidade da infância.</p>
+          </article>
+          <article class="sobre-card">
+            <div class="sobre-card-numero">03</div>
+            <h3>Afeto em Cada Ponto</h3>
+            <p>Nossas bonecas são feitas de pano, unindo o aconchego do toque artesanal à durabilidade. Cada peça é confeccionada com materiais seguros, macios e de alta qualidade, pensando no carinho e no abraço apertado de todos os dias.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="sobre-proposito" aria-labelledby="titulo-proposito">
+      <p class="sobre-etiqueta">FEITO COM PROPÓSITO</p>
+      <h2 id="titulo-proposito">O nosso propósito</h2>
+      <p>Queremos ir além do e-commerce: queremos criar memórias afetivas duradouras. Cada Malbi Doll que sai do nosso ateliê carrega a missão de incentivar a empatia, o respeito à diversidade e o amor próprio desde os primeiros anos de vida.</p>
+      <p>Seja para presentear alguém especial, colecionar ou eternizar um momento inesquecível, a <strong>Malbi Doll</strong> está aqui para criar um pedacinho de carinho feito especialmente para você.</p>
+      <div class="sobre-convite">
+        <strong>Monte a sua boneca, conte a sua história.</strong>
+        <span>Seja bem-vindo(a) à Malbi Doll!</span>
+        <a href="/personalizar" class="sobre-botao">Personalize sua boneca <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+  </main>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>if (window.lucide) lucide.createIcons();</script>
+  <%- include('../../components/carrinho') %>
+</body>
+</html>

@@ -46,3 +46,8 @@ GRANT ALL ON TABLES TO malbidoll;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
 GRANT ALL ON SEQUENCES TO malbidoll;
+
+-- Tamanhos disponíveis para itens da categoria Corpo
+CREATE TABLE IF NOT EXISTS tamanhos_corpo (id SERIAL PRIMARY KEY, nome VARCHAR(30) NOT NULL UNIQUE, ordem INTEGER NOT NULL DEFAULT 0);
+INSERT INTO tamanhos_corpo(nome,ordem) VALUES ('P',1),('M',2),('G',3) ON CONFLICT(nome) DO NOTHING;
+ALTER TABLE itens ADD COLUMN IF NOT EXISTS tamanho_corpo_id INTEGER REFERENCES tamanhos_corpo(id);

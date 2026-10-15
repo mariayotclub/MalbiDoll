@@ -17,6 +17,26 @@ function validarMiniatura(valor) {
     return valor;
 }
 
+function validarPontos(valor) {
+    let pontos;
+    try { pontos = JSON.parse(valor || '{}'); } catch { throw new Error('JSON de pontos inválido.'); }
+    if (!pontos || Array.isArray(pontos) || typeof pontos !== 'object' || Object.keys(pontos).length > 80) throw new Error('Conjunto de pontos inválido.');
+    for (const [nome, ponto] of Object.entries(pontos)) {
+        if (!/^[a-zA-Z][a-zA-Z0-9_]{0,49}$/.test(nome) || !ponto || !Number.isFinite(ponto.x) || !Number.isFinite(ponto.y) || Math.abs(ponto.x)>100000 || Math.abs(ponto.y)>100000) throw new Error('Coordenadas de pontos inválidas.');
+    }
+    return pontos;
+}
+
+function validarCores(valor) {
+    let cores;
+    try { cores = JSON.parse(valor || '[]'); } catch { throw new Error('Paleta de cores inválida.'); }
+    if (!Array.isArray(cores) || cores.length > 40 ||
+        cores.some(c => typeof c !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(c))) {
+        throw new Error('Informe até 40 cores no formato #RRGGBB.');
+    }
+    return [...new Set(cores.map(c => c.toUpperCase()))];
+}
+
 const armarioController = {
     async exibirArmario(req, res) {
         try {
@@ -50,15 +70,33 @@ const armarioController = {
 
             const categorias = Object.values(mapaCategorias);
             const corpoPadrao = await ItemModel.buscarCorpoPadrao();
+            const tamanhosCorpo = await ItemModel.buscarTamanhosCorpo();
             const isAdmin = req.path === "/armario";
             const pagina = isAdmin
                 ? "admin/armarioAdmin"
                 : "user/armarioUser";
 
-            res.render(pagina, { categorias, itens, isAdmin, corpoPadrao });
+            res.render(pagina, { categorias, itens, isAdmin, corpoPadrao, tamanhosCorpo });
         } catch (erro) {
             console.error("Erro ao carregar armário:", erro);
             res.status(500).send("Erro ao carregar o armário.");
+        }
+    },
+
+    async listarAncorasCorpos(req, res) {
+        try {
+            const corpos = await ItemModel.listarCorposComAncoras();
+            return res.json({ corpos: corpos.map(corpo => ({
+                id: corpo.id,
+                nome: corpo.nome,
+                subcategoria: corpo.subcategoria,
+                tamanho: corpo.tamanho,
+                tamanho_corpo_id: corpo.tamanho_corpo_id,
+                pontos_referencia: corpo.pontos_referencia || {}
+            })) });
+        } catch (erro) {
+            console.error('Erro ao listar âncoras dos corpos:', erro);
+            return res.status(500).json({ error: 'Não foi possível carregar as âncoras dos corpos.' });
         }
     },
 
@@ -88,6 +126,16 @@ const armarioController = {
         }
     },
 
+    async obterPontos(req, res) {
+        const id = Number(req.params.id);
+        if (!Number.isSafeInteger(id) || id <= 0) return res.status(400).json({ error: 'ID inválido' });
+        try {
+            const item = await ItemModel.buscarItemPorId(id);
+            if (!item) return res.status(404).json({ error: 'Item não encontrado' });
+            return res.json({ pontos_referencia: item.pontos_referencia || {} });
+        } catch { return res.status(500).json({ error: 'Erro ao buscar pontos' }); }
+    },
+
     async adicionarItem(req, res) {
         try {
             const {
@@ -96,7 +144,10 @@ const armarioController = {
                 preco,
                 z_index,
                 subcategoria_id,
-                imagemProcessada
+                imagemProcessada,
+                pontos_referencia,
+                cores,
+                tamanho_corpo_id
             } = req.body;
 
             if (!nome?.trim() || !req.file || !subcategoria_id) {
@@ -124,7 +175,12 @@ const armarioController = {
                 imagem,
                 miniatura,
                 z_index: Number.parseInt(z_index, 10) || 1,
-                subcategoria_id: Number.parseInt(subcategoria_id, 10)
+                subcategoria_id: Number.parseInt(subcategoria_id, 10),
+                pontos_referencia: validarPontos(pontos_referencia),
+                cores: validarCores(cores),
+                tamanho_corpo_id: await ItemModel.validarTamanhoCorpo(
+                    Number(subcategoria_id), tamanho_corpo_id ? Number(tamanho_corpo_id) : null
+                )
             });
 
             res.redirect("/armario");
@@ -143,7 +199,10 @@ const armarioController = {
                 preco,
                 z_index,
                 subcategoria_id,
-                imagemProcessada
+                imagemProcessada,
+                pontos_referencia,
+                cores,
+                tamanho_corpo_id
             } = req.body;
 
             const imagem = req.file
@@ -161,7 +220,12 @@ const armarioController = {
                 imagem,
                 miniatura,
                 z_index: Number.parseInt(z_index, 10) || 1,
-                subcategoria_id: Number.parseInt(subcategoria_id, 10)
+                subcategoria_id: Number.parseInt(subcategoria_id, 10),
+                pontos_referencia: validarPontos(pontos_referencia),
+                cores: validarCores(cores),
+                tamanho_corpo_id: await ItemModel.validarTamanhoCorpo(
+                    Number(subcategoria_id), tamanho_corpo_id ? Number(tamanho_corpo_id) : null
+                )
             });
             res.redirect("/armario");
         } catch (erro) {

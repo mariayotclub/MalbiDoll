@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Malbi Doll | Bonecas com afeto</title>
+  <%- include('../../components/lojaHead') %>
+</head>
+<body>
+  <%- include('../../components/cabecalho') %>
+
+  <main class="loja-main">
+    <a class="hero-home" href="/personalizar" aria-label="Personalize sua boneca">
+      <div class="hero-copy">
+        <span class="etiqueta">FEITA PARA SER ÚNICA</span>
+        <h1>Uma boneca com a sua história.</h1>
+        <p>Escolha cada detalhe e crie uma companhia tão especial quanto você.</p>
+        <span class="botao-claro">Personalizar minha boneca →</span>
+      </div>
+      <div class="hero-arte">
+        <img src="/assets/pizzabacon.jpg" alt="" onerror="this.style.display='none'">
+        <div class="hero-placeholder">Sua arte com bonecas<br>entra aqui ♡</div>
+      </div>
+    </a>
+
+    <section class="secao-loja" id="prontas">
+      <div class="secao-titulo">
+        <div>
+          <span class="etiqueta">PRONTO PARA ENTREGAR</span>
+          <h2>Bonecas prontinhas para você</h2>
+          <p>Conheça nossas bonecas.</p>
+        </div>
+        <a class="link-verde" href="/bonecas">Ver todas →</a>
+      </div>
+
+      <div class="grade-bonecas">
+        <% if (!bonecas.length) { %>
+          <div class="estado-vazio">
+            <a href="/admin/bonecas">Administração</a>.
+          </div>
+        <% } %>
+
+        <% bonecas.slice(0, 8).forEach(b => { %>
+          <a class="card-np" href="/bonecas/<%= b.id %>">
+            <div class="foto-card">
+              <img src="/bonecas/<%= b.id %>/imagem" alt="<%= b.nome %>" loading="lazy">
+            </div>
+            <div class="card-np-info">
+              <h3><%= b.nome %></h3>
+              <span class="estrelas">
+                <%= '★'.repeat(Math.round(b.media)) %>
+                <%= '☆'.repeat(5 - Math.round(b.media)) %> 
+                <small>(<%= b.total_avaliacoes %>)</small>
+              </span>
+              <strong><%= moeda(b.preco) %></strong>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    </section>
+
+    <section class="faixa-convite">
+      <span>✿</span>
+      <div>
+        <h2>Seu jeitinho, sua boneca.</h2>
+        <p>Explore as possibilidades da personalização Malbi Doll.</p>
+      </div>
+      <a href="/personalizar" class="botao-verde">Começar a criar</a>
+    </section>
+  </main>
+
+  <%- include('../../components/carrinho') %>
+  <% /* Painel lateral acionado pelo ícone de usuário no cabeçalho */ %>
+  <%- include('../../components/perfilLateral') %>
+</body>
+</html>

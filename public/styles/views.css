@@ -1,0 +1,224 @@
+
+/* Página Sobre Nós | Malbi Doll */
+
+:root {
+    --verde: #3a6057;
+    --verde-escuro: #29483f;
+    --creme: #fcfaf5;
+    --rosa: #f5e7e5;
+    --texto: #40544d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    color: var(--texto);
+    background: var(--creme);
+    font-family: 'Nunito', sans-serif;
+    line-height: 1.7;
+}
+
+.sobre-pagina h1,
+.sobre-pagina h2,
+.sobre-pagina h3 {
+    font-family: 'Fredoka', sans-serif;
+    line-height: 1.18;
+}
+
+.sobre-hero {
+    max-width: 1050px;
+    margin: auto;
+    padding: 72px 26px 90px;
+    text-align: center;
+}
+
+.sobre-marca {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 21px;
+    margin-bottom: 55px;
+}
+
+.sobre-logo {
+    width: clamp(75px, 11vw, 126px);
+    height: clamp(85px, 12vw, 140px);
+    object-fit: contain;
+}
+
+.sobre-marca h1 {
+    margin: 0;
+    color: var(--verde);
+    font-size: clamp(58px, 9vw, 112px);
+    font-weight: 600;
+    letter-spacing: -3px;
+}
+
+.sobre-etiqueta {
+    color: #9c796d;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+}
+
+.sobre-hero h2 {
+    color: var(--verde-escuro);
+    font-size: clamp(32px, 4.5vw, 55px);
+    font-weight: 500;
+    margin: 13px 0 34px;
+}
+
+.sobre-hero h2 span {
+    color: #b78479;
+}
+
+.sobre-introducao {
+    max-width: 800px;
+    margin: auto;
+    font-size: 17px;
+    text-align: left;
+}
+
+.sobre-introducao p {
+    margin: 0 0 20px;
+}
+
+.sobre-diferenciais {
+    background: #f1eae2;
+    padding: 85px 25px 100px;
+}
+
+.sobre-conteudo {
+    max-width: 1150px;
+    margin: auto;
+    text-align: center;
+}
+
+.sobre-conteudo h2,
+.sobre-proposito h2 {
+    font-size: clamp(31px, 4vw, 47px);
+    color: var(--verde);
+    margin: 10px 0 38px;
+}
+
+.sobre-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    text-align: left;
+}
+
+.sobre-card {
+    background: #fffefa;
+    border-radius: 22px;
+    padding: 30px 26px;
+    box-shadow: 0 8px 24px rgba(58, 96, 87, .055);
+}
+
+.sobre-card-numero {
+    font: 600 28px 'Fredoka', sans-serif;
+    color: #bd9286;
+    margin-bottom: 20px;
+}
+
+.sobre-card h3 {
+    color: var(--verde);
+    font-size: 23px;
+    margin: 0 0 17px;
+}
+
+.sobre-card p {
+    margin: 0;
+    font-size: 15px;
+}
+
+.sobre-proposito {
+    max-width: 850px;
+    padding: 90px 25px 105px;
+    margin: auto;
+    text-align: center;
+    font-size: 17px;
+}
+
+.sobre-proposito p:not(.sobre-etiqueta) {
+    text-align: left;
+    margin: 0 0 20px;
+}
+
+.sobre-convite {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 44px;
+    color: var(--verde);
+}
+
+.sobre-convite strong {
+    font: 600 clamp(22px, 3vw, 31px) 'Fredoka', sans-serif;
+}
+
+.sobre-convite span {
+    font-size: 17px;
+}
+
+.sobre-botao {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 22px;
+    padding: 12px 28px;
+    border-radius: 999px;
+    background: var(--verde);
+    color: white;
+    font-weight: 800;
+    text-decoration: none;
+}
+.sobre-botao:hover {
+    background: var(--verde-escuro);
+}
+
+@media (max-width: 750px) {
+    .sobre-hero {
+        padding-top: 55px;
+        padding-bottom: 65px;
+    }
+    .sobre-marca {
+        gap: 10px;
+        margin-bottom: 42px;
+    }
+    .sobre-marca h1 {
+        letter-spacing: -1.5px;
+    }
+    .sobre-cards {
+        grid-template-columns: 1fr;
+    }
+     .sobre-diferenciais {
+        padding: 65px 20px;
+    }
+    .sobre-proposito {
+        padding: 65px 22px;
+    }
+}
+
+@media (max-width: 420px) {
+
+    .sobre-marca h1 {
+        font-size: 48px;
+    }
+    .sobre-logo {
+        width: 65px;
+        height: 75px;
+    }
+}
+
+/* Refinamentos compartilhados das views */
+.sobre-card { border: 1px solid rgba(58,96,87,.10); transition: transform .22s ease, box-shadow .22s ease; }
+.sobre-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(58,96,87,.11); }
+.sobre-botao { box-shadow: 0 6px 16px rgba(58,96,87,.18); transition: background-color .2s ease, transform .2s ease; }
+.sobre-botao:hover { transform: translateY(-2px); }
+.sobre-botao:focus-visible { outline: 3px solid #b78479; outline-offset: 3px; }

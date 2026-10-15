@@ -5,6 +5,8 @@ import upload from '../middlewares/upload.js';
 
 const router = Router();
 
+router.get('/api/ancoras/corpos', armarioController.listarAncorasCorpos);
+router.get('/api/itens/:id/pontos', armarioController.obterPontos);
 router.get('/api/itens/:id/svg', armarioController.obterSvg);
 router.get('/armario', armarioController.exibirArmario);
 router.get('/personalizar', armarioController.exibirArmario);

@@ -1,11 +1,12 @@
      <div id="modalItem" class="modal-overlay">
-        <div class="modal-content">
+        <div class="modal-content modal-content-pontos">
             <div class="modal-header">
                 <h3>Cadastrar Novo Item</h3>
                 <button id="btnFecharModal" class="close-btn">&times;</button>
             </div>
 
-            <form id="formCadastrarItem" action="/armario/item" method="POST" enctype="multipart/form-data">
+            <form id="formCadastrarItem" class="form-pontos" action="/armario/item" method="POST" enctype="multipart/form-data">
+                <div class="campos-item">
                 <div class="form-group">
                     <label for="categoria_select">Categoria:</label>
                     <select id="categoria_select" required>
@@ -19,6 +20,16 @@
                     <label for="subcategoria_id">Subcategoria:</label>
                     <select id="subcategoria_id" name="subcategoria_id" required>
                         <option value="">Selecione primeiro uma Categoria</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="grupo_tamanho_corpo" hidden>
+                    <label for="tamanho_corpo_id">Tamanho do corpo:</label>
+                    <select id="tamanho_corpo_id" name="tamanho_corpo_id" disabled>
+                        <option value="">Selecione um tamanho</option>
+                        <% tamanhosCorpo.forEach(tamanho => { %>
+                            <option value="<%= tamanho.id %>"><%= tamanho.nome %></option>
+                        <% }) %>
                     </select>
                 </div>
 
@@ -62,6 +73,65 @@
                     <input type="number" id="z_index" name="z_index" value="1">
                 </div>
 
+                </div>
+                <section class="painel-pontos" data-editor-pontos data-prefixo="">
+                    <h4>Editor visual de pontos</h4>
+                    <div class="pontos-barra">
+                        <label>Nome do ponto
+                            <select class="pontos-nome">
+                                <option value="ombroEsquerdo">ombroEsquerdo</option>
+                                <option value="ombroDireito">ombroDireito</option>
+                                <option value="mangaEsquerda">mangaEsquerda</option>
+                                <option value="mangaDireita">mangaDireita</option>
+                                <option value="cinturaEsquerda">cinturaEsquerda</option>
+                                <option value="cinturaDireita">cinturaDireita</option>
+                                <option value="quadrilEsquerdo">quadrilEsquerdo</option>
+                                <option value="quadrilDireito">quadrilDireito</option>
+                                <option value="golaCentro">golaCentro</option>
+                                <option value="barraEsquerda">barraEsquerda</option>
+                                <option value="barraDireita">barraDireita</option>
+                            </select>
+                        </label>
+                        <label>Ou nome personalizado
+                            <input class="pontos-personalizado" type="text" placeholder="ex.: punhoEsquerdo" pattern="[a-zA-Z][a-zA-Z0-9_]*" />
+                        </label>
+                    </div>
+                    <div class="pontos-auto-controles">
+                        <label><input type="checkbox" class="pontos-mostrar-auto" checked> Mostrar pontos automáticos (azuis)</label>
+
+                    </div>
+                    <section class="ancoras-comparacao" aria-label="Corpo de referência" hidden>
+                        <h4>Corpos</h4>
+                        <label class="ancoras-campo-sub">Tipo de corpo
+                            <select class="ancoras-select-sub" aria-label="Tipo de corpo">
+                                <option value="Fem">Feminino</option>
+                                <option value="Masc">Masculino</option>
+                                <option value="N">Neutro</option>
+                            </select>
+                        </label>
+                        <div class="ancoras-grupos" aria-label="Tamanhos disponíveis"></div>
+                        <button type="button" class="ancoras-previa-btn">Visualizar encaixe inicial</button>
+                        <small class="ancoras-previa-status" aria-live="polite"></small>
+                        <details class="ancoras-detalhes">
+                            <summary>Verificação de âncoras</summary>
+                            <button type="button" class="ancoras-verificar">Verificar âncoras</button>
+                            <div class="ancoras-resultado" aria-live="polite"></div>
+                        </details>
+                    </section>
+                    <div class="pontos-visual">
+                        <img class="ancoras-imagem-corpo" alt="Corpo de referência" hidden />
+                        <svg class="ancoras-previa-svg" xmlns="http://www.w3.org/2000/svg" hidden aria-label="Prévia do encaixe inicial"></svg>
+                        <img class="pontos-imagem" alt="Prévia do SVG" />
+                        <svg class="pontos-camada" xmlns="http://www.w3.org/2000/svg" aria-label="Área de marcação dos pontos"></svg>
+                        <p class="pontos-vazio">Escolha um SVG para começar.</p>
+                    </div>
+                    <div class="pontos-rodape">
+                        <span class="pontos-coordenadas">Nenhum ponto selecionado</span>
+                        <button type="button" class="pontos-excluir">Excluir selecionado</button>
+                    </div>
+                    <div class="pontos-lista" aria-live="polite"></div>
+                    <input type="hidden" name="pontos_referencia" class="pontos-json" value="{}" />
+                </section>
                 <button type="submit" class="btn-modal-salvar">Salvar Item</button>
             </form>
         </div>

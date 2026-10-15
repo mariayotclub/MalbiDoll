@@ -1,0 +1,3 @@
+export function exigirLogin(req,res,next){if(!req.session.usuarioId)return res.redirect('/login?retorno='+encodeURIComponent(req.originalUrl));next()}
+export function exigirAdmin(req,res,next){if(!req.usuario || req.usuario.tipo!=='admin')return res.sendStatus(403);next()}
+export function csrf(req,res,next){if(['GET','HEAD','OPTIONS'].includes(req.method))return next();if(req.is('multipart/form-data'))return next();const recebido=req.body?._csrf || req.get('x-csrf-token');if(!recebido || recebido!==req.session.csrfToken)return res.status(403).send('Formulário expirado. Recarregue a página.');next()}

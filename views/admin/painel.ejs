@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Administração | Malbi Doll</title>
+  <%- include('../../components/lojaHead') %>
+</head>
+<body>
+  <%- include('../../components/cabecalho') %>
+
+  <main class="loja-main secao-loja">
+    <span class="etiqueta">PAINEL DE CONTROLE</span>
+    <h1>Administração Malbi Doll</h1>
+    <p>Escolha a área que deseja gerenciar.</p>
+
+    <div class="admin-grid">
+      <a href="/admin/bonecas" class="admin-card">
+        <span>01</span>
+        <h2>Bonecas prontas (NP)</h2>
+        <p>Cadastre imagens PNG, nomes, descrições e preços.</p>
+        <b>Gerenciar →</b>
+      </a>
+      
+      <a href="/admin/itens" class="admin-card">
+        <span>02</span>
+        <h2>Itens do armário</h2>
+        <p>Veja os itens cadastrados e acesse o CRUD existente.</p>
+        <b>Ver itens →</b>
+      </a>
+      
+      <a href="/admin/armario" class="admin-card">
+        <span>03</span>
+        <h2>Armário e pontos</h2>
+        <p>Abra o editor administrativo de SVGs e pontos.</p>
+        <b>Abrir editor →</b>
+      </a>
+    </div>
+
+    <p class="aviso-admin">Atenção: estas rotas estão sem login, apenas para desenvolvimento local. Proteja /admin antes de publicar.</p>
+  </main>
+
+  <%- include('../../components/carrinho') %>
+</body>
+</html>

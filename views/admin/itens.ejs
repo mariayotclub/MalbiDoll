@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Itens cadastrados | Malbi Doll</title>
+  <%- include('../../components/lojaHead') %>
+</head>
+<body>
+  <%- include('../../components/cabecalho') %>
+
+  <main class="loja-main secao-loja">
+    <a href="/admin" class="link-verde">← Voltar ao painel</a>
+    <span class="etiqueta">ADMINISTRAÇÃO</span>
+    <h1>Itens do armário</h1>
+    <p>Lista dos itens existentes no PostgreSQL. Para cadastrar, editar ou excluir, utilize o armário administrativo.</p>
+    
+    <a href="/admin/armario" class="botao-verde">Abrir CRUD de itens →</a>
+
+    <div class="tabela-scroll">
+      <table class="tabela-itens">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Categoria</th>
+            <th>Subcategoria</th>
+            <th>Preço</th>
+            <th>Camada</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% itens.forEach(i => { %>
+            <tr>
+              <td><%= i.id %></td>
+              <td><%= i.nome %></td>
+              <td><%= i.categoria %></td>
+              <td><%= i.subcategoria %></td>
+              <td><%= moeda(i.preco) %></td>
+              <td><%= i.z_index %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <% if (!itens.length) { %>
+        <p>Sem itens cadastrados.</p>
+      <% } %>
+    </div>
+  </main>
+
+  <%- include('../../components/carrinho') %>
+</body>
+</html>

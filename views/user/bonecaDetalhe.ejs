@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <title><%= boneca.nome %> | Malbi Doll</title>
+    <%- include('../../components/lojaHead') %>
+</head>
+<body>
+    <%- include('../../components/cabecalho') %>
+    <main class="loja-main">
+        <nav class="trilha" aria-label="Navegação">
+            <a href="/">Home</a> / <a href="/bonecas">Bonecas</a> / <%= boneca.nome %>
+        </nav>
+        <section class="produto-detalhe">
+            <div class="produto-foto">
+                <img src="/bonecas/<%= boneca.id %>/imagem" alt="Boneca <%= boneca.nome %>">
+            </div>
+            <div class="produto-info">
+                <span class="etiqueta">· MALBI DOLL · </span>
+                <h1><%= boneca.nome %></h1>
+                <div class="estrelas estrelas-grandes" aria-label="Nota <%= boneca.media %> de 5">
+                    <%= '★'.repeat(Math.round(boneca.media)) %><%= '☆'.repeat(5 - Math.round(boneca.media)) %>
+                    <a href="#avaliacoes"><%= boneca.total_avaliacoes %> avaliações</a>
+                </div>
+                <p class="produto-descricao"><%= boneca.descricao || 'Uma boneca especial da coleção Malbi Doll.' %></p>
+                <p class="produto-preco"><%= moeda(boneca.preco) %></p>
+                <button type="button" class="botao-verde" data-adicionar="<%= boneca.id %>">
+                    Adicionar ao carrinho
+                </button>
+            </div>
+        </section>
+        <section id="avaliacoes" class="avaliacoes">
+            <span class="etiqueta">EXPERIÊNCIAS E CARINHO</span>
+            <h2>Avaliações e comentários</h2>
+            <div class="avaliacoes-layout">
+                <form class="form-avaliacao" action="/bonecas/<%= boneca.id %>/avaliacoes" method="post" enctype="multipart/form-data">
+                    <h3>Conte sua experiência</h3>
+                    <p>Por enquanto, qualquer visitante pode avaliar.</p>
+                    <fieldset class="campo-estrelas">
+                        <legend>Sua nota (0 a 5 estrelas)</legend>
+                        <div class="estrelas-escolha">
+                            <% for (let nota = 0; nota <= 5; nota++) { %>
+                                <label>
+                                    <input type="radio" name="estrelas" value="<%= nota %>" <%= nota === 5 ? 'checked' : '' %>>
+                                    <span><%= nota %> ★</span>
+                                </label>
+                            <% } %>
+                        </div>
+                    </fieldset>
+                    <label>Comentário
+                        <textarea name="comentario" maxlength="2000" rows="5" required></textarea>
+                    </label>
+                    <label>Foto (PNG opcional, até 3 MB)
+                        <input type="file" name="foto" accept="image/png,image/jpeg,image/webp,image/gif">
+                    </label>
+                    <button type="submit" class="botao-verde">Publicar avaliação</button>
+                </form>
+                <div class="lista-avaliacoes">
+                    <% if (!avaliacoes.length) { %>
+                        <p class="estado-vazio">Esta boneca ainda não recebeu avaliações. Seja a primeira pessoa a comentar!</p>
+                    <% } %>
+                    <% avaliacoes.forEach(avaliacao => { %>
+                        <article class="avaliacao-card">
+                            <div class="avaliacao-topo">
+                                <strong><%= avaliacao.nome %></strong>
+                                <time datetime="<%= new Date(avaliacao.criado_em).toISOString() %>">
+                                    <%= new Date(avaliacao.criado_em).toLocaleDateString('pt-BR') %>
+                                </time>
+                            </div>
+                            <div class="estrelas" aria-label="Nota <%= avaliacao.estrelas %> de 5">
+                                <%= '★'.repeat(avaliacao.estrelas) %><%= '☆'.repeat(5 - avaliacao.estrelas) %>
+                            </div>
+                            <p><%= avaliacao.comentario %></p>
+                            <% if (avaliacao.tem_foto) { %>
+                                <img class="foto-avaliacao" src="/avaliacoes/<%= avaliacao.id %>/foto" alt="Foto enviada na avaliação" loading="lazy">
+                            <% } %>
+                        </article>
+                    <% }) %>
+                </div>
+            </div>
+        </section>
+    </main>
+    <%- include('../../components/carrinho') %>
+</body>
+</html>

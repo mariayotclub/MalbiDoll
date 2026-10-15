@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <title>Bonecas prontas | Malbi Doll</title>
+    <%- include('../../components/lojaHead') %>
+</head>
+<body>
+    <%- include('../../components/cabecalho') %>
+    <main class="loja-main secao-loja">
+        <a href="/" class="link-verde">← Voltar para Home</a>
+        <div class="secao-titulo">
+            <div>
+                <span class="etiqueta">COLEÇÃO MALBI DOLL</span>
+                <h1>Bonecas prontinhas para amar</h1>
+                <p>Escolha sua favorita e conheça todos os detalhes.</p>
+            </div>
+        </div>
+        <div class="grade-bonecas">
+            <% if (!bonecas.length) { %>
+                <p class="estado-vazio">Ainda não temos bonecas disponíveis. Volte em breve!</p>
+            <% } %>
+            <% bonecas.forEach(boneca => { %>
+                <a class="card-np" href="/bonecas/<%= boneca.id %>">
+                    <div class="foto-card">
+                        <img src="/bonecas/<%= boneca.id %>/imagem" alt="<%= boneca.nome %>" loading="lazy">
+                    </div>
+                    <div class="card-np-info">
+                        <h3><%= boneca.nome %></h3>
+                        <span class="estrelas" aria-label="Nota <%= boneca.media %> de 5">
+                            <%= '★'.repeat(Math.round(boneca.media)) %><%= '☆'.repeat(5 - Math.round(boneca.media)) %>
+                            <small>(<%= boneca.total_avaliacoes %>)</small>
+                        </span>
+                        <strong><%= moeda(boneca.preco) %></strong>
+                    </div>
+                </a>
+            <% }) %>
+        </div>
+    </main>
+    <%- include('../../components/carrinho') %>
+</body>
+</html>
