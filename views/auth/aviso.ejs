@@ -1,1 +1,55 @@
-<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Malbi Doll</title><link rel="stylesheet" href="/styles/contas.css"><main class="conta"><h1>Verifique seu e-mail</h1><p><%= mensagem %></p><a href="/login">Voltar ao login</a></main></html>
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      Verifique seu e-mail | Malbi Doll
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/contas.css">
+    <link rel="stylesheet" href="/styles/temaEscuro.css">
+    <script src="/scripts/temaEscuro.js" defer>
+    </script>
+  </head>
+  <body class="contas-pagina">
+    <header class="contas-cabecalho">
+      <a class="contas-logo" href="/" aria-label="Malbi Doll — início">
+        <img class="logo-tema-claro" src="/assets/logoMalbi_verde.svg" alt="">
+        <img class="logo-tema-escuro" src="/assets/logoMalbi_lilas.svg" alt="" aria-hidden="true">
+        <span>
+          Malbi Doll
+        </span>
+      </a>
+      <div class="contas-acoes">
+        <a class="contas-voltar" href="/">
+          ← Voltar à loja
+        </a>
+        <button type="button" id="alternarTema" class="contas-alternar-tema" aria-label="Ativar modo escuro">
+          <span class="tema-icone">
+            ☾
+          </span>
+        </button>
+      </div>
+    </header>
+    <main class="contas-centro">
+      <section class="conta" aria-labelledby="aviso-titulo">
+        <h1 id="aviso-titulo">
+          Verifique seu e-mail
+        </h1>
+        <p class="contas-descricao">
+          <%= mensagem %>
+        </p>
+        <div class="contas-rodape">
+          <p>
+            <a href="/login">
+              Voltar ao login
+            </a>
+          </p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

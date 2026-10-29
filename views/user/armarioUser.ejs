@@ -138,13 +138,11 @@
         }))
     }));
 %>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -152,75 +150,92 @@
         rel="stylesheet"
     >
     <link rel="stylesheet" href="/styles/style.css">
-
-    <script src="/scripts/trocarCat.js" defer></script>
-
+    <link rel="stylesheet" href="/styles/temaArmario.css">
+    <script src="/scripts/temaEscuro.js" defer>
+    </script>
+    <script src="/scripts/trocarCat.js" defer>
+    </script>
     <div
         id="dadosCorpoPadrao"
         data-corpo="<%= JSON.stringify(corpoPadrao ?? null) %>"
         hidden>
     </div>
-
     <script>
-        window.corpoPadrao = JSON.parse(
+      window.corpoPadrao = JSON.parse(
             document.getElementById("dadosCorpoPadrao").dataset.corpo
         );
     </script>
-
-    <script src="/scripts/personalizaCorpo.js" defer></script>
-
+    <script src="/scripts/personalizaCorpo.js" defer>
+    </script>
     <% if (admin) { %>
-        <link
+    <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
         >
-        <script
+    <script
             src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"
             defer
-        ></script>
-        <script src="/scripts/modalItem.js" defer></script>
-        <script src="/scripts/editorPontos.js" defer></script>
-        <script src="/scripts/imgCrop.js" defer></script>
-        <script src="/scripts/delItens.js" defer></script>
+        >
+    </script>
+    <script src="/scripts/modalItem.js" defer>
+    </script>
+    <script src="/scripts/editorPontos.js" defer>
+    </script>
+    <script src="/scripts/imgCrop.js" defer>
+    </script>
+    <script src="/scripts/delItens.js" defer>
+    </script>
     <% } %>
-
-    <title>Personalize sua boneca</title>
-</head>
-
-<body class="bodyPersonalizar">
-
+    <title>
+      Personalize sua boneca
+    </title>
+  </head>
+  <body class="bodyPersonalizar">
+    <button
+        type="button"
+        id="alternarTema"
+        class="armario-alternar-tema contas-alternar-tema"
+        aria-label="Ativar modo escuro"
+        title="Ativar modo escuro"
+    >
+      <span class="tema-icone" aria-hidden="true">
+        ☾
+      </span>
+    </button>
     <a href="/" class="setaVoltar" aria-label="Voltar para a página inicial">
-        <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 12H5"></path>
-            <path d="M12 19l-7-7 7-7"></path>
-        </svg>
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5">
+        </path>
+        <path d="M12 19l-7-7 7-7">
+        </path>
+      </svg>
     </a>
-
     <% if (admin) { %>
-        <div
+    <div
             id="categoriasData"
             data-categorias="<%= JSON.stringify(categoriasModal) %>"
             hidden>
-        </div>
-
-        <script>
-            window.categoriasData = JSON.parse(
+    </div>
+    <script>
+      window.categoriasData = JSON.parse(
                 document.getElementById("categoriasData").dataset.categorias
             );
-        </script>
+    </script>
     <% } %>
-
     <div class="quadrado">
-        <% abas.forEach(aba => { %>
-            <div id="cat<%= aba.id %>">
-                <div class="titulo-container">
-                    <div class="titulo"><%= aba.titulo %></div>
-                    <div class="subtitulo"><%= aba.subs[0][1] %></div>
-                </div>
-
-                <div class="linhaSubCat">
-                    <% aba.subs.forEach(([id, nomeExibido]) => { %>
-                        <button
+      <% abas.forEach(aba => { %>
+      <div id="cat<%= aba.id %>">
+        <div class="titulo-container">
+          <div class="titulo">
+            <%= aba.titulo %>
+          </div>
+          <div class="subtitulo">
+            <%= aba.subs[0][1] %>
+          </div>
+        </div>
+        <div class="linhaSubCat">
+          <% aba.subs.forEach(([id, nomeExibido]) => { %>
+          <button
                             type="button"
                             id="<%= id %>"
                             class="categoria"
@@ -228,33 +243,35 @@
                             aria-label="<%= nomeExibido %>"
                             title="<%= nomeExibido %>"
                             onclick="trocarsubCat(this)"
-                        ></button>
-                    <% }) %>
-                </div>
-
-                <% aba.subs.forEach(([id, nomeExibido, nomeBanco]) => {
+                        >
+          </button>
+          <% }) %>
+        </div>
+        <% aba.subs.forEach(([id, nomeExibido, nomeBanco]) => {
                     const nomesCategorias = { Maquiagem: "Maquiagens", Vestido: "Vestidos", Bottom: "Bottoms", Meia: "Meias", Sapato: "Sapatos", Acessorio: "Acessórios", Extra: "Extras" };
                     const info = getSubId(nomeBanco, nomesCategorias[aba.id] || aba.id);
                     const itensSubcategoria = itens.filter(
                         item => String(item.subcategoria_id) === String(info.subId)
                     );
                 %>
-                    <div class="displayItens" id="cat<%= id %>">
-                        <% itensSubcategoria.forEach(item => { %>
-                            <div class="item-card"
+        <div class="displayItens" id="cat<%= id %>">
+          <% itensSubcategoria.forEach(item => { %>
+          <div class="item-card"
                                 data-id="<%= item.id %>"
                                 data-categoria="<%= aba.id %>"
                                 data-subcategoria="<%= nomeBanco %>"
-                                data-zindex="<%= item.z_index %>">
-                                <% if (admin) { %>
-                                    <button
+                                data-zindex="<%= item.z_index %>"
+                                data-preco="<%= Number(item.preco) || 0 %>">
+            <% if (admin) { %>
+            <button
                                         type="button"
                                         class="btn-deletar-item"
                                         data-id="<%= item.id %>"
                                         title="Excluir item"
-                                    >&times;</button>
-
-                                    <button
+                                    >
+              &times;
+            </button>
+            <button
                                         type="button"
                                         class="btn-editar-item btn-abrir-modal-editar"
                                         data-id="<%= item.id %>"
@@ -262,72 +279,90 @@
                                         data-preco="<%= parseFloat(item.preco).toFixed(2) %>"
                                         data-descricao="<%= item.descricao || '' %>"
                                         data-zindex="<%= item.z_index %>"
+                                data-preco="<%= Number(item.preco) || 0 %>"
                                         data-cat="<%= item.categoria_id %>"
                                         data-subcat="<%= item.subcategoria_id %>"
                                         title="Editar item"
-                                    >E</button>
-                                <% } %>
-
-                                <div class="svg-wrapper">
-                                    <% if (item.miniatura) { %>
-                                        <img src="<%= item.miniatura %>" alt="<%= item.nome %>" style="width:100%;height:100%;object-fit:contain;">
-                                    <% } else { %>
-                                        <span>Sem miniatura</span>
-                                    <% } %>
-                                </div>
-
-                                <div class="item-info">
-                                    <p><%= item.nome %></p>
-                                    <small>
-                                        R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %>
-                                    </small>
-                                </div>
-                            </div>
-                        <% }) %>
-
-                        <% if (admin) { %>
-                            <button
+                                    >
+              E
+            </button>
+            <% } %>
+            <div class="svg-wrapper">
+              <% if (item.miniatura) { %>
+              <img src="<%= item.miniatura %>" alt="<%= item.nome %>" style="width:100%;height:100%;object-fit:contain;">
+              <% } else { %>
+              <span>
+                Sem miniatura
+              </span>
+              <% } %>
+            </div>
+            <div class="item-info">
+              <p>
+                <%= item.nome %>
+              </p>
+              <small>
+                R$
+                <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %>
+              </small>
+            </div>
+          </div>
+          <% }) %>
+          <% if (admin) { %>
+          <button
                                 type="button"
                                 class="btn-card-add btn-abrir-modal"
                                 data-categoria-id="<%= info.catId %>"
                                 data-subcategoria-id="<%= info.subId %>"
                                 title="Adicionar item"
-                            >+</button>
-                        <% } %>
-                    </div>
-                <% }) %>
-            </div>
+                            >
+            +
+          </button>
+          <% } %>
+        </div>
         <% }) %>
+      </div>
+      <% }) %>
     </div>
-
     <div class="botoes">
-        <% abas.forEach(aba => { %>
-            <button
+      <% abas.forEach(aba => { %>
+      <button
                 type="button"
                 id="<%= aba.id %>"
                 class="categoria"
                 aria-label="<%= aba.titulo %>"
                 title="<%= aba.titulo %>"
                 onclick="trocarCat(this)"
-            ></button>
-        <% }) %>
+            >
+      </button>
+      <% }) %>
     </div>
-
     <div
         id="bonecaContainer"
         class="bonecaContainer"
         style="width: 635px; height: 893px;"
-    ></div>
-
-    <% if (admin) { %>
-        <%- include('../../components/modalCadastro') %>
-        <%- include('../../components/modalConfirmacao') %>
-        <%- include('../../components/modalEdicao') %>
-    <% } %>
-
-    <div class="tabPreco">
-        <span class="preco-titulo">Preço Total:</span>
-        <span id="valorTotal" class="preco-valor">R$ 150,00</span>
+    >
     </div>
-</body>
+    <% if (admin) { %>
+    <%- include('../../components/modalCadastro') %>
+    <%- include('../../components/modalConfirmacao') %>
+    <%- include('../../components/modalEdicao') %>
+    <% } %>
+    <footer class="armario-rodape" aria-label="Resumo da personalização">
+      <div class="armario-rodape-resumo">
+        <img class="armario-logo armario-logo-clara" src="/assets/logoMalbi_verde.svg" alt="" aria-hidden="true">
+        <img class="armario-logo armario-logo-escura" src="/assets/logoMalbi_lilas.svg" alt="" aria-hidden="true">
+        <div class="armario-rodape-valor">
+          <span class="preco-titulo">
+            Valor total
+          </span>
+          <strong id="valorTotal" class="preco-valor" aria-live="polite">
+            R$ 0,00
+          </strong>
+        </div>
+      </div>
+      <button type="button" id="finalizarPersonalizacao" class="armario-finalizar">
+        Finalizar compra
+      </button>
+    </footer>
+  </body>
 </html>

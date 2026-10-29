@@ -2,6 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import path from 'node:path';
 import Loja from '../models/lojaModel.js';
+import { csrf } from '../middlewares/acesso.js';
 
 const router = Router();
 
@@ -105,6 +106,8 @@ function erro(res, falha) {
     return res.status(500).send('Não foi possível concluir a operação. Verifique o banco de dados.');
 }
 
+router.get('/favoritos', (req, res) => res.render('user/favoritos'));
+
 // Catálogo público
 router.get('/bonecas', async (req, res) => {
     try {
@@ -166,17 +169,17 @@ router.get('/bonecas/:id', async (req, res) => {
     }
 });
 
-router.post('/bonecas/:id/avaliacoes', upload.single('foto'), async (req, res) => {
+router.post('/bonecas/:id/avaliacoes', upload.single('foto'), csrf, async (req, res) => {
     try {
         const id = numero(req.params.id);
         const boneca = id && await Loja.obter(id);
         if (!boneca || !boneca.ativo) return res.sendStatus(404);
 
-        const nome = String(req.body.nome || '').trim();
+        const nome = String(req.usuario?.nome || 'Visitante').trim();
         const comentario = String(req.body.comentario || '').trim();
         const estrelas = Number(req.body.estrelas);
 
-        if (!nome || nome.length > 80 || !comentario || comentario.length > 2000 ||
+        if (!comentario || comentario.length > 2000 ||
             !Number.isInteger(estrelas) || estrelas < 0 || estrelas > 5) {
             return res.status(400).send('Dados da avaliação inválidos.');
         }

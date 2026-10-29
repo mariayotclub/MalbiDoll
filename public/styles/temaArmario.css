@@ -1,0 +1,219 @@
+/* Armário: mesmas cores e preferência de tema das demais páginas. */
+.armario-alternar-tema {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    z-index: 1100;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid #b78479;
+    border-radius: 50%;
+    background: #fffefa;
+    color: #3a6057;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.armario-alternar-tema:hover {
+    filter: brightness(0.93);
+}
+
+html[data-tema="escuro"] {
+    color-scheme: dark;
+    --verde: #b9a5e8;
+    --verde-escuro: #d0c0f5;
+    --creme: #121118;
+    --rosa: #211d2b;
+    --texto: #e9e5f1;
+    --bege: #262130;
+    --rosa-terroso: #9f86c9;
+}
+
+html[data-tema="escuro"] .bodyPersonalizar {
+    background: #121118;
+    color: #e9e5f1;
+}
+
+html[data-tema="escuro"] .quadrado,
+html[data-tema="escuro"] .tabPreco {
+    background: #1c1924;
+    border-color: #4a405b;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+html[data-tema="escuro"] .item-card,
+html[data-tema="escuro"] .btn-card-add {
+    background: #262130;
+    color: #e9e5f1;
+    border-color: #4a405b;
+}
+
+/* As miniaturas continuam sobre fundo claro para preservar a leitura
+   das ilustrações e as cores originais dos SVGs. */
+html[data-tema="escuro"] .svg-wrapper {
+    background: #f7f5f3;
+    border-color: #554b64;
+}
+
+html[data-tema="escuro"] .titulo,
+html[data-tema="escuro"] .preco-valor,
+html[data-tema="escuro"] .item-card p,
+html[data-tema="escuro"] .item-card small {
+    color: #d0c0f5;
+}
+
+html[data-tema="escuro"] .subtitulo,
+html[data-tema="escuro"] .preco-titulo {
+    color: #c7b8d9;
+}
+
+html[data-tema="escuro"] button.categoria,
+html[data-tema="escuro"] .linhaSubCat button {
+    background: #68518b;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+html[data-tema="escuro"] button.categoria:hover,
+html[data-tema="escuro"] .linhaSubCat button:hover {
+    background: #8268a8;
+}
+
+html[data-tema="escuro"] .setaVoltar {
+    color: #d0c0f5;
+}
+
+html[data-tema="escuro"] .displayItens {
+    scrollbar-color: #68518b transparent;
+}
+
+html[data-tema="escuro"] .modal-overlay {
+    background: rgba(5, 4, 10, 0.72);
+}
+
+html[data-tema="escuro"] .modal-content,
+html[data-tema="escuro"] .modal-content-pontos,
+html[data-tema="escuro"] .ancoras-comparacao {
+    background: #211d2b;
+    color: #e9e5f1;
+    border-color: #4a405b;
+}
+
+html[data-tema="escuro"] .form-group :is(input, select, textarea),
+html[data-tema="escuro"] .pontos-barra :is(input, select),
+html[data-tema="escuro"] .ancoras-opcao,
+html[data-tema="escuro"] .ancoras-select-sub {
+    background: #302a3c;
+    color: #f0eaf9;
+    border-color: #5b4d70;
+}
+
+html[data-tema="escuro"] .armario-alternar-tema {
+    background: #30283e;
+    border-color: #665380;
+    color: #e3d5ff;
+}
+
+
+/* Rodapé de largura total, sempre abaixo da área útil do armário. */
+.bodyPersonalizar {
+    padding-bottom: 84px;
+    box-sizing: border-box;
+}
+
+.bodyPersonalizar .quadrado {
+    height: calc(100vh - 112px);
+    top: calc((100vh - 84px) / 2);
+}
+
+.bodyPersonalizar .botoes {
+    top: calc((100vh - 84px) / 2);
+}
+
+.armario-rodape {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    width: 100%;
+    min-height: 84px;
+    padding: 10px clamp(8px, 1.5vw, 24px);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: #fffefa;
+    border-top: 2px solid #b78479;
+    box-shadow: 0 -8px 28px rgba(41, 72, 63, 0.1);
+}
+
+.armario-rodape-resumo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.armario-logo {
+    width: 48px;
+    height: 52px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.armario-logo-escura { display: none; }
+
+.armario-rodape-valor {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.armario-rodape .preco-titulo {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.armario-rodape .preco-valor {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.armario-finalizar {
+    background: #3a6057;
+    color: #fffefa;
+    border: 0;
+    border-radius: 14px;
+    padding: 12px 24px;
+    font: 600 16px "Readex Pro", sans-serif;
+    cursor: pointer;
+}
+
+.armario-finalizar:hover { background: #29483f; }
+.armario-finalizar:focus-visible { outline: 3px solid #b78479; outline-offset: 3px; }
+
+html[data-tema="escuro"] .armario-rodape {
+    background: #1c1924;
+    border-top-color: #4a405b;
+    box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.3);
+}
+
+html[data-tema="escuro"] .armario-logo-clara { display: none; }
+html[data-tema="escuro"] .armario-logo-escura { display: block; }
+html[data-tema="escuro"] .armario-finalizar { background: #8063ad; color: #fff; }
+html[data-tema="escuro"] .armario-finalizar:hover { background: #9779c4; }
+
+@media (max-width: 640px) {
+    .armario-rodape { min-height: 76px; padding: 9px 10px; gap: 10px; }
+    .armario-logo { width: 36px; height: 42px; }
+    .armario-rodape-resumo { gap: 9px; }
+    .armario-finalizar { padding: 13px 14px; font-size: 13px; }
+    .armario-rodape .preco-titulo { font-size: 14px; }
+    .armario-rodape .preco-valor { font-size: 21px; }
+}

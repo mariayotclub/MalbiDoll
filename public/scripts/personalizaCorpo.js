@@ -180,7 +180,6 @@ document.querySelectorAll(".item-card").forEach(card => {
         try {
             const id = Number(card.dataset.id);
 
-            // Invalida o carregamento pendente do corpo padrão assim que o usuário escolhe outro.
             const categoria = card.dataset.categoria;
             const versao = categoria === "Corpo" ? ++requisicaoCorpo : null;
             const resposta = await fetch(`/api/itens/${id}/svg`);
@@ -203,3 +202,42 @@ document.querySelectorAll(".item-card").forEach(card => {
         }
     });
 });
+
+// Resumo do rodapé: soma os preços dos itens efetivamente selecionados.
+const valorTotalRodape = document.getElementById("valorTotal");
+const finalizarPersonalizacao = document.getElementById("finalizarPersonalizacao");
+const precosItens = new Map(
+    [...document.querySelectorAll(".item-card")].map(card => [
+        String(card.dataset.id),
+        Number(card.dataset.preco) || 0
+    ])
+);
+
+function atualizarTotalArmario() {
+    const ids = Object.values(boneca).flatMap(subcategorias => Object.values(subcategorias));
+    const total = ids.reduce((soma, id) => soma + (precosItens.get(String(id)) || 0), 0);
+
+    if (valorTotalRodape) {
+        valorTotalRodape.textContent = total.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL"
+        });
+    }
+}
+
+// Mantém o preço sincronizado também com o corpo padrão carregado assincronamente.
+const observadorTotal = new MutationObserver(atualizarTotalArmario);
+observadorTotal.observe(container, { childList: true, subtree: true });
+
+if (finalizarPersonalizacao) {
+    finalizarPersonalizacao.addEventListener("click", () => {
+        // Guarda a composição para integração posterior com o checkout.
+        localStorage.setItem("malbidoll_personalizacao_pendente", JSON.stringify({
+            itens: boneca,
+            atualizadoEm: new Date().toISOString()
+        }));
+        alert("Sua personalização foi salva neste navegador. A finalização do pedido ainda precisa ser integrada ao checkout.");
+    });
+}
+
+atualizarTotalArmario();

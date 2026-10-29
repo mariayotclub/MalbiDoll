@@ -24,12 +24,38 @@ const voltar=(res,msg)=>res.redirect('/?perfil=abrir&perfil_msg='+encodeURICompo
 router.post('/perfil/dados',exigirLogin,async(req,res,next)=>{try{const nome=texto(req.body.nome,100),apelido=texto(req.body.apelido,40);if(nome.length<2)return voltar(res,'Informe um nome com pelo menos 2 caracteres.');await Usuario.atualizarNome(req.usuario.id,nome,apelido||null);voltar(res,'Dados atualizados.')}catch(e){next(e)}});
 router.post('/perfil/foto/remover',exigirLogin,async(req,res,next)=>{try{await Usuario.removerFoto(req.usuario.id);voltar(res,'Foto removida.')}catch(e){next(e)}});
 router.post('/perfil/senha',exigirLogin,async(req,res,next)=>{try{const atual=String(req.body.senha_atual||''),nova=String(req.body.nova_senha||'');const u=await Usuario.senha(req.usuario.id);if(!u||!(await argon2.verify(u.senha_hash,atual)))return voltar(res,'Senha atual incorreta.');if(nova.length<12||nova.length>128)return voltar(res,'A nova senha precisa ter de 12 a 128 caracteres.');await Usuario.alterarSenha(req.usuario.id,await argon2.hash(nova,{type:argon2.argon2id}));voltar(res,'Senha alterada.')}catch(e){next(e)}});
-const endereco=(b)=>({apelido:texto(b.apelido,50),cep:texto(b.cep,9),logradouro:texto(b.logradouro,150),numero:texto(b.numero,20),complemento:texto(b.complemento,100),bairro:texto(b.bairro,100),cidade:texto(b.cidade,100),estado:texto(b.estado,2).toUpperCase(),principal:b.principal==='on'});
-const valido=(d)=>/^\d{5}-?\d{3}$/.test(d.cep)&&d.logradouro&&d.numero&&d.bairro&&d.cidade&&/^[A-Z]{2}$/.test(d.estado);
+const endereco=(b)=>({apelido:texto(b.destinatario,50),cep:texto(b.cep,9).replace(/\D/g, ''),logradouro:texto(b.logradouro,150),numero:texto(b.numero,20),complemento:texto(b.complemento,100),bairro:texto(b.bairro,100),cidade:texto(b.cidade,100),estado:texto(b.estado,2).toUpperCase(),principal:b.principal==='on'});
+const valido=(d)=>/^\d{5}-?\d{3}$/.test(d.cep)&&d.logradouro&&d.numero&&d.bairro&&d.cidade&&/^(AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)$/.test(d.estado);
 router.post('/perfil/enderecos',exigirLogin,async(req,res,next)=>{try{const d=endereco(req.body);if(!valido(d))return voltar(res,'Confira os campos do endereço.');await Usuario.salvarEndereco(req.usuario.id,d);voltar(res,'Endereço adicionado.')}catch(e){next(e)}});
 router.post('/perfil/enderecos/:id/editar',exigirLogin,async(req,res,next)=>{try{const d=endereco(req.body);if(!valido(d))return voltar(res,'Confira os campos do endereço.');await Usuario.editarEndereco(req.usuario.id,Number(req.params.id),d);voltar(res,'Endereço atualizado.')}catch(e){next(e)}});
 router.post('/perfil/enderecos/:id/excluir',exigirLogin,async(req,res,next)=>{try{await Usuario.excluirEndereco(req.usuario.id,Number(req.params.id));voltar(res,'Endereço excluído.')}catch(e){next(e)}});
 router.post('/perfil/enderecos/:id/principal',exigirLogin,async(req,res,next)=>{try{await Usuario.principalEndereco(req.usuario.id,Number(req.params.id));voltar(res,'Endereço principal atualizado.')}catch(e){next(e)}});
+
+// Exclui a conta autenticada somente após confirmar a senha.
+// As tabelas vinculadas utilizam suas regras de chave estrangeira
+// (CASCADE ou SET NULL), preservando avaliações sem autor.
+router.post('/perfil/excluir-conta', exigirLogin, async (req, res, next) => {
+    const senha = String(req.body.senha_confirmacao || '');
+    try {
+        const usuario = await Usuario.senha(req.usuario.id);
+
+        if (!usuario || !(await argon2.verify(usuario.senha_hash, senha))) {
+            return voltar(res, 'Senha incorreta. A conta não foi excluída.');
+        }
+
+        await Usuario.excluirConta(req.usuario.id);
+
+        req.session.destroy((erro) => {
+            if (erro) return next(erro);
+
+            res.clearCookie('connect.sid');
+            res.redirect('/?conta_excluida=1');
+        });
+    } catch (erro) {
+        next(erro);
+    }
+});
+
 router.get('/recuperar-senha',(req,res)=>pagina(res,'Recuperar senha','recuperar'));
 router.post('/recuperar-senha',async(req,res,next)=>{try{const email=String(req.body.email||'').trim().toLowerCase();const u=await Usuario.email(email);if(u){const token=crypto.randomBytes(32).toString('hex'),hash=crypto.createHash('sha256').update(token).digest('hex');await pool.query('INSERT INTO recuperacoes_senha(usuario_id,token_hash,expira_em) VALUES($1,$2,NOW()+INTERVAL \'30 minutes\')',[u.id,hash]);if(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS && process.env.APP_URL){const transport=nodemailer.createTransport({host:process.env.SMTP_HOST,port:Number(process.env.SMTP_PORT||587),secure:process.env.SMTP_PORT==='465',auth:{user:process.env.SMTP_USER,pass:process.env.SMTP_PASS}});await transport.sendMail({from:process.env.SMTP_FROM||process.env.SMTP_USER,to:u.email,subject:'Recuperação de senha Malbi Doll',text:`Acesse ${process.env.APP_URL}/redefinir-senha/${token} (válido por 30 minutos).`})}else{console.warn('SMTP/APP_URL não configurados: e-mail de recuperação não enviado.')}}res.render('auth/aviso',{mensagem:'Se o e-mail estiver cadastrado, você receberá instruções para recuperar a senha.'})}catch(e){next(e)}});
 router.get('/redefinir-senha/:token',(req,res)=>res.render('auth/form',{titulo:'Nova senha',corpo:'redefinir',erro:'',token:req.params.token}));

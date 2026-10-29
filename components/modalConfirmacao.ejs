@@ -1,12 +1,65 @@
-    <div id="modalConfirmacao" class="modal-overlay" style="display: none;">
-        <div class="modal-content" style="text-align: center; width: 320px;">
-            <div class="modal-header" style="justify-content: center;">
-                <h3 style="margin: 0;">Excluir Item</h3>
-            </div>
-            <p style="margin: 15px 0; color: #1a4d38; font-weight: 500;">Tem certeza de que deseja excluir este item?</p>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button type="button" id="btnCancelarExclusao" class="btn-modal-salvar" style="background-color: #ccc; border-color: #888; margin-top: 0;">Cancelar</button>
-                <button type="button" id="btnConfirmarExclusao" class="btn-modal-salvar" style="background-color: #e63946; color: #fff; border-color: #b71c1c; margin-top: 0;">Excluir</button>
-            </div>
-        </div>
+<% if (typeof tipo !== 'undefined' && tipo === 'conta') { %>
+<div id="modalExcluirConta" class="confirmacao-fundo" hidden>
+  <section class="confirmacao-caixa" role="dialog" aria-modal="true"
+                 aria-labelledby="tituloExcluirConta"
+                 aria-describedby="descricaoExcluirConta">
+    <div class="confirmacao-icone" aria-hidden="true">
+      <i data-lucide="user-x">
+      </i>
     </div>
+    <h2 id="tituloExcluirConta">
+      Excluir minha conta?
+    </h2>
+    <p id="descricaoExcluirConta">
+      Esta ação é permanente. Informe sua senha atual para confirmar.
+    </p>
+    <form id="formExcluirConta" method="post"
+                  action="/perfil/excluir-conta" class="confirmacao-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label for="senhaExcluirConta">
+        Senha atual
+      </label>
+      <input id="senhaExcluirConta" type="password"
+                       name="senha_confirmacao" autocomplete="current-password"
+                       required>
+      <div class="confirmacao-acoes">
+        <button type="button" class="confirmacao-cancelar"
+                            data-fechar-exclusao-conta>
+          Cancelar
+        </button>
+        <button type="submit" class="confirmacao-excluir">
+          Excluir conta
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+<% } else { %>
+<div id="modalConfirmacao" class="modal-overlay confirmacao-fundo"
+         style="display: none;" role="dialog" aria-modal="true"
+         aria-labelledby="tituloConfirmacaoItem">
+  <div class="modal-content confirmacao-caixa">
+    <div class="confirmacao-icone" aria-hidden="true">
+      <i data-lucide="trash-2">
+      </i>
+    </div>
+    <h2 id="tituloConfirmacaoItem">
+      Excluir item?
+    </h2>
+    <p>
+      Tem certeza de que deseja excluir este item?
+    </p>
+    <div class="confirmacao-acoes">
+      <button type="button" id="btnCancelarExclusao"
+                        class="confirmacao-cancelar">
+        Cancelar
+      </button>
+      <button type="button" id="btnConfirmarExclusao"
+                        class="confirmacao-excluir">
+        Excluir
+      </button>
+    </div>
+  </div>
+</div>
+<% } %>
+<link rel="stylesheet" href="/styles/modalConfirmacao.css">

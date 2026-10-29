@@ -825,3 +825,23 @@ h1,h2,h3,p {
 .avaliacoes {
     scroll-margin-top: 24px;
 }
+
+/* Marca no card principal da página inicial */
+.hero-marca {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--verde);
+    font-family: Fredoka, sans-serif;
+    font-size: clamp(23px, 3vw, 34px);
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.hero-marca-logo {
+    display: block;
+    width: 42px;
+    height: 46px;
+    object-fit: contain;
+    flex-shrink: 0;
+}

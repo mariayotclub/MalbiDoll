@@ -1,12 +1,63 @@
 <header class="cabecalho">
-  <a href="/" class="cabecalho-logo"><img src="/assets/logoMalbi_branco.svg" alt="Logo Malbi Doll"><span>Malbi Doll</span></a>
+  <a href="/" class="cabecalho-logo">
+    <img src="/assets/logoMalbi_branco.svg" alt="Logo Malbi Doll">
+    <span>
+      Malbi Doll
+    </span>
+  </a>
   <nav class="cabecalho-menu" aria-label="Navegação principal">
-    <a href="/">Home</a><a href="/personalizar">Personalizar</a><a href="/bonecas">Bonecas</a><a href="/sobre">Sobre</a>
+    <a href="/">
+      Home
+    </a>
+    <a href="/personalizar">
+      Personalizar
+    </a>
+    <a href="/bonecas">
+      Bonecas
+    </a>
+    <a href="/sobre">
+      Sobre
+    </a>
   </nav>
   <div class="cabecalho-icones">
-    <a class="cabecalho-auth cabecalho-auth-cadastro" href="/cadastro">Sign in</a>
-    <a class="cabecalho-auth cabecalho-auth-login" href="/login">Log in</a>
-    <button type="button" data-abrir-perfil aria-label="Abrir perfil" aria-controls="perfilPainel" aria-expanded="false"><i data-lucide="user-round"></i></button>
-    <button type="button" data-abrir-carrinho aria-label="Abrir carrinho"><i data-lucide="shopping-cart"></i></button>
+    <% if (!usuario) { %>
+    <a class="cabecalho-auth cabecalho-auth-cadastro" href="/cadastro">
+      Sign in
+    </a>
+    <a class="cabecalho-auth cabecalho-auth-login" href="/login">
+      Log in
+    </a>
+    <% } %>
+    <button type="button" id="alternarTema" aria-label="Alternar tema">
+      <i data-lucide="moon">
+      </i>
+    </button>
+    <a href="/favoritos" aria-label="Meus favoritos" title="Meus favoritos">
+      <i data-lucide="heart">
+      </i>
+    </a>
+    <button type="button" data-abrir-perfil aria-label="Abrir perfil" aria-controls="perfilPainel" aria-expanded="false">
+      <i data-lucide="user-round">
+      </i>
+    </button>
+    <button type="button" data-abrir-carrinho aria-label="Abrir carrinho">
+      <i data-lucide="shopping-cart">
+      </i>
+    </button>
   </div>
 </header>
+<% /* O painel acompanha o cabeçalho em todas as páginas que o utilizam. */ %>
+<link rel="stylesheet" href="/styles/perfilLateral.css">
+<%- include('./perfilLateral') %>
+<link rel="stylesheet" href="/styles/temaEscuro.css">
+<script src="/scripts/temaEscuro.js" defer>
+</script>
+<script src="/scripts/perfilLateral.js" defer>
+</script>
+<script src="/scripts/enderecoCep.js" defer>
+</script>
+<% if (usuario) { %>
+<%- include('./modalConfirmacao', { tipo: 'conta' }) %>
+<script src="/scripts/excluirConta.js" defer>
+</script>
+<% } %>

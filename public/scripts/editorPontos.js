@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
             selecionado = chave;
             redesenhar();
         }
-        // O SVG sem preenchimento não recebe cliques no fundo em todos os navegadores.
+
         // Um retângulo transparente torna a área inteira interativa.
         const fundo = document.createElementNS(NS, 'rect');
         fundo.setAttribute('fill', 'transparent');
@@ -282,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const matriz = path.getScreenCTM();
                     if (!matriz) continue;
                     const paraRaiz = inversa.multiply(matriz);
-                    // Ignora o início/fim: os 8 pontos anatômicos continuam independentes.
+
                     const quantidade = Math.min(90, Math.max(0, Math.floor(comprimento / passo) - 1));
                     for (let i = 1; i <= quantidade && automaticos.length < 400; i++) {
                         const local = path.getPointAtLength(comprimento * i / (quantidade + 1));
@@ -537,7 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
             previaSvg.replaceChildren(fundo, grupo);
             previaSvg.hidden = false; imagem.hidden = true; camada.hidden = true;
             previaAtiva = true; botaoPrevia.textContent = 'Voltar à edição dos pontos';
-            statusPrevia.textContent = `${pares.length} âncora(s) usadas no encaixe inicial. Ajustes FFD ainda não implementados.`;
+            statusPrevia.textContent = `${pares.length} âncora(s) usadas no encaixe inicial. `;
         }
         botaoPrevia?.addEventListener('click', async () => {
             if (previaAtiva) { desativarPrevia(); return; }

@@ -17,3 +17,150 @@
 
 /* Edição de perfil e endereços */
 .perfil-form{display:grid;gap:11px;margin:14px 0}.perfil-form label{display:grid;gap:5px;font-weight:700;font-size:13px}.perfil-form input:not([type=checkbox]){box-sizing:border-box;width:100%;padding:11px;border:1px solid #dccbc4;border-radius:10px;background:white;font:inherit;color:#493e3b}.perfil-form input:disabled{background:#f3eeeb}.perfil-form button,.perfil-acoes button{border:0;border-radius:10px;padding:10px 13px;background:#35594e;color:white;font:700 13px Nunito,sans-serif;cursor:pointer}.perfil-form .perfil-check{display:flex;align-items:center}.perfil-endereco{border:1px solid #eaded7;border-radius:12px;padding:13px;margin:12px 0;background:#fff}.perfil-endereco p{overflow-wrap:anywhere}.perfil-acoes{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.perfil-acoes button{background:#eee0da;color:#604b44}.perfil-secao summary{cursor:pointer;color:#35594e;font-weight:800;margin-top:12px}.perfil-novo-endereco{padding-top:8px}.perfil-aviso{background:#e8f2eb;border-radius:9px;padding:10px;color:#35594e}.perfil-form .perfil-discreto{background:transparent;color:#84564d;border:1px solid #dccbc4}.perfil-conteudo .perfil-secao{scroll-margin-top:15px}
+
+
+/* Seções recolhíveis do painel de perfil */
+.perfil-acordeao {
+    border-bottom: 1px solid #ebded7;
+}
+
+.perfil-acordeao > summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 17px 0;
+    margin: 0;
+    color: #674c47;
+    font: 600 17px Fredoka, sans-serif;
+    cursor: pointer;
+    list-style: none;
+}
+
+.perfil-acordeao > summary::-webkit-details-marker {
+    display: none;
+}
+
+.perfil-acordeao > summary > svg:first-child {
+    width: 19px;
+    height: 19px;
+    color: #a6786d;
+}
+
+.perfil-acordeao > summary .perfil-seta {
+    width: 19px;
+    height: 19px;
+    margin-left: auto;
+    transition: transform 0.2s ease;
+}
+
+.perfil-acordeao[open] > summary .perfil-seta {
+    transform: rotate(180deg);
+}
+
+.perfil-acordeao > summary:focus-visible {
+    outline: 2px solid #35594e;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+.perfil-acordeao-conteudo {
+    padding: 0 0 17px;
+}
+
+.perfil-acordeao-conteudo > .perfil-form-foto {
+    margin-top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .perfil-acordeao > summary .perfil-seta {
+        transition: none;
+    }
+}
+
+.perfil-exclusao-conta { margin: 18px 0 10px; }
+.perfil-excluir-botao { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 14px; border: 1px solid #b78479; border-radius: 12px; background: transparent; color: #a34a46; cursor: pointer; font: inherit; }
+.perfil-excluir-botao:hover { background: #f5e7e5; }
+
+
+/* Identidade e ações de edição */
+.perfil-avatar-area { position: relative; flex: 0 0 75px; }
+.perfil-avatar-area .perfil-avatar { display: grid; width: 75px; height: 75px; }
+.perfil-nome-linha { display: flex; align-items: center; gap: 8px; }
+.perfil-nome-linha h3 { margin: 0; }
+.perfil-identidade-texto { flex: 1; min-width: 0; }
+.perfil-identidade-texto .perfil-usuario { font-size: 12px; margin: 2px 0; opacity: .8; }
+.perfil-identidade-texto .perfil-email { font-size: 13px; margin: 2px 0 0; }
+.perfil-edicao > summary { display: grid; place-items: center; cursor: pointer; list-style: none; width: 27px; height: 27px; border-radius: 50%; background: var(--perfil-editar-fundo, #ead7ce); color: var(--perfil-editar-cor, #674c47); }
+.perfil-edicao > summary::-webkit-details-marker { display: none; }
+.perfil-edicao > summary svg { width: 15px; height: 15px; }
+.perfil-edicao-foto { position: absolute; top: -9px; right: -8px; }
+.perfil-edicao-conteudo { position: absolute; z-index: 5; top: 33px; right: 0; width: min(310px, calc(100vw - 65px)); padding: 15px; border: 1px solid #b78479; border-radius: 12px; background: var(--perfil-editar-painel, #fffaf6); color: inherit; box-shadow: 0 12px 25px #0002; }
+.perfil-edicao-foto .perfil-edicao-conteudo { left: 0; right: auto; }
+.perfil-edicao-conteudo .perfil-form-foto { margin: 0; }
+.perfil-edicao-conteudo .perfil-form { margin: 0; }
+.perfil-acordeao > summary > .perfil-seta { margin-left: auto; flex-shrink: 0; }
+.perfil-acordeao > summary > span { flex: 1; }
+.perfil-acordeao-conteudo p { overflow-wrap: anywhere; }
+[data-theme="dark"] .perfil-painel, body.dark-mode .perfil-painel {
+    --perfil-editar-fundo: #514166;
+    --perfil-editar-cor: #e7d8ff;
+    --perfil-editar-painel: #251e30;
+}
+
+
+/* Modal de edição centralizado na largura do painel lateral. */
+.perfil-edicao-sombra {
+    position: absolute;
+    inset: 0;
+    z-index: 12;
+    background: rgba(12, 10, 17, .68);
+    backdrop-filter: blur(2px);
+}
+
+.perfil-edicao-sombra[hidden] {
+    display: none;
+}
+
+.perfil-painel .perfil-edicao-conteudo,
+.perfil-painel .perfil-edicao-foto .perfil-edicao-conteudo {
+    position: fixed;
+    top: 50%;
+    left: auto;
+    right: calc(min(430px, 100vw) / 2);
+    transform: translate(50%, -50%);
+    z-index: 15;
+    box-sizing: border-box;
+    width: min(350px, calc(100vw - 44px));
+    max-height: min(80vh, 600px);
+    overflow-y: auto;
+    padding: 22px;
+    border-radius: 16px;
+    box-shadow: 0 20px 65px rgba(0, 0, 0, .4);
+}
+
+.perfil-edicao > summary {
+    background: #4b354a;
+    color: #fff;
+    border: 1px solid #725474;
+}
+
+.perfil-edicao > summary:hover {
+    background: #624665;
+}
+
+.perfil-edicao > summary svg {
+    stroke: currentColor;
+    stroke-width: 2.5;
+}
+
+html[data-tema="escuro"] .perfil-edicao > summary {
+    background: #49345f;
+    color: #f6edff;
+    border-color: #856ca5;
+}
+
+html[data-tema="escuro"] .perfil-edicao-conteudo {
+    background: #272132;
+    color: #f3eafa;
+    border-color: #69547f;
+}

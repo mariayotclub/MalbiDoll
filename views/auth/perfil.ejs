@@ -1,1 +1,62 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Meu perfil | Malbi Doll</title><link rel="stylesheet" href="/styles/contas.css"></head><body><main class="conta perfil"><a href="/">← Voltar à loja</a><h1>Meu perfil</h1><div class="identidade"><% if(usuario.tem_foto){ %><img class="avatar" src="/usuarios/<%= usuario.id %>/foto" alt="Foto de perfil"><% }else{ %><div class="avatar vazio">👤</div><% } %><div><h2><%= usuario.nome %></h2><p><%= usuario.email %></p></div></div><form action="/perfil/foto" method="post" enctype="multipart/form-data"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><label>Foto de perfil (PNG, JPG ou WEBP, até 2 MB)<input type="file" name="foto" accept="image/png,image/jpeg,image/webp" required></label><button>Atualizar foto</button></form><section><h2>Endereços</h2><p>Você ainda não possui endereços cadastrados.</p></section><section><h2>Dados bancários</h2><p>Funcionalidade ainda não disponível. Nenhum dado bancário é solicitado ou armazenado.</p></section><section><h2>Meus dados</h2><p>Mais opções de gerenciamento estarão disponíveis futuramente.</p></section><form method="post" action="/logout"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button>Sair da conta</button></form></main></body></html>
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      Meu perfil | Malbi Doll
+    </title>
+    <link rel="stylesheet" href="/styles/contas.css">
+  </head>
+  <body>
+    <main class="conta perfil">
+      <a href="/">
+        ← Voltar à loja
+      </a>
+      <h1>
+        Meu perfil
+      </h1>
+      <div class="identidade">
+        <% if(usuario.tem_foto){ %>
+        <img class="avatar" src="/usuarios/<%= usuario.id %>/foto" alt="Foto de perfil">
+        <% }else{ %>
+        <div class="avatar vazio">
+          👤
+        </div>
+        <% } %>
+        <div>
+          <h2>
+            <%= usuario.nome %>
+          </h2>
+          <p>
+            <%= usuario.email %>
+          </p>
+        </div>
+      </div>
+      <form action="/perfil/foto" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <label>
+          Foto de perfil (PNG, JPG ou WEBP, até 2 MB)
+          <input type="file" name="foto" accept="image/png,image/jpeg,image/webp" required>
+        </label>
+        <button>
+          Atualizar foto
+        </button>
+      </form>
+      <section>
+        <h2>
+          Endereços
+        </h2>
+        <p>
+          Você ainda não possui endereços cadastrados.
+        </p>
+      </section>
+      <form method="post" action="/logout">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button>
+          Sair da conta
+        </button>
+      </form>
+    </main>
+  </body>
+</html>

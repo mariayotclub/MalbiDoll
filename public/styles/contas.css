@@ -26,7 +26,42 @@ body.contas-pagina{margin:0;min-height:100vh;background:radial-gradient(circle a
 @media(max-width:520px){.contas-cabecalho{height:86px;padding:10px 20px}.contas-logo img{height:72px;width:75px}.contas-centro{min-height:calc(100vh - 86px);padding:8px 15px 42px;align-items:start}.conta{padding:28px 23px;border-radius:19px}.contas-voltar{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.contas-enviar,.contas-form input{transition:none}}
 
-/* Assinatura com logo e nome em Fredoka */
-.contas-logo{display:inline-flex;align-items:center;gap:10px;max-width:none;text-decoration:none;color:#35594e;font-family:"Fredoka",sans-serif;font-weight:600;font-size:clamp(22px,3vw,32px);white-space:nowrap}
-.contas-logo img{width:62px;height:70px;object-fit:contain}
-@media(max-width:520px){.contas-logo{font-size:23px;gap:5px}.contas-logo img{width:49px;height:56px}}
+
+/* Marca no canto superior esquerdo das páginas de autenticação */
+.contas-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    max-width: none;
+    color: var(--verde);
+    font-family: "Fredoka", sans-serif;
+    font-size: clamp(22px, 3vw, 32px);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.contas-logo img {
+    width: 62px;
+    height: 70px;
+    object-fit: contain;
+}
+
+@media (max-width: 520px) {
+    .contas-logo {
+        gap: 5px;
+        font-size: 23px;
+    }
+
+    .contas-logo img {
+        width: 49px;
+        height: 56px;
+    }
+}
+
+.contas-cabecalho { padding-left: clamp(8px, 2vw, 26px); }
+
+.contas-acoes { display: flex; align-items: center; gap: 20px; }
+.contas-alternar-tema { border: 1px solid currentColor; background: transparent; color: inherit;
+    width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 24px; }
+html[data-tema="escuro"] .contas-alternar-tema { color: #d8c6f6; }

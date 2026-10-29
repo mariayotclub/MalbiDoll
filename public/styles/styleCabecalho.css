@@ -113,3 +113,30 @@ html, body {
 .cabecalho-icones a.cabecalho-auth:hover{background:#f7e7df;color:#674c47!important;transform:translateY(-1px)}
 .cabecalho-icones a.cabecalho-auth:focus-visible{outline:2px solid white;outline-offset:3px}
 @media(max-width:440px){.cabecalho-icones a.cabecalho-auth{padding:7px 10px;font-size:12px}}
+
+/* Todos os ícones de ação têm a mesma caixa e alinhamento. */
+.cabecalho-icones > a:not(.cabecalho-auth),
+.cabecalho-icones > button {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 40px;
+    padding: 0;
+    margin: 0;
+    color: white;
+    text-decoration: none;
+    line-height: 1;
+    background: transparent;
+    border: 0;
+}
+.cabecalho-icones > a:not(.cabecalho-auth) svg,
+.cabecalho-icones > button svg { width: 27px; height: 27px; stroke-width: 2.2; }
+.cabecalho-icones > #alternarTema { margin-left: 5px; }
+@media (max-width: 850px) {
+    .cabecalho-icones > a:not(.cabecalho-auth),
+    .cabecalho-icones > button { width: 36px; height: 36px; flex-basis: 36px; }
+    .cabecalho-icones > a:not(.cabecalho-auth) svg,
+    .cabecalho-icones > button svg { width: 24px; height: 24px; }
+}
