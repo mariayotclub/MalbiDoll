@@ -1,0 +1,194 @@
+.clientes-main {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  color: var(--verde,#3a6057);
+}
+.clientes-main h1 {
+  font-size: 2rem;
+}
+.clientes-abas {
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid #bbb;
+  padding: 15px 0;
+}
+.clientes-abas a {
+  color: inherit;
+  text-decoration: none;
+  padding: 8px;
+}
+.clientes-abas .ativo {
+  border-bottom: 3px solid #3a6057;
+  font-weight: 700;
+}
+.clientes-busca {
+  display: flex;
+  gap: 10px;
+  margin: 22px 0;
+}
+.clientes-busca input {
+  flex: 1;
+  min-width: 0;
+}
+.clientes-main input,.clientes-main select,.clientes-main textarea,.clientes-modal select,.clientes-modal textarea {
+  padding: 10px;
+  border: 1px solid #bbb;
+  border-radius: 8px;
+}
+.clientes-main button,.clientes-modal button {
+  background: #3a6057;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+.clientes-tabela {
+  overflow: auto;
+  margin-top: 20px;
+}
+.clientes-tabela table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: .9rem;
+}
+.clientes-tabela th,.clientes-tabela td {
+  padding: 13px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  vertical-align: middle;
+}
+.clientes-tabela small {
+  display: block;
+  color: #777;
+  margin-top: 4px;
+}
+.clientes-tabela td form {
+  display: flex;
+  gap: 6px;
+}
+.clientes-modal {
+  border: 0;
+  border-radius: 16px;
+  padding: 28px;
+  max-width: 440px;
+  width: calc(100% - 30px);
+  background: #fcfaf5;
+  color: #29483f;
+  position: fixed;
+  inset: 0;
+  margin: auto;
+}
+.clientes-modal::backdrop {
+  background: #0009;
+}
+.clientes-modal form,.clientes-modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.clientes-modal label {
+  margin: 14px 0;
+}
+.clientes-modal .modal-acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+.clientes-modal [hidden] {
+  display: none !important;
+}
+.denuncia-menu {
+  position: relative;
+  margin-left: auto;
+}
+.denuncia-menu summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 25px;
+  padding: 0 8px;
+}
+.denuncia-form {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 20;
+  background: #fcfaf5;
+  color: #29483f;
+  box-shadow: 0 4px 20px #0003;
+  border-radius: 12px;
+  padding: 15px;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.denuncia-form select,.denuncia-form input {
+  padding: 8px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+}
+.denuncia-form button {
+  background: #3a6057;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 9px;
+  cursor: pointer;
+}
+.clientes-modal {
+  max-width: 490px;
+  padding: 30px;
+  box-shadow: 0 20px 70px #0004;
+}
+.bloqueio-modal-topo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-bottom: 1px solid #d8ded8;
+  padding-bottom: 18px;
+}
+.bloqueio-modal-topo h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+.bloqueio-modal-topo p {
+  margin: 5px 0 0;
+  color: #65766b;
+}
+.bloqueio-modal-icone {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #f5e7e5;
+  color: #954f4c;
+  font-size: 25px;
+  font-weight: 700;
+}
+.clientes-modal label {
+  font-weight: 600;
+  gap: 8px;
+}
+.clientes-modal textarea {
+  resize: vertical;
+  min-height: 95px;
+  font: inherit;
+}
+.clientes-modal label small {
+  font-weight: 400;
+  color: #6a7c70;
+  font-size: .8rem;
+}
+.clientes-modal .modal-acoes {
+  padding-top: 12px;
+  border-top: 1px solid #d8ded8;
+}
+.clientes-modal #cancelarBloqueio {
+  background: #e8ebe7;
+  color: #29483f;
+}

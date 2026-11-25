@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Pagamentos | Malbi Doll</title>
+    <%- include('../../components/lojaHead') %>
+    <link rel="stylesheet" href="/styles/pagamentosAdmin.css">
+    <link rel="stylesheet" href="/styles/dashboardNavegacao.css">
+  </head>
+  <body>
+    <%- include('../../components/cabecalho') %>
+    <div class="dashboard-layout">
+      <%- include('../../components/dashboardMenu', { paginaAtual: '/admin/pagamentos' }) %>
+      <main class="dashboard-conteudo dashboard-pagina loja-main pagamentos-admin">
+      <header class="pag-topo">
+        <div>
+          <h1>Pagamentos</h1>
+          <p>Transações simuladas para demonstração. Nenhum valor representa recebimento real.</p>
+        </div>
+        <a class="pag-botao" href="/admin/pagamentos/exportar">Exportar CSV</a>
+      </header>
+      <% if(mensagem) { %><p class="pag-aviso" role="status">Pagamento atualizado: <%= mensagem %>.</p><% } %>
+      <section class="pag-indicadores" aria-label="Resumo financeiro">
+        <div>
+          <span>Receita aprovada (simulada)</span>
+          <strong><%= moeda(indicadores.recebido) %></strong>
+        </div>
+        <div>
+          <span>Pagamentos pendentes</span>
+          <strong><%= moeda(indicadores.pendente) %></strong>
+        </div>
+        <div>
+          <span>Valor reembolsado</span>
+          <strong><%= moeda(indicadores.reembolsado) %></strong>
+        </div>
+        <div>
+          <span>Vendas aprovadas</span>
+          <strong><%= indicadores.aprovados %></strong>
+        </div>
+      </section>
+      <nav class="pag-abas" aria-label="Seções de pagamentos">
+        <a class="<%= aba === 'visao' ? 'ativo' : '' %>" href="/admin/pagamentos?aba=visao">Visão geral</a>
+        <a class="<%= aba === 'reembolsos' ? 'ativo' : '' %>" href="/admin/pagamentos?aba=reembolsos">Reembolsos</a>
+        <a class="<%= aba === 'transacoes' ? 'ativo' : '' %>" href="/admin/pagamentos?aba=transacoes">Histórico de transações</a>
+      </nav>
+      <% if(aba === 'visao') { %>
+        <div class="pag-graficos-topo">
+          <form method="get" class="pag-periodo">
+            <input type="hidden" name="aba" value="visao">
+            <label for="pagPeriodo">Período</label>
+            <select id="pagPeriodo" name="periodo" >
+              <option value="6" <%= periodo === 6 ? 'selected' : '' %>>Últimos 6 meses</option>
+              <option value="12" <%= periodo === 12 ? 'selected' : '' %>>Últimos 12 meses</option>
+            </select>
+            <button class="pag-botao" type="submit">Aplicar</button>
+          </form>
+        </div>
+        <div class="pag-graficos">
+          <section class="pag-bloco pag-grafico">
+            <h2>Receita mensal</h2>
+            <% const maiorReceita = Math.max(1, ...receitaMensal.map(m => Number(m.total) || 0)); %>
+            <div class="pag-barras" role="img" aria-label="Receita mensal dos últimos <%= periodo %> meses">
+              <% for(const mes of receitaMensal) { const valor = Number(mes.total) || 0; %>
+              <div class="pag-barra-coluna" title="<%= mes.rotulo %>: <%= moeda(valor) %>">
+                <span class="pag-barra-valor"><%= moeda(valor) %></span>
+                <div class="pag-barra-trilho">
+                  <div class="pag-barra" style="height:<%= valor ? Math.max(3,valor/maiorReceita*100) : 0 %>%">
+                  </div>
+                </div>
+                <span class="pag-barra-mes"><%= mes.rotulo.slice(0,2) %>/<%= mes.rotulo.slice(-2) %></span>
+              </div>
+            <% } %>
+          </div>
+        </section>
+        <section class="pag-bloco pag-grafico">
+          <h2>Status dos pagamentos</h2>
+          <% const nomesStatus = ['Aprovados','Pendentes','Recusados','Reembolsados','Outros']; const coresStatus = ['#3a6057','#c29b58','#b76c65','#8d78b4','#87928d']; const dadosStatus = nomesStatus.map((nome,i)=>({nome, cor:coresStatus[i], quantidade:Number(statusGrafico.find(s=>s.status===nome)?.quantidade || 0)})).filter(s=>s.quantidade>0); const totalStatus = dadosStatus.reduce((s,d)=>s+d.quantidade,0); let acumuladoStatus = 0; const partesStatus = dadosStatus.map(d=>{const inicio=acumuladoStatus; acumuladoStatus+=d.quantidade/totalStatus*100;return `${d.cor} ${inicio}% ${acumuladoStatus}%`;}); %>
+          <div class="pag-status-layout">
+            <div class="pag-rosca" role="img" aria-label="Distribuição de <%= totalStatus %> pagamentos" style="background:<%= totalStatus ? 'conic-gradient('+partesStatus.join(',')+')' : 'var(--pag-vazio,#d8d5d0)' %>">
+              <div class="pag-rosca-centro">
+                <strong><%= totalStatus %></strong>
+                <span>pagamentos</span>
+              </div>
+            </div>
+            <div class="pag-legenda">
+              <% for(const dado of dadosStatus) { %><div class="pag-legenda-linha">
+                  <span class="pag-legenda-cor" style="background:<%= dado.cor %>">
+                  </span>
+                  <span><%= dado.nome %></span>
+                  <strong><%= dado.quantidade %></strong>
+              </div><% } %>
+              <% if(!totalStatus) { %><p>Nenhum pagamento no período.</p><% } %>
+            </div>
+          </div>
+        </section>
+      </div>
+    <% } else if(aba === 'transacoes') { %>
+      <section class="pag-bloco">
+        <h2>Histórico de transações</h2>
+        <form class="pag-filtros" method="get">
+          <input type="hidden" name="aba" value="transacoes">
+          <input name="busca" value="<%= busca %>" placeholder="Pedido, cliente ou e-mail" aria-label="Buscar">
+          <select name="status" aria-label="Status">
+            <option value="">Todos os status</option><% for(const st of ['aguardando','pendente','pago','aprovado','recusado','reembolsado']) { %><option value="<%= st %>" <%= status===st?'selected':'' %>><%= st %></option><% } %></select>
+          <label>De <input type="date" name="inicio" value="<%= inicio %>">
+          </label>
+          <label>Até <input type="date" name="fim" value="<%= fim %>">
+          </label>
+          <button class="pag-botao" type="submit">Filtrar</button>
+        </form>
+        <div class="pag-rolagem">
+          <table>
+            <thead>
+              <tr>
+                <th>Pedido / data</th>
+                <th>Cliente</th>
+                <th>Valor</th>
+                <th>Método</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% for(const t of transacoes) { %><tr>
+                  <td>
+                    <strong><%= t.numero %></strong>
+                    <small><%= new Date(t.criado_em).toLocaleDateString('pt-BR') %></small>
+                  </td>
+                  <td><%= t.cliente_nome %><small><%= t.cliente_email %></small>
+                  </td>
+                  <td><%= moeda(t.total) %></td>
+                  <td><%= t.pagamento_metodo %></td>
+                  <td>
+                    <span class="pag-status"><%= t.pagamento_status %></span>
+                </tr><% } %>
+                <% if(!transacoes.length) { %><tr>
+                    <td colspan="5">Nenhuma transação encontrada.</td>
+                </tr><% } %>
+              </tbody>
+            </table>
+          </div>
+          <div class="pag-paginacao"><% if(pagina>1) { %><a href="?aba=transacoes&pagina=<%= pagina-1 %>&busca=<%= encodeURIComponent(busca) %>&status=<%= status %>&inicio=<%= inicio %>&fim=<%= fim %>">Anterior</a><% } %><span>Página <%= pagina %> de <%= paginas %></span><% if(pagina<paginas) { %><a href="?aba=transacoes&pagina=<%= pagina+1 %>&busca=<%= encodeURIComponent(busca) %>&status=<%= status %>&inicio=<%= inicio %>&fim=<%= fim %>">Próxima</a><% } %></div>
+        </section>
+      <% } else { %>
+        <section class="pag-bloco">
+          <h2>Solicitações de reembolso dos clientes</h2>
+          <div class="pag-rolagem">
+            <table>
+              <thead>
+                <tr>
+                  <th>Pedido</th>
+                  <th>Cliente</th>
+                  <th>Motivo</th>
+                  <th>Detalhes</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% for(const s of solicitacoes) { %><tr>
+                    <td><%= s.numero %></td>
+                    <td><%= s.cliente_nome %></td>
+                    <td><%= s.motivo %></td>
+                    <td><%= s.detalhes || '—' %></td>
+                    <td><%= moeda(s.total) %></td>
+                    <td><%= s.status %></td>
+                    <td>
+                      <a class="pag-botao secundario" href="/admin/atendimento?reembolso_id=<%= s.id %>">Conversar com cliente</a>
+                      <% if(s.status === 'pendente') { %><form method="post" action="/admin/pagamentos/reembolsos/<%= s.id %>/decisao" onsubmit="return confirm('Confirmar decisão sobre a solicitação de reembolso?')">
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                          <button class="pag-botao" name="decisao" value="aprovado">Aprovar</button>
+                          <button class="pag-botao secundario" name="decisao" value="recusado">Recusar</button>
+                      </form><% } %>
+                    </td>
+                </tr><% } %><% if(!solicitacoes.length) { %><tr>
+                    <td colspan="7">Nenhuma solicitação.</td>
+              </tr><% } %></tbody>
+            </table>
+          </div>
+        </section>
+        <section class="pag-bloco">
+          <h2>Histórico de alterações</h2>
+          <p>Registros das mudanças feitas pelos administradores, incluindo reembolsos simulados.</p>
+          <div class="pag-rolagem">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Pedido</th>
+                  <th>Cliente</th>
+                  <th>Alteração</th>
+                  <th>Valor</th>
+                  <th>Observação</th>
+                </tr>
+              </thead>
+              <tbody><% for(const h of historico) { %><tr>
+                    <td><%= new Date(h.criado_em).toLocaleString('pt-BR') %></td>
+                    <td><%= h.numero %></td>
+                    <td><%= h.cliente_nome %></td>
+                    <td><%= h.status_anterior %> → <%= h.status_novo %></td>
+                    <td><%= moeda(h.valor) %></td>
+                    <td><%= h.observacao || '—' %></td>
+                </tr><% } %><% if(!historico.length) { %><tr>
+                    <td colspan="6">Nenhuma alteração registrada.</td>
+              </tr><% } %></tbody>
+            </table>
+          </div>
+        </section>
+      <% } %>
+    </main>
+    </div>
+
+  </body>
+</html>

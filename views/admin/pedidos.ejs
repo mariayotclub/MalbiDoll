@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pedidos | Malbi Doll</title>
+    <%- include('../../components/lojaHead') %>
+    <link rel="stylesheet" href="/styles/checkout.css">
+    <link rel="stylesheet" href="/styles/modalConfirmacao.css">
+    <link rel="stylesheet" href="/styles/dashboardNavegacao.css">
+  </head>
+  <body>
+    <%- include('../../components/cabecalho') %>
+    <div class="dashboard-layout">
+      <%- include('../../components/dashboardMenu', { paginaAtual: '/admin/pedidos' }) %>
+      <main class="dashboard-conteudo dashboard-pagina loja-main secao-loja">
+      <h1>Pedidos</h1>
+      <p>Ambiente de demonstração: os pagamentos são simulados e não representam transações reais.</p>
+      <nav class="pedidos-abas" aria-label="Tipo de pedido">
+        <a class="<%= tipo === 'np' ? 'ativo' : '' %>" href="/admin/pedidos?tipo=np">Bonecas NP</a>
+        <a class="<%= tipo === 'personalizada' ? 'ativo' : '' %>" href="/admin/pedidos?tipo=personalizada">Personalizadas</a>
+      </nav>
+      <form method="get" action="/admin/pedidos" class="pedidos-filtros">
+        <input type="hidden" name="tipo" value="<%= tipo %>">
+        <input name="busca" value="<%= busca %>" placeholder="Número ou cliente" aria-label="Buscar pedidos">
+        <select name="status" aria-label="Filtrar produção">
+          <option value="">Todos os status</option>
+          <% for (const st of ['aguardando','em_producao','producao_finalizada','separado','conferido','embalado']) { %>
+            <option value="<%= st %>" <%= status === st ? 'selected' : '' %>><%= st.replaceAll('_', ' ') %></option>
+          <% } %>
+        </select>
+        <button type="submit">Filtrar</button>
+      </form>
+      <div class="pedidos-tabela-rolagem">
+        <table class="pedidos-tabela">
+          <thead>
+            <tr>
+              <th>Pedido / data</th>
+              <th>Cliente</th>
+              <th>Total</th>
+              <th>Pagamento</th>
+              <th>Produção</th>
+              <th>Detalhes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (const pedido of pedidos) { %>
+              <tr>
+                <td>
+                  <strong><%= pedido.numero %></strong>
+                  <small><%= new Date(pedido.criado_em).toLocaleString('pt-BR') %></small>
+                </td>
+                <td><%= pedido.cliente_nome %></td>
+                <td><%= moeda(pedido.total) %></td>
+                <td>
+                  <span class="pedido-status"><%= pedido.pagamento_status %></span>
+                </td>
+                <td><%= pedido.producao_status.replaceAll('_',' ') %></td>
+                <td>
+                  <button type="button" class="pedido-acao" onclick="document.getElementById('detalhe-<%= pedido.id %>').hidden = !document.getElementById('detalhe-<%= pedido.id %>').hidden">Ver itens</button>
+                </td>
+              </tr>
+              <tr id="detalhe-<%= pedido.id %>" hidden>
+                <td colspan="6">
+                  <section class="pedido-detalhes">
+                    <p>
+                      <strong>E-mail:</strong> <%= pedido.cliente_email %></p>
+                    <p>
+                      <strong>Entrega:</strong> <%= [pedido.endereco.logradouro, pedido.endereco.numero, pedido.endereco.bairro, pedido.endereco.cidade, pedido.endereco.estado, pedido.endereco.cep].filter(Boolean).join(', ') %></p>
+                    <h3>Itens do pedido</h3>
+                    <% for (const item of pedido.itens) { %>
+                      <div class="pedido-item">
+                        <% if (item.imagem) { %>
+                          <img src="<%= item.imagem %>" alt="" loading="lazy">
+                        <% } %>
+                        <span>
+                          <strong><%= item.nome %></strong>
+                          <small>Quantidade: <%= item.quantidade || 1 %></small>
+                        </span>
+                        <span><%= moeda(item.preco) %></span>
+                      </div>
+                    <% } %>
+                    <p>
+                      <strong>Frete:</strong> <%= moeda(pedido.valor_frete) %></p>
+                    <% const etapas = pedido.tipo === 'np'
+                    ? ['Produto separado', 'Qualidade conferida', 'Embalagem concluída', 'Enviado']
+                    : ['Produção iniciada', 'Produção finalizada', 'Qualidade conferida', 'Embalagem concluída', 'Enviado']; %>
+                    <form method="post" action="/admin/pedidos/<%= pedido.id %>/status" class="etapas-form">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <input type="hidden" name="etapa" value="<%= pedido.etapa_producao %>">
+                      <input type="hidden" name="confirmar_envio" value="nao">
+                      <div class="etapas-lista">
+                        <% etapas.forEach((etapa, i) => { %>
+                          <label class="etapa-linha">
+                            <input type="checkbox" data-etapa="<%= i + 1 %>" <%= i < pedido.etapa_producao ? 'checked' : '' %> <%= i > pedido.etapa_producao ? 'disabled' : '' %>>
+                            <span><%= etapa %></span>
+                          </label>
+                        <% }) %>
+                      </div>
+                      <button type="submit">Confirmar alterações</button>
+                    </form>
+                  </section>
+                </td>
+              </tr>
+            <% } %>
+            <% if (!pedidos.length) { %><tr>
+                <td colspan="6">Nenhum pedido encontrado.</td>
+            </tr><% } %>
+          </tbody>
+        </table>
+      </div>
+      <nav class="pedidos-paginacao">
+        <% if (pagina > 1) { %><a href="?tipo=<%= tipo %>&pagina=<%= pagina-1 %>&status=<%= encodeURIComponent(status) %>&busca=<%= encodeURIComponent(busca) %>">Anterior</a><% } %>
+        <span>Página <%= pagina %> de <%= paginas %></span>
+        <% if (pagina < paginas) { %><a href="?tipo=<%= tipo %>&pagina=<%= pagina+1 %>&status=<%= encodeURIComponent(status) %>&busca=<%= encodeURIComponent(busca) %>">Próxima</a><% } %>
+      </nav>
+    </main>
+    </div>
+    <div id="modalConfirmarEnvio" class="confirmacao-fundo" hidden>
+      <section class="confirmacao-caixa" role="dialog" aria-modal="true" aria-labelledby="tituloConfirmarEnvio">
+        <h2 id="tituloConfirmarEnvio">Confirmar envio?</h2>
+        <p>Este pedido será transferido para Entregas.</p>
+        <div class="confirmacao-acoes">
+          <button type="button" class="confirmacao-cancelar" id="cancelarEnvio">Cancelar</button>
+          <button type="button" class="confirmacao-salvar" id="confirmarEnvio">Confirmar envio</button>
+        </div>
+      </section>
+    </div>
+    <script src="/scripts/pedidosAdmin.js" defer></script>
+  </body>
+</html>

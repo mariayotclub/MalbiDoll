@@ -1,0 +1,184 @@
+/*Modal de denúncias — padrão visual Malbi Doll*/
+.avaliacao-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.avaliacao-acoes {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.avaliacao-card .denuncia-tres-pontos {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 30px;
+  height: 32px;
+  margin: 0;
+  padding: 0 !important;
+  border: 0 !important;
+  outline-offset: 2px;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  appearance: none;
+  color: #3a6057 !important;
+  font-family: inherit;
+  font-size: 29px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+.avaliacao-card .denuncia-tres-pontos:hover {
+  color: #29483f !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+.denuncia-dialogo {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(440px,calc(100% - 32px));
+  max-height: min(90vh,680px);
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  background: #fcfaf5;
+  color: #40544d;
+  box-shadow: 0 16px 55px #0005;
+  overflow: auto;
+}
+.denuncia-dialogo::backdrop {
+  background: rgba(0,0,0,.64);
+}
+.denuncia-form-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 26px 28px 24px;
+  font-family: Nunito,sans-serif;
+  color: #40544d;
+}
+.denuncia-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.denuncia-cabecalho h2 {
+  margin: 0;
+  color: #29483f;
+  font-family: Fredoka,sans-serif;
+  font-size: 1.45rem;
+  font-weight: 600;
+}
+.denuncia-form-modal .denuncia-descricao {
+  margin: 0 0 12px;
+  font-size: .9rem;
+  color: #64736b;
+}
+.denuncia-form-modal label {
+  display: block;
+  margin-top: 7px;
+  font-size: .92rem;
+  font-weight: 700;
+  color: #40544d;
+}
+.denuncia-form-modal select,.denuncia-form-modal textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid #b8c6bd;
+  border-radius: 9px;
+  background: #fff;
+  color: #40544d;
+  font: inherit;
+  font-size: .95rem;
+}
+.denuncia-form-modal textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+.denuncia-form-modal :is(select,textarea):focus {
+  outline: 2px solid #3a6057;
+  outline-offset: 1px;
+}
+.denuncia-contador {
+  align-self: flex-end;
+  color: #77827b;
+  font-size: .78rem;
+}
+.denuncia-acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+.denuncia-acoes button {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 9px;
+  background: #3a6057;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.denuncia-acoes .denuncia-cancelar {
+  background: #ebece7;
+  color: #40544d;
+}
+.denuncia-cabecalho .denuncia-fechar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #40544d;
+  font-size: 26px;
+  cursor: pointer;
+}
+html[data-tema="escuro"] .avaliacao-card .denuncia-tres-pontos {
+  color: #b9a5e8 !important;
+}
+html[data-tema="escuro"] .avaliacao-card .denuncia-tres-pontos:hover {
+  color: #d0c0f5 !important;
+}
+html[data-tema="escuro"] .denuncia-dialogo {
+  background: #262130;
+  color: #e9e5f1;
+}
+html[data-tema="escuro"] .denuncia-form-modal,html[data-tema="escuro"] .denuncia-cabecalho h2,html[data-tema="escuro"] .denuncia-form-modal label {
+  color: #e9e5f1;
+}
+html[data-tema="escuro"] .denuncia-form-modal .denuncia-descricao,html[data-tema="escuro"] .denuncia-contador {
+  color: #c1b5d2;
+}
+html[data-tema="escuro"] .denuncia-cabecalho .denuncia-fechar {
+  color: #d0c0f5;
+}
+html[data-tema="escuro"] .denuncia-acoes button[type="submit"] {
+  background: #6b518f;
+  color: #fff;
+}
+html[data-tema="escuro"] .denuncia-acoes .denuncia-cancelar {
+  background: #3d354b;
+  color: #f3eefe;
+}
+@media (max-width:480px) {
+  .denuncia-form-modal {
+    padding: 22px 18px;
+  }
+  .avaliacao-acoes {
+    gap: 7px;
+  }
+}

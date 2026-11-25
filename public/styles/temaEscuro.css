@@ -1,81 +1,119 @@
-/* Paleta noturna: superfícies neutras, violeta reservado para destaques. */
+/*Paleta noturna: superfícies neutras, violeta reservado para destaques.*/
 html[data-tema="escuro"] {
-    color-scheme: dark;
-    --verde: #b9a5e8;
-    --verde-escuro: #d0c0f5;
-    --creme: #121118;
-    --rosa: #211d2b;
-    --texto: #e9e5f1;
-    --fundo-noturno: #121118;
-    --superficie-noturna: #1c1924;
-    --superficie-elevada: #262130;
-    --borda-noturna: #3d354b;
-    --destaque-noturno: #c7b2f4;
+  color-scheme: dark;
+  --verde: #b9a5e8;
+  --verde-escuro: #d0c0f5;
+  --creme: #121118;
+  --rosa: #211d2b;
+  --texto: #e9e5f1;
+  --fundo-noturno: #121118;
+  --superficie-noturna: #1c1924;
+  --superficie-elevada: #262130;
+  --borda-noturna: #3d354b;
+  --destaque-noturno: #c7b2f4;
 }
-.logo-tema-escuro { display: none !important; }
-html[data-tema="escuro"] .logo-tema-claro { display: none !important; }
-html[data-tema="escuro"] .logo-tema-escuro { display: inline-block !important; }
+.logo-tema-escuro {
+  display: none !important;
+}
+html[data-tema="escuro"] .logo-tema-claro {
+  display: none !important;
+}
+html[data-tema="escuro"] .logo-tema-escuro {
+  display: inline-block !important;
+}
 html[data-tema="escuro"] body {
-    background: var(--fundo-noturno) !important;
-    color: var(--texto) !important;
+  background: var(--fundo-noturno) !important;
+  color: var(--texto) !important;
 }
 html[data-tema="escuro"] :is(main, .loja-main, .contas-centro) {
-    background-color: var(--fundo-noturno);
-    color: var(--texto);
+  background-color: var(--fundo-noturno);
+  color: var(--texto);
 }
 html[data-tema="escuro"] :is(.cabecalho, .contas-cabecalho) {
-    background: #211b2d !important;
-    color: #f3eefe;
+  background: #211b2d !important;
+  color: #f3eefe;
 }
 html[data-tema="escuro"] :is(.perfil-painel, .perfil-conteudo, .conta, .produto-info,
-    .produto-foto, .avaliacao-card, .card-np, .boneca-card, .estado-vazio,
-    .perfil-acordeao, .perfil-endereco, .hero-home, .faixa-convite,
-    .secao-loja, .perfil-identidade, .perfil-topo) {
-    background-color: var(--superficie-noturna) !important;
-    color: var(--texto) !important;
-    border-color: var(--borda-noturna) !important;
+  .produto-foto, .avaliacao-card, .card-np, .boneca-card, .estado-vazio,
+  .perfil-acordeao, .perfil-endereco, .hero-home, .faixa-convite,
+  .secao-loja, .perfil-identidade, .perfil-topo) {
+  background-color: var(--superficie-noturna) !important;
+  color: var(--texto) !important;
+  border-color: var(--borda-noturna) !important;
 }
 html[data-tema="escuro"] :is(input, textarea, select) {
-    background-color: var(--superficie-elevada) !important;
-    color: #f5f1fc !important;
-    border-color: #594c6d !important;
+  background-color: var(--superficie-elevada) !important;
+  color: #f5f1fc !important;
+  border-color: #594c6d !important;
 }
-html[data-tema="escuro"] :is(input, textarea)::placeholder { color: #a99db9; }
+html[data-tema="escuro"] :is(input, textarea)::placeholder {
+  color: #a99db9;
+}
 html[data-tema="escuro"] :is(h1, h2, h3, h4, p, label, summary, strong, small) {
-    color: inherit;
+  color: inherit;
 }
 html[data-tema="escuro"] :is(.contas-logo, .perfil-marca, .hero-marca, .link-verde,
-    .contas-voltar, .contas-rodape a, .perfil-conteudo a) { color: var(--destaque-noturno); }
+  .contas-voltar, .contas-rodape a, .perfil-conteudo a) {
+  color: var(--destaque-noturno);
+}
 html[data-tema="escuro"] :is(.contas-enviar, .perfil-botao, .botao-claro) {
-    background-color: #6b518f;
-    color: #fff;
-    border-color: #9075b7;
+  background-color: #6b518f;
+  color: #fff;
+  border-color: #9075b7;
 }
 html[data-tema="escuro"] :is(button, a):focus-visible {
-    outline: 2px solid var(--destaque-noturno);
-    outline-offset: 3px;
+  outline: 2px solid var(--destaque-noturno);
+  outline-offset: 3px;
 }
-html[data-tema="escuro"] .cabecalho-icones :is(a, button) { color: #f1eafb; }
+html[data-tema="escuro"] .cabecalho-icones :is(a, button) {
+  color: #f1eafb;
+}
 html[data-tema="escuro"] .cabecalho-icones .cabecalho-auth-cadastro {
-    background: #d9c8f8;
-    color: #211b2d !important;
+  background: #d9c8f8;
+  color: #211b2d !important;
 }
 html[data-tema="escuro"] .cabecalho-icones .cabecalho-auth-login {
-    border-color: #cbb8eb;
-    color: #f4eefe !important;
+  border-color: #cbb8eb;
+  color: #f4eefe !important;
 }
-
-/* O card principal usa um gradiente próprio no modo claro. */
+/*O card principal usa um gradiente próprio no modo claro.*/
 html[data-tema="escuro"] .hero-home {
-    background: linear-gradient(125deg, #211d2b 0%, #30243a 100%) !important;
-    color: #eee8f8 !important;
-    border: 1px solid #43384f !important;
+  background: linear-gradient(125deg, #211d2b 0%, #30243a 100%) !important;
+  color: #eee8f8 !important;
+  border: 1px solid #43384f !important;
 }
-
 html[data-tema="escuro"] .hero-home :is(h1, p, .hero-marca, .hero-marca span) {
-    color: #e2d1ff !important;
+  color: #e2d1ff !important;
 }
-
 html[data-tema="escuro"] .hero-placeholder {
-    background-color: #292334 !important;
+  background-color: #292334 !important;
+}
+/*Avaliações: formulário e comentários consistentes no tema escuro.*/
+html[data-tema="escuro"] .form-avaliacao {
+  background: var(--superficie-noturna) !important;
+  color: var(--texto) !important;
+  border-color: var(--borda-noturna) !important;
+}
+html[data-tema="escuro"] .form-avaliacao :is(h3, p, label, legend) {
+  color: var(--texto) !important;
+}
+html[data-tema="escuro"] .form-avaliacao :is(textarea, input[type="file"]) {
+  background: var(--superficie-elevada) !important;
+  color: #f5f1fc !important;
+  border-color: #594c6d !important;
+}
+html[data-tema="escuro"] .form-avaliacao .estrelas-escolha span {
+  background: var(--superficie-elevada);
+  border-color: #79658e;
+  color: #e3d5f4;
+}
+html[data-tema="escuro"] .form-avaliacao .estrelas-escolha input:checked + span {
+  background: #8869ad;
+  border-color: #a78cc8;
+  color: #fff;
+}
+/*O painel informativo acompanha o fundo geral, sem card destacado.*/
+html[data-tema="escuro"] .produto-info {
+  background: var(--fundo-noturno) !important;
+  border-color: transparent !important;
 }

@@ -22,272 +22,210 @@
   </div>
   <div class="perfil-conteudo">
     <% if (!usuario) { %>
-    <div class="perfil-visitante">
-      <div class="perfil-ilustracao">
-        <i data-lucide="user-round" aria-hidden="true">
-        </i>
-      </div>
-      <h3>
-        Bem-vinda à Malbi Doll!
-      </h3>
-      <p>
-        Crie uma conta ou entre para publicar avaliações e acessar seu perfil.
-      </p>
-      <a class="perfil-botao" href="/cadastro">
-        Sign in · Criar conta
-      </a>
-      <a class="perfil-botao perfil-botao-secundario" href="/login">
-        Log in · Entrar
-      </a>
-      <p class="perfil-nota">
-        Você pode personalizar bonecas mesmo sem uma conta.
-      </p>
-    </div>
-    <% } else { %>
-    <div class="perfil-identidade">
-      <div class="perfil-avatar-area">
-        <% if (usuario.tem_foto) { %>
-        <img class="perfil-avatar" src="/usuarios/<%= usuario.id %>/foto" alt="Foto de perfil">
-        <% } else { %>
-        <span class="perfil-avatar perfil-avatar-vazio">
-          <i data-lucide="user-round">
+      <div class="perfil-visitante">
+        <div class="perfil-ilustracao">
+          <i data-lucide="user-round" aria-hidden="true">
           </i>
-        </span>
-        <% } %>
-        <details class="perfil-edicao perfil-edicao-foto">
-          <summary aria-label="Editar foto de perfil" title="Editar foto de perfil">
+        </div>
+        <h3>
+          Bem-vinda à Malbi Doll!
+        </h3>
+        <p>
+          Crie uma conta ou entre para publicar avaliações e acessar seu perfil.
+        </p>
+        <a class="perfil-botao" href="/cadastro">
+          Sign in · Criar conta
+        </a>
+        <a class="perfil-botao perfil-botao-secundario" href="/login">
+          Log in · Entrar
+        </a>
+        <p class="perfil-nota">
+          Você pode personalizar bonecas mesmo sem uma conta.
+        </p>
+      </div>
+    <% } else { %>
+      <div class="perfil-identidade">
+        <div class="perfil-avatar-area">
+          <% if (usuario.tem_foto) { %>
+            <img class="perfil-avatar" src="/usuarios/<%= usuario.id %>/foto" alt="Foto de perfil">
+          <% } else { %>
+            <span class="perfil-avatar perfil-avatar-vazio">
+              <i data-lucide="user-round">
+              </i>
+            </span>
+          <% } %>
+          <button type="button" class="perfil-edicao-abrir perfil-edicao-foto" data-abrir-modal-perfil="foto" aria-label="Editar foto de perfil" title="Editar foto de perfil">
             <i data-lucide="pencil">
             </i>
-          </summary>
-          <div class="perfil-edicao-conteudo">
-            <form action="/perfil/foto" method="post" enctype="multipart/form-data" class="perfil-form-foto">
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-              <label for="fotoPerfil">
-                Alterar foto de perfil
-              </label>
-              <input id="fotoPerfil" type="file" name="foto" accept="image/png,image/jpeg,image/webp" required>
-              <small>
-                PNG, JPG ou WebP · até 2 MB
-              </small>
-              <button type="submit">
-                Salvar foto
-              </button>
-            </form>
-            <form method="post" action="/perfil/foto/remover" class="perfil-form">
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-              <button type="submit" class="perfil-discreto">
-                Remover foto
-              </button>
-            </form>
-          </div>
-        </details>
-      </div>
-      <div class="perfil-identidade-texto">
-        <div class="perfil-nome-linha">
-          <h3>
-            <%= usuario.nome %>
-          </h3>
-          <details class="perfil-edicao perfil-edicao-nome">
-            <summary aria-label="Editar nome e usuário" title="Editar nome e usuário">
-              <i data-lucide="pencil">
-              </i>
-            </summary>
-            <div class="perfil-edicao-conteudo">
-              <form method="post" action="/perfil/dados" class="perfil-form">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <label>
-                  Nome de exibição
-                  <input name="nome" maxlength="100" minlength="2" required value="<%= usuario.nome %>">
-                </label>
-                <label>
-                  Nome de usuário
-                  <input name="apelido" maxlength="40" value="<%= usuario.apelido || '' %>" placeholder="Opcional">
-                </label>
-                <button type="submit">
-                  Salvar dados
-                </button>
-              </form>
-            </div>
-          </details>
-        </div>
-        <p class="perfil-usuario">
-          <%= usuario.apelido ? '@' + usuario.apelido : 'Nome de usuário não definido' %>
-        </p>
-        <p class="perfil-email">
-          <%= usuario.email %>
-        </p>
-      </div>
-    </div>
-    <% if (typeof queryPerfilMsg !== 'undefined' && queryPerfilMsg) { %>
-    <p class="perfil-aviso">
-      <%= queryPerfilMsg %>
-    </p>
-    <% } %>
-    <details class="perfil-acordeao">
-      <summary>
-        <i data-lucide="user-round" aria-hidden="true">
-        </i>
-        <span>
-          Meus dados
-        </span>
-        <i data-lucide="chevron-down" class="perfil-seta" aria-hidden="true">
-        </i>
-      </summary>
-      <div class="perfil-acordeao-conteudo">
-        <p>
-          <strong>
-            E-mail:
-          </strong>
-          <%= usuario.email %>
-        </p>
-      </div>
-    </details>
-    <details class="perfil-acordeao">
-      <summary>
-        <i data-lucide="map-pin" aria-hidden="true">
-        </i>
-        <span>
-          Meus endereços
-        </span>
-        <i data-lucide="chevron-down" class="perfil-seta" aria-hidden="true">
-        </i>
-      </summary>
-      <div class="perfil-acordeao-conteudo">
-        <% if (!(enderecosPerfil || []).length) { %>
-        <p>
-          Nenhum endereço cadastrado.
-        </p>
-        <% } %>
-        <% (enderecosPerfil || []).forEach(e => { %>
-        <div class="perfil-endereco">
-          <strong>
-            <%= e.apelido || 'Destinatário não informado' %>
-            <%= e.principal ? '· Principal' : '' %>
-          </strong>
-          <p>
-            <%= e.logradouro %>
-            ,
-            <%= e.numero %>
-            <%= e.complemento || '' %>
-            —
-            <%= e.bairro %>
-            ,
-            <%= e.cidade %>
-            /
-            <%= e.estado %>
-            ·
-            <%= e.cep %>
-          </p>
-          <details>
-            <summary>
-              Editar endereço
-            </summary>
-            <form class="perfil-form endereco-form" method="post" action="/perfil/enderecos/<%= e.id %>/editar">
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-              <% [['destinatario','Nome do destinatário'],['cep','CEP'],['logradouro','Rua / avenida'],['numero','Número'],['complemento','Complemento'],['bairro','Bairro'],['cidade','Cidade'],['estado','UF']].forEach(([campo,rotulo])=>{ %>
-              <label>
-                <%= rotulo %>
-                <input data-endereco-campo="<%= campo %>" name="<%= campo %>" value="<%= (campo === 'destinatario' ? e.apelido : e[campo]) || '' %>" <%= ['destinatario','cep','logradouro','numero','bairro','cidade','estado'].includes(campo)?'required':'' %>
-                >
-              </label>
-              <% }) %>
-              <label class="perfil-check">
-                <input type="checkbox" name="principal" <%= e.principal ? 'checked' : '' %>
-                >
-            Definir como endereço principal
-              </label>
-              <button type="submit">
-                Salvar endereço
-              </button>
-            </form>
-          </details>
-          <div class="perfil-acoes">
-            <% if (!e.principal) { %>
-            <form method="post" action="/perfil/enderecos/<%= e.id %>/principal">
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-              <button type="submit">
-                Tornar principal
-              </button>
-            </form>
-            <% } %>
-            <form method="post" action="/perfil/enderecos/<%= e.id %>/excluir" onsubmit="return confirm('Excluir este endereço?')">
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-              <button type="submit">
-                Excluir
-              </button>
-            </form>
-          </div>
-        </div>
-        <% }) %>
-        <details class="perfil-novo-endereco">
-          <summary>
-            + Adicionar endereço
-          </summary>
-          <form class="perfil-form endereco-form" method="post" action="/perfil/enderecos">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <% [['destinatario','Nome do destinatário'],['cep','CEP'],['logradouro','Rua / avenida'],['numero','Número'],['complemento','Complemento'],['bairro','Bairro'],['cidade','Cidade'],['estado','UF (ex.: RS)']].forEach(([campo,rotulo])=>{ %>
-            <label>
-              <%= rotulo %>
-              <input data-endereco-campo="<%= campo %>" name="<%= campo %>" <%= ['destinatario','cep','logradouro','numero','bairro','cidade','estado'].includes(campo)?'required':'' %>
-              >
-            </label>
-            <% }) %>
-            <label class="perfil-check">
-              <input type="checkbox" name="principal">
-              Definir como principal
-            </label>
-            <button type="submit">
-              Adicionar endereço
-            </button>
-          </form>
-        </details>
-      </div>
-    </details>
-    <details class="perfil-acordeao">
-      <summary>
-        <i data-lucide="lock-keyhole" aria-hidden="true">
-        </i>
-        <span>
-          Segurança
-        </span>
-        <i data-lucide="chevron-down" class="perfil-seta" aria-hidden="true">
-        </i>
-      </summary>
-      <div class="perfil-acordeao-conteudo">
-        <details>
-          <summary>
-            Alterar senha
-          </summary>
-          <form method="post" action="/perfil/senha" class="perfil-form">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <label>
-              Senha atual
-              <input type="password" name="senha_atual" required autocomplete="current-password">
-            </label>
-            <label>
-              Nova senha
-              <input type="password" name="nova_senha" minlength="12" maxlength="128" required autocomplete="new-password">
-            </label>
-            <button type="submit">
-              Alterar senha
-            </button>
-          </form>
-        </details>
-        <div class="perfil-exclusao-conta">
-          <button type="button" class="perfil-excluir-botao" data-abrir-exclusao-conta>
-            <i data-lucide="user-x" aria-hidden="true">
-            </i>
-            Excluir conta
           </button>
         </div>
+        <div class="perfil-identidade-texto">
+          <div class="perfil-nome-linha">
+            <h3>
+              <%= usuario.nome %>
+            </h3>
+            <button type="button" class="perfil-edicao-abrir" data-abrir-modal-perfil="dados" aria-label="Editar nome e usuário" title="Editar nome e usuário">
+              <i data-lucide="pencil">
+              </i>
+            </button>
+          </div>
+          <p class="perfil-usuario">
+            <%= usuario.apelido ? '@' + usuario.apelido : 'Nome de usuário não definido' %>
+          </p>
+          <p class="perfil-email">
+            <%= usuario.email %>
+          </p>
+        </div>
       </div>
-    </details>
-    <form method="post" action="/logout" class="perfil-logout">
-      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-      <button class="perfil-botao perfil-botao-secundario" type="submit">
-        Sair da conta
-      </button>
-    </form>
+      <details class="perfil-acordeao">
+        <summary>
+          <i data-lucide="user-round" aria-hidden="true">
+          </i>
+          <span>Meus dados</span>
+          <i data-lucide="chevron-down" class="perfil-seta" aria-hidden="true">
+          </i>
+        </summary>
+        <div class="perfil-acordeao-conteudo perfil-subcategorias">
+          <button type="button" class="perfil-link-modal" data-abrir-modal-perfil="dados">Dados do perfil</button>
+          <details>
+            <summary>Carteira</summary>
+            <p>Cartões demonstrativos. Não informe o número completo nem o CVV.</p>
+            <% (cartoesPerfil || []).forEach(cartao => { %>
+              <div class="perfil-registro">
+                <span><%= cartao.bandeira %> •••• <%= cartao.final %></span>
+                <form method="post" action="/perfil/carteira/<%= cartao.id %>/excluir">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <button type="submit">Remover</button>
+                </form>
+              </div>
+            <% }) %>
+            <details>
+              <summary>Adicionar cartão</summary>
+              <form method="post" action="/perfil/carteira" class="perfil-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <label>Bandeira<select name="bandeira" required>
+                    <option value="Visa">Visa</option>
+                    <option value="Mastercard">Mastercard</option>
+                    <option value="Elo">Elo</option>
+                    <option value="Outra">Outra</option>
+                  </select>
+                </label>
+                <label>Últimos quatro dígitos<input name="final" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required placeholder="1234">
+                </label>
+                <button type="submit">Adicionar cartão de teste</button>
+              </form>
+            </details>
+          </details>
+          <details>
+            <summary>Endereços</summary>
+            <% (enderecosPerfil || []).forEach(endereco => { %>
+              <div class="perfil-endereco-registro">
+                <strong><%= endereco.logradouro %>, <%= endereco.numero %></strong>
+                <span><%= endereco.bairro %> — <%= endereco.cidade %>/<%= endereco.estado %> · <%= endereco.cep %></span>
+                <% if (endereco.principal) { %><small>Endereço padrão</small><% } %>
+                <div class="perfil-registro-acoes">
+                  <% if (!endereco.principal) { %><form method="post" action="/perfil/enderecos/<%= endereco.id %>/principal">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <button type="submit">Definir como padrão</button>
+                  </form><% } %>
+                  <form method="post" action="/perfil/enderecos/<%= endereco.id %>/excluir" onsubmit="return confirm('Excluir este endereço?')">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit">Excluir</button>
+                  </form>
+                </div>
+                <details>
+                  <summary>Editar endereço</summary>
+                  <form method="post" action="/perfil/enderecos/<%= endereco.id %>/editar" class="perfil-form">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <label>CEP *<input name="cep" value="<%= endereco.cep %>" required maxlength="9">
+                    </label>
+                    <label>Rua / Avenida *<input name="logradouro" value="<%= endereco.logradouro %>" required>
+                    </label>
+                    <label>Número *<input name="numero" value="<%= endereco.numero %>" required>
+                    </label>
+                    <label>Complemento<input name="complemento" value="<%= endereco.complemento || '' %>">
+                    </label>
+                    <label>Bairro *<input name="bairro" value="<%= endereco.bairro %>" required>
+                    </label>
+                    <label>Cidade *<input name="cidade" value="<%= endereco.cidade %>" required>
+                    </label>
+                    <label>UF *<input name="estado" value="<%= endereco.estado %>" maxlength="2" required>
+                    </label>
+                    <label>
+                    <input type="checkbox" name="principal" <%= endereco.principal ? 'checked' : '' %>> Endereço padrão</label>
+                    <button type="submit">Salvar endereço</button>
+                  </form>
+                </details>
+              </div>
+            <% }) %>
+            <details>
+              <summary>Adicionar endereço</summary>
+              <form method="post" action="/perfil/enderecos" class="perfil-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <label>CEP *<input name="cep" required maxlength="9" placeholder="00000-000">
+                </label>
+                <label>Rua / Avenida *<input name="logradouro" required maxlength="150">
+                </label>
+                <label>Número *<input name="numero" required maxlength="20">
+                </label>
+                <label>Complemento<input name="complemento" maxlength="100">
+                </label>
+                <label>Bairro *<input name="bairro" required maxlength="100">
+                </label>
+                <label>Cidade *<input name="cidade" required maxlength="100">
+                </label>
+                <label>UF *<input name="estado" required maxlength="2" placeholder="RS">
+                </label>
+                <label>
+                <input type="checkbox" name="principal"> Definir como padrão</label>
+                <button type="submit">Adicionar endereço</button>
+              </form>
+            </details>
+          </details>
+        </div>
+      </details>
+      <details class="perfil-acordeao">
+        <summary>
+          <i data-lucide="package" aria-hidden="true">
+          </i>
+          <span>Meus pedidos</span>
+          <i data-lucide="chevron-down" class="perfil-seta" aria-hidden="true">
+          </i>
+        </summary>
+        <div class="perfil-acordeao-conteudo perfil-pedidos-links">
+          <% if (!(pedidosPerfil || []).length) { %><p>Nenhum pedido de teste nesta sessão.</p><% } %>
+          <% (pedidosPerfil || []).forEach(pedido => { %>
+            <a href="/pedidos/<%= encodeURIComponent(pedido.numero) %>">Pedido <%= pedido.numero %></a>
+          <% }) %>
+        </div>
+      </details>
+      <details class="perfil-acordeao">
+        <summary>
+          <i data-lucide="lock-keyhole" aria-hidden="true">
+          </i>
+          <span>
+            Segurança
+          </span>
+          <i data-lucide="chevron-down" class="perfil-seta" aria-hidden="true">
+          </i>
+        </summary>
+        <div class="perfil-acordeao-conteudo">
+          <button type="button" class="perfil-link-modal" data-abrir-modal-perfil="senha">Alterar senha</button>
+          <div class="perfil-exclusao-conta">
+            <button type="button" class="perfil-excluir-botao" data-abrir-exclusao-conta>
+              <i data-lucide="user-x" aria-hidden="true">
+              </i>
+              Excluir conta
+            </button>
+          </div>
+        </div>
+      </details>
+   <form method="post" action="/logout" class="perfil-logout">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="perfil-botao perfil-botao-secundario" type="submit">
+          Sair da conta
+        </button>
+      </form>
     <% } %>
   </div>
 </aside>

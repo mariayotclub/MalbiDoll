@@ -1,0 +1,102 @@
+<aside class="dashboard-menu" aria-label="Navegação administrativa">
+  <div class="dashboard-menu-topo">
+    <span class="dashboard-menu-titulo">Administração</span>
+    <button
+      type="button"
+      class="dashboard-menu-toggle"
+      aria-controls="dashboardMenuLinks"
+      aria-expanded="true"
+      aria-label="Ocultar categorias administrativas"
+    >
+      <span class="dashboard-menu-toggle-texto">Ocultar</span>
+      <i data-lucide="chevron-up" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <% const grupos = [
+    {
+      nome: 'Catálogo',
+      links: [
+        ['Produtos', null],
+        ['Itens de personalização', '/admin/itens'],
+        ['Editor de itens', '/admin/armario'],
+        ['Corpos', null],
+        ['Bonecas prontas', '/admin/bonecas'],
+        ['Categorias e subcategorias', null],
+        ['Estoque', null]
+      ]
+    },
+    {
+      nome: 'Vendas',
+      links: [
+        ['Pedidos', '/admin/pedidos'],
+        ['Pagamentos', '/admin/pagamentos'],
+        ['Entregas', '/admin/entregas'],
+        ['Devoluções', '/admin/devolucoes']
+      ]
+    },
+    {
+      nome: 'Clientes',
+      links: [
+        ['Usuários cadastrados', '/admin/clientes'],
+        ['Avaliações', '/admin/avaliacoes'],
+        ['Atendimento', '/admin/atendimento']
+      ]
+    },
+    {
+      nome: 'Gestão',
+      links: [['Administradores', '/admin/administradores']]
+    }
+  ];
+
+  const contadores = {
+    Pedidos: 'pedidos',
+    Pagamentos: 'pagamentos',
+    Entregas: 'entregas',
+    Devoluções: 'devolucoes',
+    'Usuários cadastrados': 'clientes',
+    Avaliações: 'avaliacoes',
+    Atendimento: 'atendimento'
+  }; %>
+
+  <nav id="dashboardMenuLinks" class="dashboard-menu-links" aria-label="Páginas administrativas">
+    <a
+      href="/admin"
+      class="dashboard-inicio <%= paginaAtual === 'dashboard' ? 'ativo' : '' %>"
+      <%= paginaAtual === 'dashboard' ? 'aria-current="page"' : '' %>
+    >
+      <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+      <span>Dashboard</span>
+    </a>
+
+    <% grupos.forEach(grupo => { %>
+      <details class="dashboard-grupo" open>
+        <summary>
+          <%= grupo.nome %>
+          <i data-lucide="chevron-down" aria-hidden="true"></i>
+        </summary>
+        <div class="dashboard-subitens">
+          <% grupo.links.forEach(([titulo, endereco]) => { %>
+            <% const quantidade = contadoresAdmin?.[contadores[titulo]] || 0; %>
+            <% if (endereco) { %>
+              <a
+                href="<%= endereco %>"
+                class="<%= paginaAtual === endereco ? 'ativo' : '' %>"
+                <%= paginaAtual === endereco ? 'aria-current="page"' : '' %>
+              >
+                <span><%= titulo %></span>
+                <%- include('contadorAdmin', { quantidade }) %>
+              </a>
+            <% } else { %>
+              <span class="dashboard-indisponivel">
+                <span><%= titulo %></span>
+                <%- include('contadorAdmin', { quantidade }) %>
+              </span>
+            <% } %>
+          <% }) %>
+        </div>
+      </details>
+    <% }) %>
+  </nav>
+</aside>
+<script src="/scripts/dashboardNavegacao.js" defer></script>

@@ -1,24 +1,27 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
+<head>
     <%- include('../../components/lojaHead') %>
-    <title>
-      Meus favoritos | Malbi Doll
-    </title>
-  </head>
-  <body>
+    <title>Meus favoritos | Malbi Doll</title>
+</head>
+<body>
     <%- include('../../components/cabecalho') %>
-    <main style="max-width:960px;margin:50px auto;padding:20px">
-      <h1>
-        Meus favoritos
-      </h1>
-      <p>
-        Seus favoritos ficam salvos neste navegador.
-      </p>
-      <div id="listaFavoritos">
-      </div>
+    <main class="loja-main">
+        <h1>Meus favoritos</h1>
+        <% if (!favoritos.length) { %>
+            <p>Você ainda não adicionou bonecas aos favoritos.</p>
+        <% } else { %>
+            <div class="grade-favoritos">
+                <% favoritos.forEach(boneca => { %>
+                    <a class="card-favorito" href="/bonecas/<%= boneca.id %>">
+                        <img src="/bonecas/<%= boneca.id %>/imagem" alt="Boneca <%= boneca.nome %>" loading="lazy">
+                        <strong><%= boneca.nome %></strong>
+                    </a>
+                <% }) %>
+            </div>
+        <% } %>
     </main>
-    <script src="/scripts/favoritos.js" defer>
-    </script>
-  </body>
+<%- include('../../components/rodape') %>
+<%- include('../../components/chatAtendimento') %>
+</body>
 </html>

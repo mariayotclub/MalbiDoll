@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <%- include('../../components/lojaHead') %>
+    <link rel="stylesheet" href="/styles/checkout.css">
+    <title>Pedido simulado | Malbi Doll</title>
+</head>
+<body>
+    <%- include('../../components/cabecalho') %>
+    <main class="checkout-main">
+<section class="checkout-card checkout-centro">
+    <img class="checkout-logo" src="/assets/logoMalbi_verde.svg" alt="Malbi Doll">
+    <h1>Pedido recebido</h1>
+    <p>Seu pedido foi registrado. O pagamento foi marcado como pago apenas para demonstração. Nenhum valor foi cobrado.</p>
+    <p class="checkout-nota">Status do pagamento: <%= pedido.pagamento_status %>. Este status é fictício e não representa um pagamento real.</p>
+    <a href="/pedidos/<%= encodeURIComponent(pedido.numero) %>" class="checkout-botao">Acompanhar pedido</a>
+</section>
+    </main>
+<%- include('../../components/rodape') %>
+<%- include('../../components/chatAtendimento') %>
+</body>
+</html>

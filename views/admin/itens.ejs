@@ -7,13 +7,13 @@
       Itens cadastrados | Malbi Doll
     </title>
     <%- include('../../components/lojaHead') %>
+    <link rel="stylesheet" href="/styles/dashboardNavegacao.css">
   </head>
   <body>
     <%- include('../../components/cabecalho') %>
-    <main class="loja-main secao-loja">
-      <a href="/admin" class="link-verde">
-        ← Voltar ao painel
-      </a>
+    <div class="dashboard-layout">
+      <%- include('../../components/dashboardMenu', { paginaAtual: '/admin/itens' }) %>
+      <main class="dashboard-conteudo dashboard-pagina loja-main secao-loja">
       <span class="etiqueta">
         ADMINISTRAÇÃO
       </span>
@@ -82,6 +82,7 @@
         <% } %>
       </div>
     </main>
+    </div>
     <%- include('../../components/carrinho') %>
   </body>
 </html>

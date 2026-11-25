@@ -6,6 +6,7 @@
       | Malbi Doll
     </title>
     <%- include('../../components/lojaHead') %>
+    <link rel="stylesheet" href="/styles/denuncias.css">
   </head>
   <body>
     <%- include('../../components/cabecalho') %>
@@ -22,8 +23,21 @@
         <%= boneca.nome %>
       </nav>
       <section class="produto-detalhe">
-        <div class="produto-foto">
-          <img src="/bonecas/<%= boneca.id %>/imagem" alt="Boneca <%= boneca.nome %>">
+        <div class="produto-imagem-acoes">
+          <div class="produto-foto">
+            <img src="/bonecas/<%= boneca.id %>/imagem" alt="Boneca <%= boneca.nome %>">
+          </div>
+          <div class="produto-acoes">
+            <button type="button" class="botao-favorito" data-favorito-id="<%= boneca.id %>"
+              data-favoritado="<%= favoritado %>" data-autenticado="<%= Boolean(usuario) %>"
+              data-csrf="<%= csrfToken %>" aria-pressed="<%= favoritado %>"
+              aria-label="<%= favoritado ? 'Remover dos favoritos' : 'Adicionar aos favoritos' %>"
+              title="Favoritos">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z" />
+              </svg>
+            </button>
+          </div>
         </div>
         <div class="produto-info">
           <span class="etiqueta">
@@ -32,9 +46,6 @@
           <h1>
             <%= boneca.nome %>
           </h1>
-          <button type="button" data-favorito-id="<%= boneca.id %>">
-            ♡ Adicionar aos favoritos
-          </button>
           <div class="estrelas estrelas-grandes" aria-label="Nota <%= boneca.media %> de 5">
             <%= '★'.repeat(Math.round(boneca.media)) %>
             <%= '☆'.repeat(5 - Math.round(boneca.media)) %>
@@ -68,7 +79,7 @@
               Conte sua experiência
             </h3>
             <p>
-              Por enquanto, qualquer visitante pode avaliar.
+              <% if (usuario) { %>Sua avaliação aparecerá com seu nome e foto de perfil.<% } else { %><a href="/login?retorno=<%= encodeURIComponent('/bonecas/' + boneca.id + '#avaliacoes') %>">Entre na sua conta</a> para publicar uma avaliação.<% } %>
             </p>
             <fieldset class="campo-estrelas">
               <legend>
@@ -76,14 +87,14 @@
               </legend>
               <div class="estrelas-escolha">
                 <% for (let nota = 0; nota <= 5; nota++) { %>
-                <label>
-                  <input type="radio" name="estrelas" value="<%= nota %>" <%= nota === 5 ? 'checked' : '' %>
-                  >
-                  <span>
-                    <%= nota %>
-                    ★
-                  </span>
-                </label>
+                  <label>
+                    <input type="radio" name="estrelas" value="<%= nota %>" <%= nota === 5 ? 'checked' : '' %>
+                    >
+                    <span>
+                      <%= nota %>
+                      ★
+                    </span>
+                  </label>
                 <% } %>
               </div>
             </fieldset>
@@ -96,44 +107,96 @@
               Foto opcional (PNG, JPG, WebP ou GIF, até 3 MB)
               <input type="file" name="foto" accept="image/png,image/jpeg,image/webp,image/gif">
             </label>
-            <button type="submit" class="botao-verde">
+            <button type="submit" class="botao-verde" <%= usuario ? '' : 'disabled' %>>
               Publicar avaliação
             </button>
           </form>
           <div class="lista-avaliacoes">
             <% if (!avaliacoes.length) { %>
-            <p class="estado-vazio">
-              Esta boneca ainda não recebeu avaliações. Seja a primeira pessoa a comentar!
-            </p>
+              <p class="estado-vazio">
+                Esta boneca ainda não recebeu avaliações. Seja a primeira pessoa a comentar!
+              </p>
             <% } %>
             <% avaliacoes.forEach(avaliacao => { %>
-            <article class="avaliacao-card">
-              <div class="avaliacao-topo">
-                <strong>
-                  <%= avaliacao.nome %>
-                </strong>
-                <time datetime="<%= new Date(avaliacao.criado_em).toISOString() %>">
-                  <%= new Date(avaliacao.criado_em).toLocaleDateString('pt-BR') %>
-                </time>
-              </div>
-              <div class="estrelas" aria-label="Nota <%= avaliacao.estrelas %> de 5">
-                <%= '★'.repeat(avaliacao.estrelas) %>
-                <%= '☆'.repeat(5 - avaliacao.estrelas) %>
-              </div>
-              <p>
-                <%= avaliacao.comentario %>
-              </p>
-              <% if (avaliacao.tem_foto) { %>
-              <img class="foto-avaliacao" src="/avaliacoes/<%= avaliacao.id %>/foto" alt="Foto enviada na avaliação" loading="lazy">
-              <% } %>
-            </article>
+              <article class="avaliacao-card">
+                <div class="avaliacao-topo">
+                  <div class="avaliacao-autor">
+                    <% if (avaliacao.usuario_id && avaliacao.tem_avatar) { %>
+                      <img class="avatar-avaliacao" src="/usuarios/<%= avaliacao.usuario_id %>/foto" alt="Foto de perfil" loading="lazy">
+                    <% } else { %>
+                      <span class="avatar-avaliacao avatar-padrao" aria-hidden="true">●</span>
+                    <% } %>
+                    <strong>
+                      <%= avaliacao.nome %>
+                    </strong>
+                  </div>
+                  <div class="avaliacao-acoes">
+                    <time datetime="<%= new Date(avaliacao.criado_em).toISOString() %>"><%= new Date(avaliacao.criado_em).toLocaleDateString('pt-BR') %></time>
+                    <% if (usuario && avaliacao.usuario_id && usuario.id !== avaliacao.usuario_id) { %>
+                      <button type="button" class="denuncia-tres-pontos" aria-label="Denunciar avaliação" title="Denunciar avaliação" data-denuncia-abrir="denuncia-<%= avaliacao.id %>">⋯</button>
+                      <dialog id="denuncia-<%= avaliacao.id %>" class="denuncia-dialogo">
+                        <form action="/avaliacoes/<%= avaliacao.id %>/denunciar" method="post" class="denuncia-form-modal">
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                          <div class="denuncia-cabecalho">
+                            <h2>Denunciar avaliação</h2>
+                            <button type="button" class="denuncia-fechar" aria-label="Fechar modal">&times;</button>
+                          </div>
+                          <p class="denuncia-descricao">Selecione o motivo da denúncia.</p>
+                          <label for="motivo-<%= avaliacao.id %>">Motivo da denúncia</label>
+                          <select id="motivo-<%= avaliacao.id %>" name="motivo" required>
+                            <option value="">Selecione um motivo</option>
+                            <option value="spam">Spam</option>
+                            <option value="ofensa">Conteúdo ofensivo</option>
+                            <option value="assedio">Assédio</option>
+                            <option value="discriminacao">Discriminação</option>
+                            <option value="improprio">Conteúdo impróprio</option>
+                            <option value="outro">Outro</option>
+                          </select>
+                          <label for="detalhes-<%= avaliacao.id %>">Detalhes (opcional)</label>
+                          <textarea id="detalhes-<%= avaliacao.id %>" name="detalhes" maxlength="50" rows="3" placeholder="Descreva brevemente (opcional)">
+                          </textarea>
+                          <small class="denuncia-contador">
+                            <span>0</span>/50 caracteres</small>
+                          <div class="denuncia-acoes">
+                            <button type="button" class="denuncia-cancelar">Cancelar</button>
+                            <button type="submit">Enviar denúncia</button>
+                          </div>
+                        </form>
+                    </dialog><% } %>
+                  </div>
+                </div>
+                <div class="estrelas" aria-label="Nota <%= avaliacao.estrelas %> de 5">
+                  <%= '★'.repeat(avaliacao.estrelas) %>
+                  <%= '☆'.repeat(5 - avaliacao.estrelas) %>
+                </div>
+                <p><%= avaliacao.comentario %></p>
+                <% if (avaliacao.tem_foto) { %>
+                  <img class="foto-avaliacao" src="/avaliacoes/<%= avaliacao.id %>/foto" alt="Foto enviada na avaliação" loading="lazy">
+                <% } %>
+                <% if (avaliacao.resposta_admin) { %><div class="resposta-loja">
+                    <strong>Resposta da Malbi Doll</strong>
+                    <p><%= avaliacao.resposta_admin %></p>
+                </div><% } %>
+              </article>
             <% }) %>
           </div>
         </div>
       </section>
     </main>
     <%- include('../../components/carrinho') %>
+    <script>
+      document.querySelectorAll('[data-denuncia-abrir]').forEach(botao => botao.addEventListener('click', () => document.getElementById(botao.dataset.denunciaAbrir).showModal()));
+      document.querySelectorAll('.denuncia-dialogo').forEach(dialogo => {
+      const detalhes = dialogo.querySelector('textarea[name=detalhes]');
+      const contador = dialogo.querySelector('.denuncia-contador span');
+      detalhes.addEventListener('input', () => { contador.textContent = detalhes.value.length; });
+      dialogo.querySelectorAll('.denuncia-fechar,.denuncia-cancelar').forEach(botao => botao.addEventListener('click', () => dialogo.close()));
+      dialogo.addEventListener('click', evento => { if (evento.target === dialogo) dialogo.close(); });
+      });
+    </script>
     <script src="/scripts/favoritos.js" defer>
     </script>
+    <%- include('../../components/rodape') %>
+    <%- include('../../components/chatAtendimento') %>
   </body>
 </html>

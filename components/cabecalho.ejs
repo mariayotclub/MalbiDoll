@@ -20,6 +20,12 @@
     </a>
   </nav>
   <div class="cabecalho-icones">
+    <% if (usuario && usuario.tipo === 'admin') { %>
+      <a class="cabecalho-admin" href="/admin" aria-label="Abrir dashboard administrativo" title="Dashboard administrativo">
+        <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+        <span>Admin</span>
+      </a>
+    <% } %>
     <% if (!usuario) { %>
     <a class="cabecalho-auth cabecalho-auth-cadastro" href="/cadastro">
       Sign in
@@ -46,7 +52,6 @@
     </button>
   </div>
 </header>
-<% /* O painel acompanha o cabeçalho em todas as páginas que o utilizam. */ %>
 <link rel="stylesheet" href="/styles/perfilLateral.css">
 <%- include('./perfilLateral') %>
 <link rel="stylesheet" href="/styles/temaEscuro.css">

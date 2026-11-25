@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Avaliações | Malbi Doll</title><%- include('../../components/lojaHead') %><link rel="stylesheet" href="/styles/clientesAdmin.css">
+    <link rel="stylesheet" href="/styles/avaliacoesAdmin.css">
+    <link rel="stylesheet" href="/styles/dashboardNavegacao.css">
+  </head>
+  <body><%- include('../../components/cabecalho') %>
+    <div class="dashboard-layout">
+      <%- include('../../components/dashboardMenu', { paginaAtual: '/admin/avaliacoes' }) %>
+      <main class="dashboard-conteudo dashboard-pagina clientes-main aval-admin">
+      <h1>Avaliações</h1>
+      <div class="aval-metricas">
+        <div>
+          <span>Total de avaliações</span>
+          <strong><%= resumo.total %></strong>
+        </div>
+        <div>
+          <span>Sem resposta</span>
+          <strong><%= resumo.pendentes %></strong>
+        </div>
+        <div>
+          <span>Média de estrelas</span>
+          <strong><%= resumo.media %> ★</strong>
+        </div>
+      </div>
+      <form method="get" class="aval-filtros">
+        <input name="busca" value="<%= busca %>" placeholder="Pesquisar produto, cliente ou comentário" aria-label="Pesquisar">
+        <select name="nota" aria-label="Nota">
+          <option value="">Todas as notas</option><% for(let n=5;n>=0;n--){ %><option value="<%= n %>" <%= String(nota)===String(n)?'selected':'' %>><%= n %> estrelas</option><% } %></select>
+        <select name="status" aria-label="Resposta">
+          <option value="todas">Todas</option>
+          <option value="pendentes" <%= status==='pendentes'?'selected':'' %>>Sem resposta</option>
+          <option value="respondidas" <%= status==='respondidas'?'selected':'' %>>Respondidas</option>
+        </select>
+        <select name="ordem" aria-label="Ordenação">
+          <option value="recentes">Mais recentes</option>
+          <option value="antigas" <%= ordem==='antigas'?'selected':'' %>>Mais antigas</option>
+          <option value="menores" <%= ordem==='menores'?'selected':'' %>>Menores notas</option>
+        </select>
+        <button>Filtrar</button>
+      </form>
+      <div class="clientes-tabela">
+        <table>
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Cliente</th>
+              <th>Nota</th>
+              <th>Comentário</th>
+              <th>Data</th>
+              <th>Situação</th>
+              <th>
+              </th>
+            </tr>
+          </thead>
+          <tbody><% avaliacoes.forEach(a=>{ %><tr>
+                <td>
+                  <a class="aval-produto" href="/bonecas/<%= a.boneca_id %>#avaliacoes">
+                  <img src="/bonecas/<%= a.boneca_id %>/imagem" alt=""><%= a.produto %></a>
+                </td>
+                <td><%= a.cliente %></td>
+                <td class="aval-estrelas"><%= '★'.repeat(a.estrelas) %><%= '☆'.repeat(5-a.estrelas) %></td>
+                <td class="aval-resumo"><%= a.comentario %></td>
+                <td><%= new Date(a.criado_em).toLocaleDateString('pt-BR') %></td>
+                <td><%= a.resposta_admin?'Respondida':'Sem resposta' %></td>
+                <td>
+                  <button type="button" class="aval-abrir" data-id="<%= a.id %>">Ver</button>
+                </td>
+            </tr><% }) %><% if(!avaliacoes.length){ %><tr>
+                <td colspan="7">Nenhuma avaliação encontrada.</td>
+          </tr><% } %></tbody>
+        </table>
+      </div>
+    </main>
+    </div><% avaliacoes.forEach(a=>{ %><dialog class="aval-modal" id="aval-<%= a.id %>">
+        <div class="aval-modal-topo">
+          <h2>Avaliação de <%= a.cliente %></h2>
+          <button type="button" class="aval-fechar" aria-label="Fechar">×</button>
+        </div>
+        <div class="aval-produto aval-produto-modal">
+          <img src="/bonecas/<%= a.boneca_id %>/imagem" alt="">
+          <a href="/bonecas/<%= a.boneca_id %>#avaliacoes"><%= a.produto %></a>
+        </div>
+        <div class="aval-estrelas"><%= '★'.repeat(a.estrelas) %><%= '☆'.repeat(5-a.estrelas) %></div>
+        <p class="aval-comentario"><%= a.comentario %></p><% if(a.tem_foto){ %><img class="aval-foto" src="/avaliacoes/<%= a.id %>/foto" alt="Foto enviada pelo cliente"><% } %><form method="post" action="/admin/avaliacoes/<%= a.id %>/responder">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <label for="resposta-<%= a.id %>">Resposta da Malbi Doll</label>
+          <textarea id="resposta-<%= a.id %>" name="resposta" maxlength="2000" required rows="4"><%= a.resposta_admin||'' %></textarea>
+          <div class="aval-acoes">
+            <button type="button" class="aval-fechar aval-cancelar">Cancelar</button>
+            <button type="submit"><%= a.resposta_admin?'Salvar alterações':'Publicar resposta' %></button>
+          </div>
+        </form><% if(a.resposta_admin){ %><form method="post" action="/admin/avaliacoes/<%= a.id %>/remover-resposta" onsubmit="return confirm('Excluir a resposta publicada?')">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" class="aval-excluir">Excluir resposta</button>
+    </form><% } %></dialog><% }) %><script>document.querySelectorAll('.aval-abrir').forEach(b=>b.addEventListener('click',()=>document.getElementById('aval-'+b.dataset.id).showModal()));document.querySelectorAll('.aval-fechar').forEach(b=>b.addEventListener('click',()=>b.closest('dialog').close()));document.querySelectorAll('.aval-modal').forEach(d=>d.addEventListener('click',e=>{if(e.target===d)d.close()}));</script></body>
+</html>

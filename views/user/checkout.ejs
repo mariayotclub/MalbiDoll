@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <%- include('../../components/lojaHead') %>
+    <link rel="stylesheet" href="/styles/checkout.css">
+    <title>Finalizar compra | Malbi Doll</title>
+  </head>
+  <body>
+    <%- include('../../components/cabecalho') %>
+    <main class="checkout-main">
+      <h1>Finalizar compra</h1>
+      <p>Confira seus produtos e escolha como deseja receber seu pedido.</p>
+      <% if (erroCheckout) { %>
+        <p role="alert" class="checkout-erro"><%= erroCheckout %></p>
+      <% } %>
+      <% if (!itens.length) { %>
+        <section class="checkout-card">
+          <p>Você ainda não selecionou itens para comprar.</p>
+          <a class="checkout-botao" href="/personalizar">Personalizar boneca</a>
+        </section>
+      <% } else { %>
+        <div class="checkout-grid">
+          <div class="checkout-coluna">
+            <section class="checkout-card">
+              <h2>Itens do pedido</h2>
+              <% itens.forEach(item => { %>
+                <div class="checkout-linha">
+                  <span><%= item.nome %></span>
+                  <strong><%= moeda(item.preco) %></strong>
+                </div>
+              <% }) %>
+            </section>
+            <section class="checkout-card">
+              <h2>Dados do destinatário</h2>
+              <div class="checkout-duas">
+                <label>Nome *<input form="formComprar" name="nome" autocomplete="given-name" maxlength="80" required>
+                </label>
+                <label>Sobrenome *<input form="formComprar" name="sobrenome" autocomplete="family-name" maxlength="80" required>
+                </label>
+              </div>
+            </section>
+            <section class="checkout-card">
+              <h2>Endereço de entrega</h2>
+              <% if (enderecos.length) { %>
+                <p>Selecione um dos endereços cadastrados:</p>
+                <% enderecos.forEach(endereco => { %>
+                  <label class="checkout-opcao">
+                    <input form="formComprar" type="radio" name="endereco_id"
+                    value="<%= endereco.id %>" <%= endereco.principal || (!enderecos.some(item => item.principal) && endereco === enderecos[0]) ? 'checked' : '' %> required>
+                    <span>
+                      <strong><%= endereco.logradouro %>, <%= endereco.numero %></strong>
+                      <small><%= endereco.bairro %> — <%= endereco.cidade %>/<%= endereco.estado %> — <%= endereco.cep %></small>
+                    </span>
+                  </label>
+                <% }) %>
+              <% } %>
+              <details class="checkout-novo-endereco" <%= enderecos.length ? '' : 'open' %>>
+                <summary>Cadastrar novo endereço</summary>
+                <form action="/checkout/endereco" method="post" class="checkout-form">
+                  <p class="checkout-nota">Campos marcados com * são obrigatórios.</p>
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <label>
+                    <span style="display:inline-flex;align-items:baseline;gap:4px;white-space:nowrap">CEP<span aria-hidden="true" style="color:#b45353">*</span>
+                    </span>
+                    <input name="cep" autocomplete="postal-code" required maxlength="9" placeholder="00000-000">
+                  </label>
+                  <label>
+                    <span style="display:inline-flex;align-items:baseline;gap:4px;white-space:nowrap">Rua / Avenida<span aria-hidden="true" style="color:#b45353">*</span>
+                    </span>
+                    <input name="logradouro" required maxlength="150">
+                  </label>
+                  <div class="checkout-duas">
+                    <label>
+                      <span style="display:inline-flex;align-items:baseline;gap:4px;white-space:nowrap">Número<span aria-hidden="true" style="color:#b45353">*</span>
+                      </span>
+                      <input name="numero" required maxlength="20">
+                    </label>
+                    <label>Complemento<input name="complemento" maxlength="150">
+                    </label>
+                  </div>
+                  <label>
+                    <span style="display:inline-flex;align-items:baseline;gap:4px;white-space:nowrap">Bairro<span aria-hidden="true" style="color:#b45353">*</span>
+                    </span>
+                    <input name="bairro" required maxlength="150">
+                  </label>
+                  <div class="checkout-duas">
+                    <label>
+                      <span style="display:inline-flex;align-items:baseline;gap:4px;white-space:nowrap">Cidade<span aria-hidden="true" style="color:#b45353">*</span>
+                      </span>
+                      <input name="cidade" required maxlength="150">
+                    </label>
+                    <label>
+                      <span style="display:inline-flex;align-items:baseline;gap:4px;white-space:nowrap">UF<span aria-hidden="true" style="color:#b45353">*</span>
+                      </span>
+                      <input name="estado" required maxlength="2" placeholder="RS">
+                    </label>
+                  </div>
+                  <label class="checkout-check">
+                  <input type="checkbox" name="principal"> Tornar endereço principal</label>
+                  <button class="checkout-botao" type="submit">Salvar endereço</button>
+                </form>
+              </details>
+            </section>
+            <section class="checkout-card">
+              <h2>Forma de pagamento</h2>
+              <p>Pagamento simulado para testes. Nenhum valor será cobrado.</p>
+              <label class="checkout-opcao">
+              <input form="formComprar" type="radio" name="pagamento" value="pix" required> Pix</label>
+              <label class="checkout-opcao">
+              <input form="formComprar" type="radio" name="pagamento" value="cartao"> Cartão de crédito</label>
+              <label class="checkout-opcao">
+              <input form="formComprar" type="radio" name="pagamento" value="boleto"> Boleto</label>
+            </section>
+            <section class="checkout-card">
+              <h2>Frete</h2>
+              <label class="checkout-opcao">
+              <input form="formComprar" type="radio" name="frete" value="economico" data-frete="<%= fretes.economico %>" required> Econômico — <%= moeda(fretes.economico) %></label>
+              <label class="checkout-opcao">
+              <input form="formComprar" type="radio" name="frete" value="expresso" data-frete="<%= fretes.expresso %>"> Expresso — <%= moeda(fretes.expresso) %></label>
+              <p class="checkout-nota">Valores ilustrativos. Nenhum envio será contratado.</p>
+            </section>
+          </div>
+          <aside class="checkout-card checkout-resumo">
+            <h2>Resumo do pedido</h2>
+            <div class="checkout-linha">
+              <span>Itens</span>
+              <strong><%= moeda(itens.reduce((total, item) => total + item.preco, 0)) %></strong>
+            </div>
+            <div class="checkout-linha">
+              <span>Frete</span>
+              <strong id="checkoutValorFrete">Selecione</strong>
+            </div>
+            <div class="checkout-linha checkout-total">
+              <span>Total</span>
+              <strong id="checkoutValorTotal"><%= moeda(itens.reduce((total, item) => total + item.preco, 0)) %></strong>
+            </div>
+            <form id="formComprar" action="/checkout/comprar" method="post">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="checkout-botao">Simular compra</button>
+            </form>
+            <p class="checkout-nota">Compra demonstrativa, sem cobrança ou envio de e-mail.</p>
+          </aside>
+        </div>
+        <script>
+          const formComprar = document.getElementById("formComprar");
+          formComprar.addEventListener("submit", event => {
+          for (const nome of ["endereco_id", "pagamento", "frete"]) {
+          const escolhido = document.querySelector(`input[name="${nome}"]:checked`);
+          if (!escolhido) {
+          event.preventDefault();
+          alert("Selecione o endereço, a forma de pagamento e o frete.");
+          return;
+          }
+          // Os controles com form="formComprar" já são enviados pelo navegador.
+          // Não criar campos ocultos duplicados.
+
+          }
+          });
+          const subtotal = <%- JSON.stringify(itens.reduce((total, item) => total + item.preco, 0)) %>;
+          document.querySelectorAll('input[name="frete"]').forEach(campo => {
+          campo.addEventListener("change", () => {
+          const valor = Number(campo.dataset.frete);
+          const formatar = numero => numero.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL"
+          });
+          document.getElementById("checkoutValorFrete").textContent = formatar(valor);
+          document.getElementById("checkoutValorTotal").textContent = formatar(subtotal + valor);
+          });
+          });
+        </script>
+      <% } %>
+    </main>
+    <%- include('../../components/rodape') %>
+    <%- include('../../components/chatAtendimento') %>
+  </body>
+</html>

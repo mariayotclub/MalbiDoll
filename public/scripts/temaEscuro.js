@@ -15,7 +15,13 @@
         botao.setAttribute('aria-pressed', String(escuro));
 
         if (botao.classList.contains('contas-alternar-tema')) {
-            botao.querySelector('.tema-icone').textContent = escuro ? '☀' : '☾';
+            const icone = botao.querySelector('.tema-icone');
+            if (icone) {
+                icone.innerHTML = escuro
+                    ? '<i data-lucide="sun"></i>'
+                    : '<i data-lucide="moon"></i>';
+                window.lucide?.createIcons();
+            }
         } else {
             botao.innerHTML = escuro ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
             window.lucide?.createIcons();

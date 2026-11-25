@@ -1,0 +1,255 @@
+.aval-admin {
+  max-width: 1320px;
+}
+.aval-metricas {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.aval-metricas>div {
+  border: 1px solid #d8ded8;
+  border-radius: 12px;
+  padding: 20px;
+  background: #fcfaf5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.aval-metricas strong {
+  font-size: 1.65rem;
+}
+.aval-filtros {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+.aval-filtros input {
+  flex: 1;
+  min-width: 210px;
+}
+.aval-filtros select {
+  min-width: 140px;
+}
+.aval-produto {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+}
+.aval-produto img {
+  width: 48px;
+  height: 54px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #f5e7e5;
+}
+.aval-resumo {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.aval-estrelas {
+  color: #b78479;
+  white-space: nowrap;
+}
+.aval-modal {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(540px,calc(100% - 30px));
+  max-height: 85vh;
+  overflow: auto;
+  border: 0;
+  border-radius: 16px;
+  padding: 28px;
+  background: #fcfaf5;
+  color: #29483f;
+  box-shadow: 0 20px 65px #0005;
+}
+.aval-modal::backdrop {
+  background: #0009;
+}
+.aval-modal-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.aval-modal h2 {
+  font-size: 1.3rem;
+  margin: 0;
+}
+.aval-modal .aval-fechar {
+  background: transparent;
+  color: inherit;
+  font-size: 25px;
+  padding: 2px 10px;
+}
+.aval-modal .aval-cancelar {
+  font-size: 1rem;
+  background: #e8ebe7;
+}
+.aval-comentario {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.aval-foto {
+  max-width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.aval-modal form {
+  margin-top: 18px;
+}
+.aval-modal label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.aval-modal textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  font: inherit;
+}
+.aval-acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+.aval-modal .aval-excluir {
+  background: transparent;
+  color: #a34848;
+  padding-left: 0;
+}
+@media (max-width:650px) {
+  .aval-metricas {
+    grid-template-columns: 1fr;
+  }
+  .aval-filtros>* {
+    flex: 1;
+  }
+}
+html[data-tema="escuro"] .aval-metricas>div,html[data-tema="escuro"] .aval-modal {
+  background: #241b30;
+  color: #eee1ff;
+  border: 1px solid #655078;
+}
+html[data-tema="escuro"] .aval-modal textarea,html[data-tema="escuro"] .aval-filtros input,html[data-tema="escuro"] .aval-filtros select {
+  background: #30243e;
+  color: #eee1ff;
+  border-color: #655078;
+}
+/*Aparência consistente com os modais de confirmação dos components.*/
+.aval-modal .aval-produto-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 14px 0 18px;
+  padding: 12px 16px;
+  border: 1px solid #e6d7cf;
+  border-radius: 12px;
+  background: #f5e7e5;
+}
+.aval-modal .aval-produto-modal a {
+  font-family: 'Fredoka',sans-serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #3a6057;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.aval-modal .aval-produto-modal a:hover {
+  text-decoration: underline;
+  color: #29483f;
+}
+.aval-modal .aval-acoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+.aval-modal .aval-acoes button {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 10px;
+  border: 0;
+  border-radius: 11px;
+  font: 700 13px 'Readex Pro','Nunito',sans-serif;
+  cursor: pointer;
+  transition: background .2s,color .2s;
+}
+.aval-modal .aval-acoes .aval-cancelar {
+  background: #f1eae2;
+  color: #40544d;
+  font-size: 13px;
+}
+.aval-modal .aval-acoes .aval-cancelar:hover {
+  background: #e6d9cd;
+}
+.aval-modal .aval-acoes button[type="submit"] {
+  background: #3a6057;
+  color: #fff;
+}
+.aval-modal .aval-acoes button[type="submit"]:hover {
+  background: #29483f;
+}
+.aval-modal .aval-excluir {
+  display: block;
+  margin: 12px auto 0;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #a9575c;
+  font: 700 13px 'Readex Pro','Nunito',sans-serif;
+  cursor: pointer;
+}
+.aval-modal .aval-excluir:hover {
+  background: #f8e8e7;
+  color: #8f4147;
+}
+.aval-modal button:focus-visible,.aval-modal .aval-produto-modal a:focus-visible {
+  outline: 3px solid #b78479;
+  outline-offset: 2px;
+}
+html[data-tema="escuro"] .aval-modal .aval-produto-modal {
+  background: #30243e;
+  border-color: #655078;
+}
+html[data-tema="escuro"] .aval-modal .aval-produto-modal a {
+  color: #d7b8f3;
+}
+html[data-tema="escuro"] .aval-modal .aval-produto-modal a:hover {
+  color: #f2e9ff;
+}
+html[data-tema="escuro"] .aval-modal .aval-acoes .aval-cancelar {
+  background: #45354f;
+  color: #eee1ff;
+}
+html[data-tema="escuro"] .aval-modal .aval-acoes .aval-cancelar:hover {
+  background: #594467;
+}
+html[data-tema="escuro"] .aval-modal .aval-acoes button[type="submit"] {
+  background: #765b99;
+  color: #fff;
+}
+html[data-tema="escuro"] .aval-modal .aval-acoes button[type="submit"]:hover {
+  background: #8a6cad;
+}
+html[data-tema="escuro"] .aval-modal .aval-excluir {
+  color: #f0b3b8;
+}
+html[data-tema="escuro"] .aval-modal .aval-excluir:hover {
+  background: #453044;
+}

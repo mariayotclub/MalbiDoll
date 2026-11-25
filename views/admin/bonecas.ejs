@@ -7,13 +7,13 @@
       Gerenciar bonecas NP | Malbi Doll
     </title>
     <%- include('../../components/lojaHead') %>
+    <link rel="stylesheet" href="/styles/dashboardNavegacao.css">
   </head>
   <body>
     <%- include('../../components/cabecalho') %>
-    <main class="loja-main secao-loja">
-      <a href="/admin" class="link-verde">
-        ← Voltar ao painel
-      </a>
+    <div class="dashboard-layout">
+      <%- include('../../components/dashboardMenu', { paginaAtual: '/admin/bonecas' }) %>
+      <main class="dashboard-conteudo dashboard-pagina loja-main secao-loja">
       <span class="etiqueta">
         ADMINISTRAÇÃO
       </span>
@@ -29,6 +29,7 @@
             Adicionar boneca
           </h2>
           <form action="/admin/bonecas" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <label>
               Nome
               <input name="nome" maxlength="120" required>
@@ -87,6 +88,7 @@
                   Editar boneca
                 </summary>
                 <form action="/admin/bonecas/<%= b.id %>/editar" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                   <label>
                     Nome
                     <input name="nome" maxlength="120" value="<%= b.nome %>" required>
@@ -115,6 +117,7 @@
                 </form>
               </details>
               <form action="/admin/bonecas/<%= b.id %>/excluir" method="post" onsubmit="return confirm('Excluir esta boneca e todas as avaliações?')">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <button class="botao-texto" type="submit">
                   Excluir
                 </button>
@@ -125,6 +128,7 @@
         </section>
       </div>
     </main>
+    </div>
     <%- include('../../components/carrinho') %>
   </body>
 </html>

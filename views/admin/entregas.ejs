@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Entregas | Malbi Doll</title>
+    <%- include('../../components/lojaHead') %>
+    <link rel="stylesheet" href="/styles/checkout.css">
+    <link rel="stylesheet" href="/styles/dashboardNavegacao.css">
+  </head>
+  <body>
+    <%- include('../../components/cabecalho') %>
+    <div class="dashboard-layout">
+      <%- include('../../components/dashboardMenu', { paginaAtual: '/admin/entregas' }) %>
+      <main class="dashboard-conteudo dashboard-pagina loja-main secao-loja">
+      <h1>Entregas</h1>
+      <p>Pedidos enviados e histórico de entregas.</p>
+      <nav class="entregas-abas" aria-label="Situação das entregas">
+        <button type="button" class="entregas-aba" data-aba="andamento">Em andamento (<%= emAndamento.length %>)</button>
+        <button type="button" class="entregas-aba" data-aba="historico">Histórico (<%= historico.length %>)</button>
+      </nav>
+      <% for (const [aba, lista] of [['andamento', emAndamento], ['historico', historico]]) { %>
+        <section class="entregas-painel" data-painel="<%= aba %>">
+          <div class="pedidos-tabela-rolagem">
+            <table class="pedidos-tabela">
+              <thead>
+                <tr>
+                  <th>Pedido</th>
+                  <th>Cliente</th>
+                  <th>Tipo</th>
+                  <th>Enviado em</th>
+                  <th>Situação</th><% if (aba === 'andamento') { %><th>Ações</th><% } else { %><th>Entregue em</th>
+                    <th>Confirmado por</th><% } %></tr>
+              </thead>
+              <tbody>
+                <% for (const pedido of lista) { %>
+                  <tr>
+                    <td><%= pedido.numero %></td>
+                    <td><%= pedido.cliente_nome %></td>
+                    <td><%= pedido.tipo === 'np' ? 'Boneca NP' : 'Personalizada' %></td>
+                    <td><%= pedido.enviado_em ? new Date(pedido.enviado_em).toLocaleString('pt-BR') : 'Não informado' %></td>
+                    <td><%= aba === 'historico' ? 'Entregue' : 'Enviado' %></td>
+                    <% if (aba === 'andamento') { %>
+                      <td>
+                        <form method="post" action="/admin/entregas/<%= pedido.id %>/entregue" onsubmit="return confirm('Confirmar entrega deste pedido?')">
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                          <button type="submit" class="pedido-acao">Marcar entregue</button>
+                        </form>
+                      </td>
+                    <% } else { %>
+                      <td><%= pedido.entregue_em ? new Date(pedido.entregue_em).toLocaleString('pt-BR') : 'Não informado' %></td>
+                      <td><%= pedido.entrega_confirmada_por === 'cliente' ? 'Cliente' : pedido.entrega_confirmada_por === 'administrador' ? 'Administrador' : 'Não informado' %></td>
+                    <% } %>
+                  </tr>
+                <% } %>
+                <% if (!lista.length) { %><tr>
+                    <td colspan="<%= aba === 'andamento' ? 6 : 7 %>">Nenhum pedido nesta aba.</td>
+                </tr><% } %>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      <% } %>
+      <script>
+        (() => {
+        const botoes = document.querySelectorAll('.entregas-aba');
+        const paineis = document.querySelectorAll('.entregas-painel');
+        function selecionar(aba) {
+        botoes.forEach(b => { const ativo = b.dataset.aba === aba; b.classList.toggle('ativa', ativo); b.setAttribute('aria-pressed', String(ativo)); });
+        paineis.forEach(p => p.hidden = p.dataset.painel !== aba);
+        }
+        botoes.forEach(b => b.addEventListener('click', () => selecionar(b.dataset.aba)));
+        selecionar(new URLSearchParams(location.search).get('aba') === 'historico' ? 'historico' : 'andamento');
+        })();
+      </script>
+    </main>
+    </div>
+  </body>
+</html>

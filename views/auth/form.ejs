@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles/contas.css">
     <link rel="stylesheet" href="/styles/temaEscuro.css">
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
     <script src="/scripts/temaEscuro.js" defer>
     </script>
   </head>
@@ -30,7 +31,8 @@
         </a>
         <button type="button" id="alternarTema" class="contas-alternar-tema" aria-label="Ativar modo escuro">
           <span class="tema-icone">
-            ☾
+            <i data-lucide="moon">
+            </i>
           </span>
         </button>
       </div>
@@ -47,45 +49,45 @@
           <%= corpo==='cadastro'?'Crie sua conta para compartilhar suas avaliações e deixar o Malbi Doll ainda mais seu.':corpo==='login'?'Entre na sua conta e continue sua experiência na Malbi Doll.':corpo==='recuperar'?'Informe seu e-mail para receber um link de recuperação de senha.':'Escolha uma nova senha para sua conta.' %>
         </p>
         <% if (erro) { %>
-        <p class="contas-erro" role="alert">
-          <%= erro %>
-        </p>
+          <p class="contas-erro" role="alert">
+            <%= erro %>
+          </p>
         <% } %>
         <form class="contas-form" method="post" action="<%= corpo==='cadastro'?'/cadastro':corpo==='login'?'/login':corpo==='recuperar'?'/recuperar-senha':'/redefinir-senha/'+encodeURIComponent(typeof token==='undefined'?'':token) %>">
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
           <% if (corpo==='cadastro') { %>
-          <label for="contas-nome">
-            Nome
-          </label>
-          <input id="contas-nome" name="nome" maxlength="100" autocomplete="name" placeholder="Seu nome" required>
+            <label for="contas-nome">
+              Nome
+            </label>
+            <input id="contas-nome" name="nome" maxlength="100" autocomplete="name" placeholder="Seu nome" required>
           <% } %>
           <% if (corpo!=='redefinir') { %>
-          <label for="contas-email">
-            E-mail
-          </label>
-          <input id="contas-email" type="email" name="email" required autocomplete="email" placeholder="seuemail@exemplo.com">
+            <label for="contas-email">
+              E-mail
+            </label>
+            <input id="contas-email" type="email" name="email" required autocomplete="email" placeholder="seuemail@exemplo.com">
           <% } %>
           <% if (corpo==='cadastro'||corpo==='login'||corpo==='redefinir') { %>
-          <div class="contas-label-linha">
-            <label for="contas-senha">
-              Senha
-            </label>
-            <% if (corpo==='login') { %>
-            <a href="/recuperar-senha">
-              Esqueceu a senha?
-            </a>
+            <div class="contas-label-linha">
+              <label for="contas-senha">
+                Senha
+              </label>
+              <% if (corpo==='login') { %>
+                <a href="/recuperar-senha">
+                  Esqueceu a senha?
+                </a>
+              <% } %>
+            </div>
+            <input id="contas-senha" type="password" name="senha" required <%= corpo==='login'?'autocomplete="current-password"':'minlength="8" autocomplete="new-password"' %>
+            placeholder="Digite sua senha">
+            <% if(corpo!=='login'){ %>
+              <small class="contas-ajuda">
+                Use pelo menos 8 caracteres.
+              </small>
             <% } %>
-          </div>
-          <input id="contas-senha" type="password" name="senha" required <%= corpo==='login'?'autocomplete="current-password"':'minlength="12" autocomplete="new-password"' %>
-          placeholder="Digite sua senha">
-          <% if(corpo!=='login'){ %>
-          <small class="contas-ajuda">
-            Use pelo menos 12 caracteres.
-          </small>
-          <% } %>
           <% } %>
           <% if (corpo==='login') { %>
-          <input type="hidden" name="retorno" value="<%= typeof retorno==='string'?retorno:'/perfil' %>">
+            <input type="hidden" name="retorno" value="<%= typeof retorno==='string'?retorno:'/perfil' %>">
           <% } %>
           <button class="contas-enviar" type="submit">
             <%= corpo==='cadastro'?'Criar conta':corpo==='login'?'Entrar':corpo==='recuperar'?'Enviar instruções':'Salvar nova senha' %>
@@ -93,25 +95,25 @@
         </form>
         <div class="contas-rodape">
           <% if (corpo==='login') { %>
-          <p>
-            Ainda não tem conta?
-            <a href="/cadastro">
-              Sign in · Criar conta
-            </a>
-          </p>
+            <p>
+              Ainda não tem conta?
+              <a href="/cadastro">
+                Sign in · Criar conta
+              </a>
+            </p>
           <% } else if (corpo==='cadastro') { %>
-          <p>
-            Já tem uma conta?
-            <a href="/login">
-              Log in · Entrar
-            </a>
-          </p>
+            <p>
+              Já tem uma conta?
+              <a href="/login">
+                Log in · Entrar
+              </a>
+            </p>
           <% } else { %>
-          <p>
-            <a href="/login">
-              Voltar para o login
-            </a>
-          </p>
+            <p>
+              <a href="/login">
+                Voltar para o login
+              </a>
+            </p>
           <% } %>
         </div>
       </section>

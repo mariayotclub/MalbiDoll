@@ -15,6 +15,7 @@ export function exigirAdmin(req, res, next) {
 }
 
 export function csrf(req, res, next) {
+    if (req.path === '/webhooks/mercadopago') return next();
     if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
         return next();
     }
@@ -22,7 +23,10 @@ export function csrf(req, res, next) {
     // O upload de foto é processado pelo Multer na rota /perfil/foto.
     // Após o Multer preencher req.body, a mesma função csrf é executada novamente.
     if (req.is('multipart/form-data') && !req.body?._csrf) {
-        if (req.path === '/perfil/foto' || /^\/bonecas\/\d+\/avaliacoes$/.test(req.path)) {
+        if (req.path === '/perfil/foto' ||
+            /^\/bonecas\/\d+\/avaliacoes$/.test(req.path) ||
+            /^\/admin\/bonecas(?:\/\d+\/editar)?$/.test(req.path) ||
+            /^\/armario\/item(?:\/editar\/\d+)?$/.test(req.path)) {
             return next();
         }
 

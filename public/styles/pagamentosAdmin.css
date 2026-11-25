@@ -1,0 +1,324 @@
+.pagamentos-admin {
+  max-width: 1250px;
+  margin: 2rem auto;
+  padding: 0 1.5rem 4rem;
+  color: var(--texto,#40544d);
+}
+.pag-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.pag-indicadores {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 1rem;
+  margin: 1rem 0 2rem;
+}
+.pag-indicadores>div,.pag-bloco {
+  background: var(--creme,#fcfaf5);
+  border: 1px solid #b7847955;
+  border-radius: 14px;
+  padding: 1.2rem;
+}
+.pag-indicadores span {
+  display: block;
+  font-size: .9rem;
+  opacity: .8;
+}
+.pag-indicadores strong {
+  display: block;
+  font-size: 1.45rem;
+  margin-top: .7rem;
+}
+.pag-abas {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #b7847966;
+}
+.pag-abas a {
+  padding: .8rem .6rem;
+  text-decoration: none;
+  color: inherit;
+}
+.pag-abas a.ativo {
+  border-bottom: 3px solid #b78479;
+  font-weight: 700;
+}
+.pag-botao {
+  display: inline-block;
+  background: #3a6057;
+  color: white;
+  border: 0;
+  border-radius: 9px;
+  padding: .65rem 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  font: inherit;
+}
+.pag-botao.secundario {
+  background: #b78479;
+}
+.pag-filtros {
+  display: flex;
+  align-items: end;
+  gap: .7rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+}
+.pag-filtros input,.pag-filtros select,.pag-modal textarea {
+  border: 1px solid #b78479;
+  border-radius: 8px;
+  padding: .65rem;
+  background: transparent;
+  color: inherit;
+  max-width: 100%;
+}
+.pag-filtros label {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+}
+.pag-rolagem {
+  overflow-x: auto;
+}
+.pag-rolagem table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.pag-rolagem th,.pag-rolagem td {
+  padding: .8rem;
+  border-bottom: 1px solid #b7847944;
+  vertical-align: top;
+}
+.pag-rolagem td small {
+  display: block;
+  opacity: .75;
+  margin-top: .3rem;
+}
+.pag-status {
+  border-radius: 20px;
+  background: #b7847922;
+  padding: .3rem .65rem;
+}
+.pag-acao {
+  margin: .15rem;
+  padding: .45rem .65rem;
+  font-size: .9rem;
+}
+.pag-paginacao {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+.pag-aviso {
+  padding: 1rem;
+  border-radius: 8px;
+  background: #3a605722;
+}
+.pag-modal[hidden] {
+  display: none !important;
+}
+.pag-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #0009;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.pag-modal section {
+  width: min(100%,470px);
+  padding: 1.5rem;
+  border-radius: 15px;
+  background: #fcfaf5;
+  color: #40544d;
+  box-shadow: 0 10px 40px #0005;
+}
+.pag-modal label,.pag-modal textarea {
+  display: block;
+  width: 100%;
+  margin: 1rem 0;
+}
+.pag-modal-acoes {
+  display: flex;
+  gap: .7rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+body.dark-mode .pag-indicadores>div,body.dark-mode .pag-bloco,body.dark .pag-indicadores>div,body.dark .pag-bloco {
+  background: #201a2c;
+  color: #f3eaff;
+}
+body.dark-mode .pag-filtros input,body.dark-mode .pag-filtros select,body.dark .pag-filtros input,body.dark .pag-filtros select {
+  color: #f3eaff;
+  background: #201a2c;
+}
+@media (max-width:850px) {
+  .pag-indicadores {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+}
+@media (max-width:500px) {
+  .pag-indicadores {
+    grid-template-columns: 1fr;
+  }
+}
+/*Gráficos financeiros da visão geral*/
+.pag-graficos-topo {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 1rem;
+}
+.pag-periodo {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+}
+.pag-periodo select {
+  border: 1px solid #b78479;
+  border-radius: 8px;
+  padding: .5rem .7rem;
+  background: var(--creme,#fcfaf5);
+  color: inherit;
+  font: inherit;
+}
+.pag-graficos {
+  display: grid;
+  grid-template-columns: minmax(0,1.35fr) minmax(0,1fr);
+  gap: 1rem;
+}
+.pag-grafico {
+  min-width: 0;
+}
+.pag-grafico h2 {
+  margin: 0 0 1.5rem;
+}
+.pag-barras {
+  display: flex;
+  align-items: stretch;
+  gap: .45rem;
+  height: 265px;
+  overflow-x: auto;
+  padding-bottom: .25rem;
+}
+.pag-barra-coluna {
+  display: flex;
+  flex: 1 0 42px;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: .4rem;
+}
+.pag-barra-valor {
+  font-size: .68rem;
+  white-space: nowrap;
+}
+.pag-barra-trilho {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-bottom: 1px solid #b7847966;
+}
+.pag-barra {
+  width: min(70%,40px);
+  background: #3a6057;
+  border-radius: 5px 5px 0 0;
+  min-height: 0;
+}
+.pag-barra-mes {
+  font-size: .72rem;
+  white-space: nowrap;
+}
+.pag-status-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  min-height: 240px;
+}
+.pag-rosca {
+  width: 190px;
+  height: 190px;
+  flex: none;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+.pag-rosca-centro {
+  width: 68%;
+  height: 68%;
+  border-radius: 50%;
+  background: var(--creme,#fcfaf5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.pag-rosca-centro strong {
+  font-size: 1.8rem;
+}
+.pag-rosca-centro span {
+  font-size: .78rem;
+}
+.pag-legenda {
+  min-width: 145px;
+  flex: 1;
+}
+.pag-legenda-linha {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin: .6rem 0;
+  font-size: .88rem;
+}
+.pag-legenda-linha strong {
+  margin-left: auto;
+}
+.pag-legenda-cor {
+  width: 11px;
+  height: 11px;
+  flex: none;
+  border-radius: 3px;
+}
+body.dark-mode .pag-rosca-centro,body.dark .pag-rosca-centro {
+  background: #201a2c;
+}
+body.dark-mode .pag-periodo select,body.dark .pag-periodo select {
+  background: #201a2c;
+  color: #f3eaff;
+}
+@media (max-width:850px) {
+  .pag-graficos {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width:500px) {
+  .pag-barras {
+    gap: .25rem;
+  }
+  .pag-barra-coluna {
+    flex-basis: 44px;
+  }
+  .pag-barra-valor {
+    font-size: .62rem;
+  }
+}
+.pag-periodo .pag-botao {
+  padding: .5rem .85rem;
+}
+.pag-periodo select {
+  cursor: pointer;
+}

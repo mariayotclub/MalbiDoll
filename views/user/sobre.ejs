@@ -21,8 +21,8 @@
     <main class="sobre-pagina">
       <section class="sobre-hero" aria-labelledby="titulo-marca">
         <div class="sobre-marca">
-          <img class="logo-tema-claro" src="/assets/logoMalbi_verde.svg" alt="" class="sobre-logo">
-          <img class="logo-tema-escuro" src="/assets/logoMalbi_lilas.svg" alt="" aria-hidden="true">
+          <img class="sobre-logo logo-tema-claro" src="/assets/logoMalbi_verde.svg" alt="">
+          <img class="sobre-logo logo-tema-escuro" src="/assets/logoMalbi_lilas.svg" alt="" aria-hidden="true">
           <h1 id="titulo-marca">
             Malbi Doll
           </h1>
@@ -138,5 +138,7 @@
       if (window.lucide) lucide.createIcons();
     </script>
     <%- include('../../components/carrinho') %>
-  </body>
+  <%- include('../../components/rodape') %>
+<%- include('../../components/chatAtendimento') %>
+</body>
 </html>

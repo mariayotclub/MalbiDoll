@@ -1,8 +1,8 @@
 <% if (typeof tipo !== 'undefined' && tipo === 'conta') { %>
-<div id="modalExcluirConta" class="confirmacao-fundo" hidden>
-  <section class="confirmacao-caixa" role="dialog" aria-modal="true"
-                 aria-labelledby="tituloExcluirConta"
-                 aria-describedby="descricaoExcluirConta">
+  <div id="modalExcluirConta" class="confirmacao-fundo" hidden>
+    <section class="confirmacao-caixa" role="dialog" aria-modal="true"
+    aria-labelledby="tituloExcluirConta"
+    aria-describedby="descricaoExcluirConta">
     <div class="confirmacao-icone" aria-hidden="true">
       <i data-lucide="user-x">
       </i>
@@ -14,52 +14,121 @@
       Esta ação é permanente. Informe sua senha atual para confirmar.
     </p>
     <form id="formExcluirConta" method="post"
-                  action="/perfil/excluir-conta" class="confirmacao-form">
+    action="/perfil/excluir-conta" class="confirmacao-form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label for="senhaExcluirConta">
+      Senha atual
+    </label>
+    <input id="senhaExcluirConta" type="password"
+    name="senha_confirmacao" autocomplete="current-password"
+    required>
+    <div class="confirmacao-acoes">
+      <button type="button" class="confirmacao-cancelar"
+      data-fechar-exclusao-conta>
+      Cancelar
+    </button>
+    <button type="submit" class="confirmacao-excluir">
+      Excluir conta
+    </button>
+  </div>
+</form>
+</section>
+</div>
+<div id="modalEditarDados" class="confirmacao-fundo" hidden>
+  <section class="confirmacao-caixa" role="dialog" aria-modal="true" aria-labelledby="tituloEditarDados">
+    <div class="confirmacao-icone" aria-hidden="true">
+      <i data-lucide="user-round">
+      </i>
+    </div>
+    <h2 id="tituloEditarDados">Dados do perfil</h2>
+    <p>Atualize as informações da sua conta.</p>
+    <form method="post" action="/perfil/dados" class="confirmacao-form">
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-      <label for="senhaExcluirConta">
-        Senha atual
-      </label>
-      <input id="senhaExcluirConta" type="password"
-                       name="senha_confirmacao" autocomplete="current-password"
-                       required>
+      <label for="modalPerfilNome">Nome</label>
+      <input id="modalPerfilNome" name="nome" minlength="2" maxlength="100" value="<%= usuario.nome %>" required>
+      <label for="modalPerfilApelido">Nome de usuário</label>
+      <input id="modalPerfilApelido" name="apelido" maxlength="40" value="<%= usuario.apelido || '' %>">
+      <label for="modalPerfilEmail">E-mail</label>
+      <input id="modalPerfilEmail" type="email" name="email" maxlength="255" value="<%= usuario.email %>" required>
       <div class="confirmacao-acoes">
-        <button type="button" class="confirmacao-cancelar"
-                            data-fechar-exclusao-conta>
-          Cancelar
-        </button>
-        <button type="submit" class="confirmacao-excluir">
-          Excluir conta
-        </button>
+        <button type="button" class="confirmacao-cancelar" data-fechar-modal-perfil>Cancelar</button>
+        <button type="submit" class="confirmacao-salvar">Salvar dados</button>
+      </div>
+    </form>
+  </section>
+</div>
+<div id="modalEditarFoto" class="confirmacao-fundo" hidden>
+  <section class="confirmacao-caixa" role="dialog" aria-modal="true" aria-labelledby="tituloEditarFoto">
+    <div class="confirmacao-icone" aria-hidden="true">
+      <i data-lucide="camera">
+      </i>
+    </div>
+    <h2 id="tituloEditarFoto">Alterar foto de perfil</h2>
+    <p>Escolha uma imagem PNG, JPG ou WebP de até 2 MB.</p>
+    <form method="post" action="/perfil/foto" enctype="multipart/form-data" class="confirmacao-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label for="modalFotoPerfil">Nova foto</label>
+      <input id="modalFotoPerfil" type="file" name="foto" accept="image/png,image/jpeg,image/webp" required>
+      <div class="confirmacao-acoes">
+        <button type="button" class="confirmacao-cancelar" data-fechar-modal-perfil>Cancelar</button>
+        <button type="submit" class="confirmacao-salvar">Salvar foto</button>
+      </div>
+    </form>
+    <% if (usuario.tem_foto) { %>
+      <form method="post" action="/perfil/foto/remover" class="confirmacao-remover-foto">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button type="submit">Remover foto atual</button>
+      </form>
+    <% } %>
+  </section>
+</div>
+<div id="modalAlterarSenha" class="confirmacao-fundo" hidden>
+  <section class="confirmacao-caixa" role="dialog" aria-modal="true" aria-labelledby="tituloAlterarSenha">
+    <div class="confirmacao-icone" aria-hidden="true">
+      <i data-lucide="lock-keyhole">
+      </i>
+    </div>
+    <h2 id="tituloAlterarSenha">Alterar senha</h2>
+    <p>Informe sua senha atual e escolha uma nova senha.</p>
+    <form method="post" action="/perfil/senha" class="confirmacao-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label for="modalSenhaAtual">Senha atual</label>
+      <input id="modalSenhaAtual" type="password" name="senha_atual" required autocomplete="current-password">
+      <label for="modalSenhaNova">Nova senha</label>
+      <input id="modalSenhaNova" type="password" name="nova_senha" minlength="8" maxlength="128" required autocomplete="new-password">
+      <div class="confirmacao-acoes">
+        <button type="button" class="confirmacao-cancelar" data-fechar-modal-perfil>Cancelar</button>
+        <button type="submit" class="confirmacao-salvar">Alterar senha</button>
       </div>
     </form>
   </section>
 </div>
 <% } else { %>
 <div id="modalConfirmacao" class="modal-overlay confirmacao-fundo"
-         style="display: none;" role="dialog" aria-modal="true"
-         aria-labelledby="tituloConfirmacaoItem">
-  <div class="modal-content confirmacao-caixa">
-    <div class="confirmacao-icone" aria-hidden="true">
-      <i data-lucide="trash-2">
-      </i>
-    </div>
-    <h2 id="tituloConfirmacaoItem">
-      Excluir item?
-    </h2>
-    <p>
-      Tem certeza de que deseja excluir este item?
-    </p>
-    <div class="confirmacao-acoes">
-      <button type="button" id="btnCancelarExclusao"
-                        class="confirmacao-cancelar">
-        Cancelar
-      </button>
-      <button type="button" id="btnConfirmarExclusao"
-                        class="confirmacao-excluir">
-        Excluir
-      </button>
-    </div>
+style="display: none;" role="dialog" aria-modal="true"
+aria-labelledby="tituloConfirmacaoItem">
+<div class="modal-content confirmacao-caixa">
+  <div class="confirmacao-icone" aria-hidden="true">
+    <i data-lucide="trash-2">
+    </i>
   </div>
+  <h2 id="tituloConfirmacaoItem">
+    Excluir item?
+  </h2>
+  <p>
+    Tem certeza de que deseja excluir este item?
+  </p>
+  <div class="confirmacao-acoes">
+    <button type="button" id="btnCancelarExclusao"
+    class="confirmacao-cancelar">
+    Cancelar
+  </button>
+  <button type="button" id="btnConfirmarExclusao"
+  class="confirmacao-excluir">
+  Excluir
+</button>
+</div>
+</div>
 </div>
 <% } %>
 <link rel="stylesheet" href="/styles/modalConfirmacao.css">

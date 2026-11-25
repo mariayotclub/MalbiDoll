@@ -32,7 +32,7 @@ btnConfirmarExclusao.addEventListener('click', async () => {
 
   try {
     const response = await fetch(`/armario/item/${itemParaDeletarId}`, {
-      method: 'DELETE', headers: {'x-csrf-token': document.querySelector('meta[name=csrf-token]')?.content || ''}
+      method: 'DELETE', headers: { 'x-csrf-token': document.querySelector('meta[name=csrf-token]')?.content || '' }
     });
 
     if (response.ok) {

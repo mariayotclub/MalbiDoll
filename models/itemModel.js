@@ -77,7 +77,8 @@ const ItemModel = {
         return rows[0] || null;
     },
     async deletarItem(id) {
-        await db.query('DELETE FROM itens WHERE id=$1', [id]);
+        const resultado = await db.query('DELETE FROM itens WHERE id=$1 RETURNING id', [id]);
+        return resultado.rowCount > 0;
     }
 };
 export default ItemModel;

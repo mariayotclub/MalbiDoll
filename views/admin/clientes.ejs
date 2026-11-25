@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Clientes | Malbi Doll</title><%- include('../../components/lojaHead') %><link rel="stylesheet" href="/styles/clientesAdmin.css">
+    <link rel="stylesheet" href="/styles/dashboardNavegacao.css">
+  </head>
+  <body><%- include('../../components/cabecalho') %>
+    <div class="dashboard-layout">
+      <%- include('../../components/dashboardMenu', { paginaAtual: '/admin/clientes' }) %>
+      <main class="dashboard-conteudo dashboard-pagina clientes-main">
+      <h1>Clientes cadastrados</h1>
+      <nav class="clientes-abas">
+        <a class="<%= aba==='clientes'?'ativo':'' %>" href="/admin/clientes">Clientes</a>
+        <a class="<%= aba==='denuncias'?'ativo':'' %>" href="/admin/clientes?aba=denuncias">Denúncias <%- include('../../components/contadorAdmin', { quantidade: contadoresAdmin?.clientes || 0 }) %></a>
+        <a class="<%= aba==='arquivadas'?'ativo':'' %>" href="/admin/clientes?aba=arquivadas">Arquivadas</a>
+      </nav>
+      <% if(aba==='clientes'){ %><form method="get" class="clientes-busca">
+          <input name="busca" value="<%= busca %>" placeholder="Nome, username ou e-mail">
+          <button>Buscar</button>
+        </form>
+        <div class="clientes-tabela">
+          <table>
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>E-mail</th>
+                <th>Cadastro</th>
+                <th>Status</th>
+                <th>Recebidas</th>
+                <th>Realizadas</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody><% clientes.forEach(c=>{ %><tr>
+                  <td>
+                    <strong><%= c.nome %></strong>
+                    <small><%= c.apelido||'' %></small>
+                  </td>
+                  <td><%= c.email %></td>
+                  <td><%= new Date(c.criado_em).toLocaleDateString('pt-BR') %></td>
+                  <td><%= c.bloqueado_em?'Bloqueada':'Ativa' %></td>
+                  <td><%= c.recebidas %></td>
+                  <td><%= c.realizadas %></td>
+                  <td>
+                    <button type="button" class="abrir-bloqueio" data-id="<%= c.id %>" data-nome="<%= c.nome %>" data-bloqueado="<%= !!c.bloqueado_em %>"><%= c.bloqueado_em?'Desbloquear':'Bloquear' %></button>
+                  </td>
+              </tr><% }) %><% if(!clientes.length){ %><tr>
+                  <td colspan="7">Nenhum cliente encontrado.</td>
+            </tr><% } %></tbody>
+          </table>
+        </div>
+      <% }else{ %><div class="clientes-tabela">
+          <table>
+            <thead>
+              <tr>
+                <th>Denunciante</th>
+                <th>Denunciado</th>
+                <th>Motivo</th>
+                <th>Avaliação</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody><% denuncias.forEach(d=>{ %><tr>
+                  <td><%= d.denunciante_nome %></td>
+                  <td><%= d.denunciado_nome %></td>
+                  <td><%= d.motivo %><small><%= d.detalhes %></small>
+                  </td>
+                  <td>
+                    <a href="/bonecas/<%= d.boneca_id %>#avaliacoes"><%= d.comentario.slice(0,100) %></a>
+                  </td>
+                  <td><%= new Date(d.criado_em).toLocaleDateString('pt-BR') %></td>
+                  <td><%= d.status %></td>
+                  <td><% if(d.status==='arquivada'){ %><form method="post" action="/admin/denuncias/<%= d.id %>/desarquivar">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button type="submit">Desarquivar</button>
+                    </form><% } else if(d.status==='pendente'){ %><form method="post" action="/admin/denuncias/<%= d.id %>/decisao">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button name="decisao" value="arquivada">Arquivar</button>
+                        <button name="decisao" value="removida" onclick="return confirm('Remover esta avaliação?')">Remover avaliação</button>
+                  </form><% } %></td>
+              </tr><% }) %><% if(!denuncias.length){ %><tr>
+                  <td colspan="7"><%= aba==='arquivadas' ? 'Nenhuma denúncia arquivada.' : 'Nenhuma denúncia pendente.' %></td>
+            </tr><% } %></tbody>
+          </table>
+    </div><% } %></main>
+    </div>
+    <dialog id="modalBloqueio" class="clientes-modal">
+      <form method="post" id="formBloqueio">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="hidden" name="acao" id="acaoBloqueio">
+        <div class="bloqueio-modal-topo">
+          <div class="bloqueio-modal-icone" aria-hidden="true">!</div>
+          <div>
+            <h2 id="tituloBloqueio">Bloquear conta</h2>
+            <p id="nomeBloqueio">
+            </p>
+          </div>
+        </div>
+        <div id="camposBloqueio">
+          <label>Motivo do bloqueio<select name="motivo" id="motivoBloqueio">
+              <option value="">Selecione</option>
+              <option value="fraude">Suspeita de fraude</option>
+              <option value="seguranca">Segurança da conta</option>
+              <option value="abuso">Abuso da plataforma</option>
+              <option value="conteudo">Conteúdo inadequado</option>
+              <option value="termos">Violação dos termos</option>
+              <option value="solicitacao">Solicitação do cliente</option>
+            </select>
+          </label>
+          <label>Detalhes para o cliente (opcional)<textarea name="detalhes" maxlength="200" rows="4" placeholder="Explique o motivo do bloqueio...">
+            </textarea>
+            <small>Esses detalhes serão exibidos ao cliente bloqueado.</small>
+          </label>
+        </div>
+        <div class="modal-acoes">
+          <button type="button" id="cancelarBloqueio">Cancelar</button>
+          <button type="submit" id="confirmarBloqueio">Confirmar</button>
+        </div>
+      </form>
+    </dialog><script>const modal=document.getElementById('modalBloqueio');document.querySelectorAll('.abrir-bloqueio').forEach(b=>b.addEventListener('click',()=>{const bloqueado=b.dataset.bloqueado==='true';document.getElementById('formBloqueio').action='/admin/clientes/'+encodeURIComponent(b.dataset.id)+'/bloqueio';document.getElementById('acaoBloqueio').value=bloqueado?'desbloquear':'bloquear';document.getElementById('tituloBloqueio').textContent=bloqueado?'Desbloquear conta':'Bloquear conta';document.getElementById('nomeBloqueio').textContent=b.dataset.nome;document.getElementById('camposBloqueio').hidden=bloqueado;document.getElementById('motivoBloqueio').required=!bloqueado;modal.showModal()}));document.getElementById('cancelarBloqueio').onclick=()=>modal.close();</script></body>
+</html>

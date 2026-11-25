@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Atendimento | Malbi Doll</title><%- include('../../components/lojaHead') %><link rel="stylesheet" href="/styles/atendimentoAdmin.css">
+    <link rel="stylesheet" href="/styles/dashboardNavegacao.css">
+  </head>
+  <body><%- include('../../components/cabecalho') %>
+    <div class="dashboard-layout">
+      <%- include('../../components/dashboardMenu', { paginaAtual: '/admin/atendimento' }) %>
+      <main class="dashboard-conteudo dashboard-pagina atd-admin">
+      <h1>Atendimento</h1>
+      <nav class="atd-abas">
+        <a class="<%= aba==='ativos'?'selecionada':'' %>" href="/admin/atendimento">Atendimentos ativos</a>
+        <a class="<%= aba==='historico'?'selecionada':'' %>" href="/admin/atendimento?aba=historico">Histórico</a>
+      </nav>
+      <div class="atd-layout">
+        <section class="atd-lista">
+          <label>Pesquisar <input id="atdBusca" placeholder="Cliente ou número do pedido">
+          </label>
+          <div id="atdItens"><% atendimentos.forEach(a=>{ %><button type="button" class="atd-item" data-id="<%= a.id %>" data-reembolso="<%= a.reembolso_id || '' %>" data-usuario="<%= a.usuario_id %>" data-sem-limites="<%= a.sem_limites %>" data-bloqueado="<%= a.bloqueado_ate ? new Date(a.bloqueado_ate).toISOString() : '' %>" data-assunto="<%= a.assunto %>" data-cliente="<%= a.cliente %>" data-pedido="<%= a.pedido_numero||'' %>" data-status="<%= a.status %>">
+                <strong><%= a.cliente %></strong>
+                <span>#<%= a.id %> · <%= a.tipo === "reembolso" ? "Reembolso · " : "" %><%= a.assunto %></span>
+                <small><%= a.status.replaceAll('_',' ') %> <%= a.nao_lidas?'· '+a.nao_lidas+' novas':'' %></small>
+            </button><% }) %><% if(!atendimentos.length){ %><p>Nenhum atendimento nesta aba.</p><% } %></div>
+        </section>
+        <section class="atd-conversa">
+          <div id="atdCabecalho">
+            <h2>Selecione uma conversa</h2>
+          </div>
+          <div id="atdMensagens" class="atd-mensagens">
+          </div>
+          <form id="atdForm" hidden>
+            <textarea id="atdTexto" maxlength="3000" rows="3" required placeholder="Escreva uma resposta...">
+            </textarea>
+            <div class="atd-envio-controles">
+              <label id="atdAnexarLabel" class="atd-anexar" for="atdFotos" hidden>
+                Anexar fotos
+              </label>
+              <input id="atdFotos" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+              <div id="atdFotosResumo" class="atd-fotos-resumo" aria-live="polite"></div>
+              <button type="submit">Enviar resposta</button>
+            </div>
+          </form>
+        </section>
+        <aside id="atdDetalhes" class="atd-detalhes">
+          <h3>Informações do cliente</h3>
+          <p>Selecione uma conversa.</p>
+        </aside>
+      </div>
+    </main>
+    </div><script>window.atdConfig={csrf:<%- JSON.stringify(csrfToken) %>,usuario:<%- JSON.stringify(usuario.id) %>};</script><script src="/scripts/atendimentoAdmin.js" defer></script></body>
+</html>

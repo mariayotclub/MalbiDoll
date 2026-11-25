@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <%- include('../../components/lojaHead') %>
+    <link rel="stylesheet" href="/styles/checkout.css">
+    <title>Detalhes do pedido | Malbi Doll</title>
+  </head>
+  <body>
+    <%- include('../../components/cabecalho') %>
+    <main class="checkout-main">
+      <h1>Detalhes do pedido</h1>
+      <button type="button" data-abrir-atendimento class="botao-verde">Preciso de ajuda</button>
+      <section class="checkout-card checkout-pedido">
+        <h2>Pedido <%= pedido.numero %></h2>
+        <p><%= new Date(pedido.criado_em).toLocaleString('pt-BR') %></p>
+        <% const status = { aguardando: 'Aguardando preparação', em_producao: 'Em produção', pronto: 'Pronto para envio', enviado: 'Enviado — aguardando entrega', entregue: 'Entregue', cancelado: 'Cancelado' }; %>
+        <p>
+          <strong>Status do pedido:</strong> <%= status[pedido.producao_status] || pedido.producao_status.replaceAll('_', ' ') %></p>
+        <% if (pedido.enviado_em) { %><p>Enviado em: <%= new Date(pedido.enviado_em).toLocaleString('pt-BR') %></p><% } %>
+        <% if (pedido.producao_status === 'entregue') { %>
+          <p>Entrega confirmada em <%= pedido.entregue_em ? new Date(pedido.entregue_em).toLocaleString('pt-BR') : 'data não informada' %> (<%= pedido.entrega_confirmada_por === 'cliente' ? 'pelo cliente' : pedido.entrega_confirmada_por === 'administrador' ? 'pela administração' : 'confirmação registrada' %>).</p>
+        <% } else if (pedido.producao_status === 'enviado') { %>
+          <form method="post" action="/pedidos/<%= encodeURIComponent(pedido.numero) %>/entregue" onsubmit="return confirm('Você confirma que recebeu este pedido?')">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" class="checkout-botao">Confirmar recebimento</button>
+          </form>
+        <% } %>
+        <% pedido.itens.forEach(item => { %>
+          <div class="checkout-linha">
+            <span><%= item.nome %></span>
+            <strong><%= moeda(item.preco) %></strong>
+          </div>
+        <% }) %>
+        <div class="checkout-linha">
+          <span>Frete (<%= pedido.frete %>)</span>
+          <strong><%= moeda(pedido.valor_frete) %></strong>
+        </div>
+        <div class="checkout-linha checkout-total">
+          <span>Total</span>
+          <strong><%= moeda(pedido.total) %></strong>
+        </div>
+        <p>Entrega: <%= pedido.endereco.logradouro %>, <%= pedido.endereco.numero %> — <%= pedido.endereco.bairro %>, <%= pedido.endereco.cidade %>/<%= pedido.endereco.estado %> · <%= pedido.endereco.cep %></p>
+        <p>Pagamento: <%= pedido.pagamento_metodo %> — <%= pedido.pagamento_status %></p>
+        <p>Pagamento simulado: nenhum valor foi cobrado.</p>
+        <section class="checkout-reembolso">
+          <h2>Reembolso</h2>
+          <% if (reembolsoMensagem) { %><p role="status">Solicitação enviada para análise.</p><% } %>
+          <% if (solicitacao) { %>
+            <p>
+              <strong>Status da solicitação:</strong> <%= {pendente:'Em análise', aprovado:'Aprovada', recusado:'Recusada'}[solicitacao.status] %></p>
+            <p>
+              <strong>Motivo:</strong> <%= solicitacao.motivo %></p>
+            <% if (solicitacao.detalhes) { %><p><%= solicitacao.detalhes %></p><% } %>
+          <% } else if (['pago','aprovado'].includes(pedido.pagamento_status) && pedido.producao_status !== 'cancelado') { %>
+            <a class="checkout-botao" href="/pedidos/<%= encodeURIComponent(pedido.numero) %>/reembolso">Solicitar reembolso</a>
+          <% } else { %><p>Não há solicitação de reembolso disponível para este pedido.</p><% } %>
+        </section>
+      </section>
+      <a class="checkout-botao" href="/?perfil=abrir">Voltar ao perfil</a>
+    </main>
+    <%- include('../../components/rodape') %>
+    <%- include('../../components/chatAtendimento') %>
+  </body>
+</html>

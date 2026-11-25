@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <%- include('../../components/lojaHead') %>
+    <link rel="stylesheet" href="/styles/pagamentosAdmin.css">
+    <title>Devoluções | Malbi Doll</title>
+    <link rel="stylesheet" href="/styles/dashboardNavegacao.css">
+  </head>
+  <body>
+    <%- include('../../components/cabecalho') %>
+    <div class="dashboard-layout">
+      <%- include('../../components/dashboardMenu', { paginaAtual: '/admin/devolucoes' }) %>
+      <main class="dashboard-conteudo dashboard-pagina loja-main pagamentos-admin">
+      <h1>Devoluções</h1>
+      <p>Solicitações de clientes e histórico de decisões. Os reembolsos são simulados.</p>
+      <nav class="pag-abas">
+        <a href="/admin/pagamentos">Pagamentos</a>
+        <a class="ativo" href="/admin/devolucoes">Devoluções</a>
+      </nav>
+      <section class="pag-bloco">
+        <h2>Solicitações pendentes</h2>
+        <div class="pag-rolagem">
+          <table>
+            <thead>
+              <tr>
+                <th>Pedido</th>
+                <th>Cliente</th>
+                <th>Motivo</th>
+                <th>Detalhes</th>
+                <th>Valor</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% for(const s of solicitacoes.filter(s=>s.status==='pendente')) { %>
+                <tr>
+                  <td><%= s.numero %><small><%= s.tipo %></small>
+                  </td>
+                  <td><%= s.cliente_nome %><small><%= s.cliente_email %></small>
+                  </td>
+                  <td><%= s.motivo %></td>
+                  <td><%= s.detalhes %></td>
+                  <td><%= moeda(s.total) %></td>
+                  <td>
+                    <form method="post" action="/admin/pagamentos/reembolsos/<%= s.id %>/decisao" onsubmit="return confirm('Confirmar esta decisão?')">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <button class="pag-botao" name="decisao" value="aprovado">Aprovar</button>
+                      <button class="pag-botao secundario" name="decisao" value="recusado">Recusar</button>
+                    </form>
+                  </td>
+              </tr><% } %>
+              <% if(!solicitacoes.some(s=>s.status==='pendente')) { %><tr>
+                  <td colspan="6">Nenhuma solicitação pendente.</td>
+              </tr><% } %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="pag-bloco">
+        <h2>Histórico de solicitações</h2>
+        <div class="pag-rolagem">
+          <table>
+            <thead>
+              <tr>
+                <th>Pedido</th>
+                <th>Cliente</th>
+                <th>Motivo</th>
+                <th>Status</th>
+                <th>Data</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% for(const s of solicitacoes.filter(s=>s.status!=='pendente')) { %><tr>
+                  <td><%= s.numero %></td>
+                  <td><%= s.cliente_nome %></td>
+                  <td><%= s.motivo %></td>
+                  <td><%= s.status %></td>
+                  <td><%= new Date(s.criado_em).toLocaleDateString('pt-BR') %></td>
+              </tr><% } %>
+              <% if(!solicitacoes.some(s=>s.status!=='pendente')) { %><tr>
+                  <td colspan="5">Nenhum registro concluído.</td>
+              </tr><% } %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+    </div>
+  </body>
+</html>

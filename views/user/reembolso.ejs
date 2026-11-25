@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <%- include('../../components/lojaHead') %>
+    <link rel="stylesheet" href="/styles/checkout.css">
+    <title>Solicitar reembolso | Malbi Doll</title>
+  </head>
+  <body>
+    <%- include('../../components/cabecalho') %>
+    <main class="checkout-main">
+      <h1>Devolução e reembolso</h1>
+      <section class="checkout-card">
+        <h2>Pedido <%= pedido.numero %></h2>
+        <p>
+          <strong>Valor do pedido:</strong> <%= moeda(pedido.total) %></p>
+        <p>Os pagamentos deste ambiente são simulados; nenhum valor será transferido.</p>
+        <% if (solicitacao) { %>
+          <p>
+            <strong>Solicitação registrada:</strong> <%= {pendente:'Em análise', aprovado:'Aprovada', recusado:'Recusada'}[solicitacao.status] || solicitacao.status %></p>
+          <p>
+            <strong>Motivo:</strong> <%= solicitacao.motivo %></p>
+          <p><%= solicitacao.detalhes %></p>
+        <% } else if (['pago','aprovado'].includes(pedido.pagamento_status) && pedido.producao_status !== 'cancelado') { %>
+          <form method="post" action="/pedidos/<%= encodeURIComponent(pedido.numero) %>/reembolso" id="formReembolso">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <label for="motivo">Motivo da solicitação *</label>
+            <select id="motivo" name="motivo" required>
+              <option value="">Selecione uma justificativa</option>
+              <% for (const motivo of ['Produto com defeito','Produto danificado no transporte','Produto diferente do solicitado','Produto não recebido','Arrependimento da compra','Outro motivo']) { %>
+                <option value="<%= motivo %>"><%= motivo %></option>
+              <% } %>
+            </select>
+            <label for="detalhes">Detalhamento breve * (até 50 caracteres)</label>
+            <textarea id="detalhes" name="detalhes" maxlength="50" rows="3" required placeholder="Descreva brevemente o ocorrido">
+            </textarea>
+            <p id="contador" aria-live="polite">0/50 caracteres</p>
+            <button class="checkout-botao" type="submit">Enviar solicitação</button>
+          </form>
+        <% } else { %>
+          <p>Não há solicitação disponível para este pedido no momento.</p>
+        <% } %>
+        <p>
+          <a href="/pedidos/<%= encodeURIComponent(pedido.numero) %>">Voltar aos detalhes do pedido</a>
+        </p>
+      </section>
+    </main>
+    <style>
+      #formReembolso{display:grid;gap:12px;margin-top:18px}
+      #formReembolso select,#formReembolso textarea{width:100%;padding:12px;border:1px solid #a9a9a9;border-radius:9px;background:transparent;color:inherit;font:inherit}
+      #contador{text-align:right;font-size:.85rem;margin:0}
+    </style>
+    <script>
+      const detalhes=document.getElementById('detalhes');
+      if(detalhes){detalhes.addEventListener('input',()=>{document.getElementById('contador').textContent=detalhes.value.length+'/50 caracteres'})}
+    </script>
+    <%- include('../../components/rodape') %>
+    <%- include('../../components/chatAtendimento') %>
+  </body>
+</html>

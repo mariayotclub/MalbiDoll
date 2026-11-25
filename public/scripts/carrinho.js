@@ -1,27 +1,28 @@
 (() => {
   const KEY = 'malbidoll_carrinho_v1';
   let itens = [];
-  
+
   try {
     const v = JSON.parse(localStorage.getItem(KEY) || '[]');
     if (Array.isArray(v)) {
       itens = v.filter(x => Number.isInteger(x.id) && x.id > 0 && Number.isInteger(x.qtd) && x.qtd > 0).slice(0, 100);
     }
-  } catch {}
+  } catch { }
 
   const $ = id => document.getElementById(id);
   const painel = $('carrinhoPainel');
   const fundo = $('carrinhoFundo');
   const lista = $('listaCarrinho');
+  const finalizar = $('finalizarCarrinho');
 
   if (!painel || !fundo || !lista) return;
 
   const dinheiro = n => Number(n).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  const salvar = () => { 
-    localStorage.setItem(KEY, JSON.stringify(itens)); 
-    render(); 
+  const salvar = () => {
+    localStorage.setItem(KEY, JSON.stringify(itens));
+    render();
   };
-  
+
   const abrir = () => {
     painel.classList.add('aberto');
     painel.setAttribute('aria-hidden', 'false');
@@ -60,7 +61,7 @@
       img.alt = '';
 
       const info = document.createElement('div');
-      
+
       const title = document.createElement('strong');
       title.textContent = i.nome;
 
@@ -108,7 +109,8 @@
 
     $('totalCarrinho').textContent = dinheiro(total);
     $('contadorCarrinho').textContent = quantidade;
-    
+    finalizar.disabled = !itens.length;
+
     document.querySelectorAll('[data-carrinho-contagem]').forEach(el => {
       el.textContent = quantidade;
     });
@@ -117,10 +119,10 @@
   document.querySelectorAll('[data-abrir-carrinho]').forEach(btn => {
     btn.addEventListener('click', abrir);
   });
-  
+
   $('fecharCarrinho').addEventListener('click', fechar);
   fundo.addEventListener('click', fechar);
-  
+
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') fechar();
   });
@@ -131,16 +133,16 @@
       try {
         const r = await fetch('/api/bonecas/' + btn.dataset.adicionar);
         if (!r.ok) throw Error();
-        
+
         const b = await r.json();
         const atual = itens.find(x => x.id === b.id);
-        
+
         if (atual) {
           atual.qtd = Math.min(99, atual.qtd + 1);
         } else {
           itens.push({ ...b, qtd: 1 });
         }
-        
+
         salvar();
         abrir();
       } catch {
@@ -149,6 +151,30 @@
         btn.disabled = false;
       }
     });
+  });
+
+  finalizar.addEventListener('click', async () => {
+    finalizar.disabled = true;
+    try {
+      const resposta = await fetch('/checkout/preparar-carrinho', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
+        },
+        body: JSON.stringify({ itens: itens.map(item => ({ id: item.id, qtd: item.qtd })) })
+      });
+      if (resposta.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
+      const resultado = await resposta.json();
+      if (!resposta.ok) throw new Error(resultado.erro || 'Não foi possível preparar a compra.');
+      window.location.href = resultado.destino;
+    } catch (erro) {
+      alert(erro.message);
+      finalizar.disabled = !itens.length;
+    }
   });
 
   render();

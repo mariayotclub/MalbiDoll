@@ -1,73 +1,258 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>
-      Administração | Malbi Doll
-    </title>
     <%- include('../../components/lojaHead') %>
+    <link rel="stylesheet" href="/styles/temaEscuro.css">
+    <title>Dashboard administrativo | Malbi Doll</title>
+    <link rel="stylesheet" href="/styles/dashboardNavegacao.css">
   </head>
   <body>
     <%- include('../../components/cabecalho') %>
-    <main class="loja-main secao-loja">
-      <span class="etiqueta">
-        PAINEL DE CONTROLE
-      </span>
-      <h1>
-        Administração Malbi Doll
-      </h1>
-      <p>
-        Escolha a área que deseja gerenciar.
-      </p>
-      <div class="admin-grid">
-        <a href="/admin/bonecas" class="admin-card">
-          <span>
-            01
-          </span>
-          <h2>
-            Bonecas prontas (NP)
-          </h2>
-          <p>
-            Cadastre imagens PNG, nomes, descrições e preços.
-          </p>
-          <b>
-            Gerenciar →
-          </b>
-        </a>
-        <a href="/admin/itens" class="admin-card">
-          <span>
-            02
-          </span>
-          <h2>
-            Itens do armário
-          </h2>
-          <p>
-            Veja os itens cadastrados e acesse o CRUD existente.
-          </p>
-          <b>
-            Ver itens →
-          </b>
-        </a>
-        <a href="/admin/armario" class="admin-card">
-          <span>
-            03
-          </span>
-          <h2>
-            Armário e pontos
-          </h2>
-          <p>
-            Abra o editor administrativo de SVGs e pontos.
-          </p>
-          <b>
-            Abrir editor →
-          </b>
-        </a>
-      </div>
-      <p class="aviso-admin">
-        Atenção: estas rotas estão sem login, apenas para desenvolvimento local. Proteja /admin antes de publicar.
-      </p>
-    </main>
+    <div class="dashboard-layout">
+      <%- include('../../components/dashboardMenu', { paginaAtual: 'dashboard' }) %>
+      <main class="dashboard-conteudo">
+        <header class="dashboard-cabecalho">
+          <div>
+            <span class="etiqueta">VISÃO GERAL</span>
+            <h1>Dashboard administrativo</h1>
+          </div>
+          <form method="get" action="/admin" class="dashboard-periodo">
+            <label for="dashboardPeriodo">Período do gráfico</label>
+            <select id="dashboardPeriodo" name="periodo">
+              <option value="6" <%= periodo === 6 ? 'selected' : '' %>>Últimos 6 meses</option>
+              <option value="12" <%= periodo === 12 ? 'selected' : '' %>>Últimos 12 meses</option>
+            </select>
+            <button type="submit">Aplicar</button>
+          </form>
+        </header>
+
+        <div class="dashboard-indicadores">
+          <div class="dashboard-metrica">
+            <span>Pedidos recebidos</span>
+            <strong><%= indicadores.pedidos %></strong>
+          </div>
+          <div class="dashboard-metrica">
+            <span>Pedidos pagos</span>
+            <strong><%= indicadores.pagos %></strong>
+          </div>
+          <div class="dashboard-metrica">
+            <span>Faturamento registrado</span>
+            <strong><%= moeda(indicadores.faturamento) %></strong>
+          </div>
+          <div class="dashboard-metrica">
+            <span>Pagamentos pendentes</span>
+            <strong><%= indicadores.pendentes %></strong>
+          </div>
+          <div class="dashboard-metrica">
+            <span>Bonecas NP ativas</span>
+            <strong><%= indicadores.bonecas %></strong>
+          </div>
+          <div class="dashboard-metrica">
+            <span>Itens do armário</span>
+            <strong><%= indicadores.itens %></strong>
+          </div>
+          <div class="dashboard-metrica">
+            <span>Clientes cadastrados</span>
+            <strong><%= indicadores.clientes %></strong>
+          </div>
+          <div class="dashboard-metrica">
+            <span>Pedidos entregues</span>
+            <strong><%= indicadores.entregues %></strong>
+          </div>
+        </div>
+        <p class="dashboard-nota">Os pagamentos são simulados. O faturamento representa os pedidos marcados como pagos, não valores recebidos.</p>
+
+        <section class="dashboard-graficos" aria-label="Desempenho da loja">
+          <div class="dashboard-secao dashboard-grafico">
+            <div class="dashboard-secao-topo">
+              <h2>Faturamento mensal</h2>
+              <a href="/admin/pagamentos">Pagamentos</a>
+            </div>
+            <% const maiorReceita = Math.max(1, ...receitaMensal.map(mes => Number(mes.total) || 0)); %>
+            <div class="dashboard-barras" role="img" aria-label="Faturamento dos últimos <%= periodo %> meses">
+              <% receitaMensal.forEach(mes => { %>
+                <% const valor = Number(mes.total) || 0; %>
+                <div class="dashboard-barra-coluna" title="<%= mes.rotulo %>: <%= moeda(valor) %>">
+                  <small><%= moeda(valor) %></small>
+                  <div class="dashboard-barra-trilho">
+                    <div class="dashboard-barra" style="height: <%= valor ? Math.max(4, (valor / maiorReceita) * 100) : 0 %>%"></div>
+                  </div>
+                  <span><%= mes.rotulo %></span>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+          <div class="dashboard-secao">
+            <div class="dashboard-secao-topo">
+              <h2>Vendas por tipo</h2>
+              <a href="/admin/pedidos">Pedidos</a>
+            </div>
+            <% const totalPorTipo = vendasPorTipo.reduce((soma, tipo) => soma + Number(tipo.quantidade), 0); %>
+            <div class="dashboard-tipos">
+              <% ['np', 'personalizada'].forEach(tipo => { %>
+                <% const dados = vendasPorTipo.find(item => item.tipo === tipo) || { quantidade: 0, faturamento: 0 }; %>
+                <div class="dashboard-tipo-linha">
+                  <div>
+                    <span><%= tipo === 'np' ? 'Bonecas prontas' : 'Bonecas personalizadas' %></span>
+                    <strong><%= dados.quantidade %> <%= Number(dados.quantidade) === 1 ? 'pedido' : 'pedidos' %></strong>
+                  </div>
+                  <div class="dashboard-tipo-trilho" aria-hidden="true">
+                    <div style="width: <%= totalPorTipo ? Number(dados.quantidade) / totalPorTipo * 100 : 0 %>%"></div>
+                  </div>
+                  <small><%= moeda(dados.faturamento) %></small>
+                </div>
+              <% }) %>
+              <% if (!totalPorTipo) { %>
+                <p class="dashboard-vazio">Nenhuma venda registrada.</p>
+              <% } %>
+            </div>
+          </div>
+        </section>
+
+        <section class="dashboard-secao">
+          <div class="dashboard-secao-topo">
+            <h2>Relatórios</h2>
+            <a href="/admin/pagamentos/exportar">Exportar vendas (CSV)</a>
+          </div>
+          <div class="dashboard-relatorios">
+            <div>
+              <h3>Bonecas prontas mais vendidas</h3>
+              <div class="dashboard-tabela-rolagem">
+                <table class="dashboard-tabela">
+                  <thead>
+                    <tr><th>Produto</th><th>Unidades</th></tr>
+                  </thead>
+                  <tbody>
+                    <% maisVendidos.forEach(item => { %>
+                      <tr>
+                        <td><%= item.nome %></td>
+                        <td><%= item.quantidade %></td>
+                      </tr>
+                    <% }) %>
+                    <% if (!maisVendidos.length) { %>
+                      <tr><td colspan="2">Nenhuma venda registrada.</td></tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div>
+              <h3>Itens de personalização mais escolhidos</h3>
+              <div class="dashboard-tabela-rolagem">
+                <table class="dashboard-tabela">
+                  <thead>
+                    <tr><th>Item</th><th>Seleções</th></tr>
+                  </thead>
+                  <tbody>
+                    <% maisEscolhidos.forEach(item => { %>
+                      <tr>
+                        <td><%= item.nome %></td>
+                        <td><%= item.quantidade %></td>
+                      </tr>
+                    <% }) %>
+                    <% if (!maisEscolhidos.length) { %>
+                      <tr><td colspan="2">Nenhuma personalização vendida.</td></tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="dashboard-secao">
+          <div class="dashboard-secao-topo">
+            <h2>Pedidos recentes</h2>
+            <a href="/admin/pedidos">Ver todos os pedidos</a>
+          </div>
+          <div class="dashboard-tabela-rolagem">
+            <table class="dashboard-tabela">
+              <thead>
+                <tr>
+                  <th>Pedido</th>
+                  <th>Cliente</th>
+                  <th>Tipo</th>
+                  <th>Data</th>
+                  <th>Valor</th>
+                  <th>Pagamento</th>
+                  <th>Produção</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% recentes.forEach(pedido => { %>
+                  <tr>
+                    <td><%= pedido.numero %></td>
+                    <td><%= pedido.cliente_nome %></td>
+                    <td><%= pedido.tipo === 'np' ? 'Boneca NP' : 'Personalizada' %></td>
+                    <td><%= new Date(pedido.criado_em).toLocaleDateString('pt-BR') %></td>
+                    <td><%= moeda(pedido.total) %></td>
+                    <td><%= pedido.pagamento_status %></td>
+                    <td><%= pedido.producao_status %></td>
+                  </tr>
+                <% }) %>
+                <% if (!recentes.length) { %>
+                  <tr><td colspan="7">Ainda não há pedidos cadastrados.</td></tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="dashboard-secao">
+          <div class="dashboard-secao-topo">
+            <h2>Histórico de vendas entregues</h2>
+            <a href="/admin/entregas?aba=historico">Ver histórico completo</a>
+          </div>
+          <div class="dashboard-tabela-rolagem">
+            <table class="dashboard-tabela">
+              <thead>
+                <tr><th>Pedido</th><th>Cliente</th><th>Tipo</th><th>Entregue em</th><th>Valor</th></tr>
+              </thead>
+              <tbody>
+                <% entregues.forEach(pedido => { %>
+                  <tr>
+                    <td><%= pedido.numero %></td>
+                    <td><%= pedido.cliente_nome %></td>
+                    <td><%= pedido.tipo === 'np' ? 'Boneca NP' : 'Personalizada' %></td>
+                    <td><%= pedido.entregue_em ? new Date(pedido.entregue_em).toLocaleDateString('pt-BR') : 'Não informada' %></td>
+                    <td><%= moeda(pedido.total) %></td>
+                  </tr>
+                <% }) %>
+                <% if (!entregues.length) { %>
+                  <tr><td colspan="5">Ainda não há entregas concluídas.</td></tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="dashboard-secao">
+          <div class="dashboard-secao-topo">
+            <h2>Logs e auditoria</h2>
+          </div>
+          <div class="dashboard-tabela-rolagem">
+            <table class="dashboard-tabela">
+              <thead>
+                <tr><th>Data</th><th>Ação</th><th>Detalhes</th><th>Responsável</th></tr>
+              </thead>
+              <tbody>
+                <% atividades.forEach(atividade => { %>
+                  <tr>
+                    <td><%= new Date(atividade.criado_em).toLocaleString('pt-BR') %></td>
+                    <td><%= atividade.acao %></td>
+                    <td class="dashboard-descricao"><%= atividade.descricao %></td>
+                    <td><%= atividade.responsavel %></td>
+                  </tr>
+                <% }) %>
+                <% if (!atividades.length) { %>
+                  <tr><td colspan="4">Nenhuma alteração registrada.</td></tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
     <%- include('../../components/carrinho') %>
   </body>
 </html>

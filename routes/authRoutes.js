@@ -1,64 +1,102 @@
-import {Router} from 'express';
+import { Router } from 'express';
 import crypto from 'node:crypto';
 import argon2 from 'argon2';
 import nodemailer from 'nodemailer';
 import multer from 'multer';
 import pool from '../config/database.js';
-import {Usuario} from '../models/usuarioModel.js';
-import {exigirLogin,csrf} from '../middlewares/acesso.js';
-const router=Router();
-const pagina=(res,titulo,corpo,erro='')=>res.render('auth/form',{titulo,corpo,erro});
-const seguroRetorno=(s)=>typeof s==='string' && s.startsWith('/') && !s.startsWith('//') && !s.includes('\\') ? s : '/perfil';
-const upload=multer({storage:multer.memoryStorage(),limits:{fileSize:2*1024*1024}});
-function tipoFoto(b){if(b?.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))return 'image/png';if(b?.[0]===255&&b?.[1]===216&&b?.[2]===255)return 'image/jpeg';if(b?.toString('ascii',0,4)==='RIFF'&&b?.toString('ascii',8,12)==='WEBP')return 'image/webp';return null}
-router.get('/cadastro',(req,res)=>pagina(res,'Criar conta','cadastro'));
-router.post('/cadastro',async(req,res,next)=>{try{const nome=String(req.body.nome||'').trim(),email=String(req.body.email||'').trim().toLowerCase(),senha=String(req.body.senha||'');if(nome.length<2||nome.length>100||!/^\S+@\S+\.\S+$/.test(email)||email.length>255||senha.length<12||senha.length>128)return pagina(res,'Criar conta','cadastro','Confira os dados. A senha deve ter entre 12 e 128 caracteres.');if(await Usuario.email(email))return pagina(res,'Criar conta','cadastro','Não foi possível cadastrar este e-mail.');const u=await Usuario.criar(nome,email,await argon2.hash(senha,{type:argon2.argon2id}));req.session.regenerate(e=>{if(e)return next(e);req.session.usuarioId=u.id;res.redirect('/perfil')})}catch(e){if(e.code==='23505')return pagina(res,'Criar conta','cadastro','Não foi possível cadastrar este e-mail.');next(e)}});
-router.get('/login',(req,res)=>pagina(res,'Entrar','login'));
-router.post('/login',async(req,res,next)=>{try{const email=String(req.body.email||'').trim().toLowerCase(),senha=String(req.body.senha||'');const u=await Usuario.email(email);if(!u||!(await argon2.verify(u.senha_hash,senha)))return pagina(res,'Entrar','login','E-mail ou senha inválidos.');req.session.regenerate(e=>{if(e)return next(e);req.session.usuarioId=u.id;res.redirect(seguroRetorno(req.body.retorno))})}catch(e){next(e)}});
-router.post('/logout',(req,res,next)=>req.session.destroy(e=>e?next(e):res.redirect('/')));
-router.get('/perfil', (req,res) => res.redirect('/?perfil=abrir'));
-router.get('/usuarios/:id/foto',async(req,res,next)=>{try{const u=await Usuario.foto(Number(req.params.id));if(!u?.foto)return res.sendStatus(404);res.set('Content-Type',u.foto_tipo);res.set('X-Content-Type-Options','nosniff');res.send(u.foto)}catch(e){next(e)}});
-router.post('/perfil/foto',exigirLogin,upload.single('foto'),csrf,async(req,res,next)=>{try{const tipo=tipoFoto(req.file?.buffer);if(!tipo)return res.status(400).send('Use PNG, JPG ou WEBP de até 2 MB.');await Usuario.atualizarFoto(req.usuario.id,req.file.buffer,tipo);res.redirect('/perfil')}catch(e){next(e)}});
-const texto=(v,max=120)=>String(v||'').trim().slice(0,max);
-const voltar=(res,msg)=>res.redirect('/?perfil=abrir&perfil_msg='+encodeURIComponent(msg));
-router.post('/perfil/dados',exigirLogin,async(req,res,next)=>{try{const nome=texto(req.body.nome,100),apelido=texto(req.body.apelido,40);if(nome.length<2)return voltar(res,'Informe um nome com pelo menos 2 caracteres.');await Usuario.atualizarNome(req.usuario.id,nome,apelido||null);voltar(res,'Dados atualizados.')}catch(e){next(e)}});
-router.post('/perfil/foto/remover',exigirLogin,async(req,res,next)=>{try{await Usuario.removerFoto(req.usuario.id);voltar(res,'Foto removida.')}catch(e){next(e)}});
-router.post('/perfil/senha',exigirLogin,async(req,res,next)=>{try{const atual=String(req.body.senha_atual||''),nova=String(req.body.nova_senha||'');const u=await Usuario.senha(req.usuario.id);if(!u||!(await argon2.verify(u.senha_hash,atual)))return voltar(res,'Senha atual incorreta.');if(nova.length<12||nova.length>128)return voltar(res,'A nova senha precisa ter de 12 a 128 caracteres.');await Usuario.alterarSenha(req.usuario.id,await argon2.hash(nova,{type:argon2.argon2id}));voltar(res,'Senha alterada.')}catch(e){next(e)}});
-const endereco=(b)=>({apelido:texto(b.destinatario,50),cep:texto(b.cep,9).replace(/\D/g, ''),logradouro:texto(b.logradouro,150),numero:texto(b.numero,20),complemento:texto(b.complemento,100),bairro:texto(b.bairro,100),cidade:texto(b.cidade,100),estado:texto(b.estado,2).toUpperCase(),principal:b.principal==='on'});
-const valido=(d)=>/^\d{5}-?\d{3}$/.test(d.cep)&&d.logradouro&&d.numero&&d.bairro&&d.cidade&&/^(AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)$/.test(d.estado);
-router.post('/perfil/enderecos',exigirLogin,async(req,res,next)=>{try{const d=endereco(req.body);if(!valido(d))return voltar(res,'Confira os campos do endereço.');await Usuario.salvarEndereco(req.usuario.id,d);voltar(res,'Endereço adicionado.')}catch(e){next(e)}});
-router.post('/perfil/enderecos/:id/editar',exigirLogin,async(req,res,next)=>{try{const d=endereco(req.body);if(!valido(d))return voltar(res,'Confira os campos do endereço.');await Usuario.editarEndereco(req.usuario.id,Number(req.params.id),d);voltar(res,'Endereço atualizado.')}catch(e){next(e)}});
-router.post('/perfil/enderecos/:id/excluir',exigirLogin,async(req,res,next)=>{try{await Usuario.excluirEndereco(req.usuario.id,Number(req.params.id));voltar(res,'Endereço excluído.')}catch(e){next(e)}});
-router.post('/perfil/enderecos/:id/principal',exigirLogin,async(req,res,next)=>{try{await Usuario.principalEndereco(req.usuario.id,Number(req.params.id));voltar(res,'Endereço principal atualizado.')}catch(e){next(e)}});
+import { Usuario } from '../models/usuarioModel.js';
+import { exigirLogin, csrf } from '../middlewares/acesso.js';
+const router = Router();
+const pagina = (res, titulo, corpo, erro = '') => res.render('auth/form', { titulo, corpo, erro });
+const seguroRetorno = (s) => typeof s === 'string' && s.startsWith('/') && !s.startsWith('//') && !s.includes('\\') ? s : '/perfil';
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
+function tipoFoto(b) { if (b?.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) return 'image/png'; if (b?.[0] === 255 && b?.[1] === 216 && b?.[2] === 255) return 'image/jpeg'; if (b?.toString('ascii', 0, 4) === 'RIFF' && b?.toString('ascii', 8, 12) === 'WEBP') return 'image/webp'; return null }
+router.get('/cadastro', (req, res) => pagina(res, 'Criar conta', 'cadastro'));
+router.post('/cadastro', async (req, res, next) => { try { const nome = String(req.body.nome || '').trim(), email = String(req.body.email || '').trim().toLowerCase(), senha = String(req.body.senha || ''); if (nome.length < 2 || nome.length > 100 || !/^\S+@\S+\.\S+$/.test(email) || email.length > 255 || senha.length < 8 || senha.length > 128) return pagina(res, 'Criar conta', 'cadastro', 'Confira os dados. A senha deve ter entre 8 e 128 caracteres.'); if (await Usuario.email(email)) return pagina(res, 'Criar conta', 'cadastro', 'Não foi possível cadastrar este e-mail.'); const u = await Usuario.criar(nome, email, await argon2.hash(senha, { type: argon2.argon2id })); req.session.regenerate(e => { if (e) return next(e); req.session.usuarioId = u.id; res.redirect('/perfil') }) } catch (e) { if (e.code === '23505') return pagina(res, 'Criar conta', 'cadastro', 'Não foi possível cadastrar este e-mail.'); next(e) } });
+router.get('/conta-bloqueada', async (req, res, next) => { try { if (!req.session.contaBloqueadaId) return res.redirect('/login'); const u = await Usuario.id(req.session.contaBloqueadaId); if (!u?.bloqueado_em) { delete req.session.contaBloqueadaId; return res.redirect('/login') } const nomes = { fraude: 'Suspeita de fraude', seguranca: 'Segurança da conta', abuso: 'Abuso da plataforma', conteudo: 'Conteúdo inadequado', termos: 'Violação dos termos', solicitacao: 'Solicitação do cliente' }; res.status(403).render('auth/bloqueada', { motivo: nomes[u.bloqueio_motivo] || u.bloqueio_motivo || 'Bloqueio administrativo', detalhes: u.bloqueio_detalhes || '' }) } catch (e) { next(e) } });
+router.get('/login', (req, res) => pagina(res, 'Entrar', 'login'));
+router.post('/login', async (req, res, next) => { try { const email = String(req.body.email || '').trim().toLowerCase(), senha = String(req.body.senha || ''); const u = await Usuario.email(email); if (!u || !(await argon2.verify(u.senha_hash, senha))) return pagina(res, 'Entrar', 'login', 'E-mail ou senha inválidos.'); if (u.bloqueado_em) { req.session.contaBloqueadaId = u.id; return res.redirect('/conta-bloqueada'); } delete req.session.contaBloqueadaId; req.session.regenerate(e => { if (e) return next(e); req.session.usuarioId = u.id; res.redirect(seguroRetorno(req.body.retorno || (u.tipo === 'admin' ? '/admin' : '/perfil'))) }) } catch (e) { next(e) } });
+router.post('/logout', (req, res, next) => req.session.destroy(e => e ? next(e) : res.redirect('/')));
+router.get('/perfil', (req, res) => res.redirect('/?perfil=abrir'));
+router.get('/usuarios/:id/foto', async (req, res, next) => { try { const u = await Usuario.foto(Number(req.params.id)); if (!u?.foto) return res.sendStatus(404); res.set('Content-Type', u.foto_tipo); res.set('X-Content-Type-Options', 'nosniff'); res.send(u.foto) } catch (e) { next(e) } });
+router.post('/perfil/foto', exigirLogin, upload.single('foto'), csrf, async (req, res, next) => { try { const tipo = tipoFoto(req.file?.buffer); if (!tipo) return res.status(400).send('Use PNG, JPG ou WEBP de até 2 MB.'); await Usuario.atualizarFoto(req.usuario.id, req.file.buffer, tipo); res.redirect('/perfil') } catch (e) { next(e) } });
+const texto = (v, max = 120) => String(v || '').trim().slice(0, max);
+const voltar = (res, msg) => res.redirect('/?perfil=abrir&perfil_msg=' + encodeURIComponent(msg));
+router.post('/perfil/dados', exigirLogin, async (req, res, next) => {
+  try {
+    const nome = texto(req.body.nome, 100);
+    const apelido = texto(req.body.apelido, 40);
+    const email = texto(req.body.email, 255).toLowerCase();
+    if (nome.length < 2 || !/^\S+@\S+\.\S+$/.test(email)) {
+      return voltar(res, 'Confira o nome e o e-mail.');
+    }
+    const existente = await Usuario.email(email);
+    if (existente && existente.id !== req.usuario.id) {
+      return voltar(res, 'Este e-mail já está cadastrado.');
+    }
+    await Usuario.atualizarPerfil(req.usuario.id, nome, apelido || null, email);
+    return voltar(res, 'Dados atualizados.');
+  } catch (erro) {
+    if (erro.code === '23505') return voltar(res, 'Nome de usuário ou e-mail indisponível.');
+    next(erro);
+  }
+});
+router.post('/perfil/carteira', exigirLogin, (req, res) => {
+  const bandeira = String(req.body.bandeira || '');
+  const final = String(req.body.final || '');
+  if (!['Visa', 'Mastercard', 'Elo', 'Outra'].includes(bandeira) || !/^\d{4}$/.test(final)) {
+    return voltar(res, 'Informe a bandeira e os últimos quatro dígitos.');
+  }
+  const cartoes = (req.session.cartoesTeste || []).filter(c => c.usuarioId === req.usuario.id);
+  if (cartoes.length >= 5) return voltar(res, 'Limite de cartões demonstrativos atingido.');
+  req.session.cartoesTeste = [...(req.session.cartoesTeste || []), {
+    id: crypto.randomUUID(), usuarioId: req.usuario.id, bandeira, final
+  }];
+  return voltar(res, 'Cartão demonstrativo adicionado.');
+});
+router.post('/perfil/carteira/:id/excluir', exigirLogin, (req, res) => {
+  req.session.cartoesTeste = (req.session.cartoesTeste || []).filter(c =>
+    c.usuarioId !== req.usuario.id || c.id !== req.params.id
+  );
+  return voltar(res, 'Cartão demonstrativo removido.');
+});
+router.post('/perfil/foto/remover', exigirLogin, async (req, res, next) => { try { await Usuario.removerFoto(req.usuario.id); voltar(res, 'Foto removida.') } catch (e) { next(e) } });
+router.post('/perfil/senha', exigirLogin, async (req, res, next) => { try { const atual = String(req.body.senha_atual || ''), nova = String(req.body.nova_senha || ''); const u = await Usuario.senha(req.usuario.id); if (!u || !(await argon2.verify(u.senha_hash, atual))) return voltar(res, 'Senha atual incorreta.'); if (nova.length < 8 || nova.length > 128) return voltar(res, 'A nova senha precisa ter de 8 a 128 caracteres.'); await Usuario.alterarSenha(req.usuario.id, await argon2.hash(nova, { type: argon2.argon2id })); voltar(res, 'Senha alterada.') } catch (e) { next(e) } });
+const endereco = (b) => ({ apelido: texto(b.destinatario, 50), cep: texto(b.cep, 9).replace(/\D/g, ''), logradouro: texto(b.logradouro, 150), numero: texto(b.numero, 20), complemento: texto(b.complemento, 100), bairro: texto(b.bairro, 100), cidade: texto(b.cidade, 100), estado: texto(b.estado, 2).toUpperCase(), principal: b.principal === 'on' });
+const valido = (d) => /^\d{5}-?\d{3}$/.test(d.cep) && d.logradouro && d.numero && d.bairro && d.cidade && /^(AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)$/.test(d.estado);
+router.post('/perfil/enderecos', exigirLogin, async (req, res, next) => { try { const d = endereco(req.body); if (!valido(d)) return voltar(res, 'Confira os campos do endereço.'); await Usuario.salvarEndereco(req.usuario.id, d); voltar(res, 'Endereço adicionado.') } catch (e) { next(e) } });
+router.post('/perfil/enderecos/:id/editar', exigirLogin, async (req, res, next) => { try { const d = endereco(req.body); if (!valido(d)) return voltar(res, 'Confira os campos do endereço.'); await Usuario.editarEndereco(req.usuario.id, Number(req.params.id), d); voltar(res, 'Endereço atualizado.') } catch (e) { next(e) } });
+router.post('/perfil/enderecos/:id/excluir', exigirLogin, async (req, res, next) => { try { await Usuario.excluirEndereco(req.usuario.id, Number(req.params.id)); voltar(res, 'Endereço excluído.') } catch (e) { next(e) } });
+router.post('/perfil/enderecos/:id/principal', exigirLogin, async (req, res, next) => { try { await Usuario.principalEndereco(req.usuario.id, Number(req.params.id)); voltar(res, 'Endereço principal atualizado.') } catch (e) { next(e) } });
 
 // Exclui a conta autenticada somente após confirmar a senha.
 // As tabelas vinculadas utilizam suas regras de chave estrangeira
 // (CASCADE ou SET NULL), preservando avaliações sem autor.
 router.post('/perfil/excluir-conta', exigirLogin, async (req, res, next) => {
-    const senha = String(req.body.senha_confirmacao || '');
-    try {
-        const usuario = await Usuario.senha(req.usuario.id);
+  const senha = String(req.body.senha_confirmacao || '');
+  try {
+    const usuario = await Usuario.senha(req.usuario.id);
 
-        if (!usuario || !(await argon2.verify(usuario.senha_hash, senha))) {
-            return voltar(res, 'Senha incorreta. A conta não foi excluída.');
-        }
-
-        await Usuario.excluirConta(req.usuario.id);
-
-        req.session.destroy((erro) => {
-            if (erro) return next(erro);
-
-            res.clearCookie('connect.sid');
-            res.redirect('/?conta_excluida=1');
-        });
-    } catch (erro) {
-        next(erro);
+    if (!usuario || !(await argon2.verify(usuario.senha_hash, senha))) {
+      return voltar(res, 'Senha incorreta. A conta não foi excluída.');
     }
+
+    await Usuario.excluirConta(req.usuario.id);
+
+    req.session.destroy((erro) => {
+      if (erro) return next(erro);
+
+      res.clearCookie('connect.sid');
+      res.redirect('/?conta_excluida=1');
+    });
+  } catch (erro) {
+    next(erro);
+  }
 });
 
-router.get('/recuperar-senha',(req,res)=>pagina(res,'Recuperar senha','recuperar'));
-router.post('/recuperar-senha',async(req,res,next)=>{try{const email=String(req.body.email||'').trim().toLowerCase();const u=await Usuario.email(email);if(u){const token=crypto.randomBytes(32).toString('hex'),hash=crypto.createHash('sha256').update(token).digest('hex');await pool.query('INSERT INTO recuperacoes_senha(usuario_id,token_hash,expira_em) VALUES($1,$2,NOW()+INTERVAL \'30 minutes\')',[u.id,hash]);if(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS && process.env.APP_URL){const transport=nodemailer.createTransport({host:process.env.SMTP_HOST,port:Number(process.env.SMTP_PORT||587),secure:process.env.SMTP_PORT==='465',auth:{user:process.env.SMTP_USER,pass:process.env.SMTP_PASS}});await transport.sendMail({from:process.env.SMTP_FROM||process.env.SMTP_USER,to:u.email,subject:'Recuperação de senha Malbi Doll',text:`Acesse ${process.env.APP_URL}/redefinir-senha/${token} (válido por 30 minutos).`})}else{console.warn('SMTP/APP_URL não configurados: e-mail de recuperação não enviado.')}}res.render('auth/aviso',{mensagem:'Se o e-mail estiver cadastrado, você receberá instruções para recuperar a senha.'})}catch(e){next(e)}});
-router.get('/redefinir-senha/:token',(req,res)=>res.render('auth/form',{titulo:'Nova senha',corpo:'redefinir',erro:'',token:req.params.token}));
-router.post('/redefinir-senha/:token',async(req,res,next)=>{const cliente=await pool.connect();try{const senha=String(req.body.senha||'');if(senha.length<12||senha.length>128)return res.render('auth/form',{titulo:'Nova senha',corpo:'redefinir',erro:'A senha deve ter de 12 a 128 caracteres.',token:req.params.token});const hash=crypto.createHash('sha256').update(req.params.token).digest('hex');await cliente.query('BEGIN');const r=await cliente.query('SELECT * FROM recuperacoes_senha WHERE token_hash=$1 AND usado_em IS NULL AND expira_em>NOW() FOR UPDATE',[hash]);if(!r.rows[0]){await cliente.query('ROLLBACK');return res.render('auth/form',{titulo:'Nova senha',corpo:'redefinir',erro:'Link inválido ou expirado.',token:req.params.token})}await cliente.query('UPDATE usuarios SET senha_hash=$1 WHERE id=$2',[await argon2.hash(senha,{type:argon2.argon2id}),r.rows[0].usuario_id]);await cliente.query('UPDATE recuperacoes_senha SET usado_em=NOW() WHERE usuario_id=$1 AND usado_em IS NULL',[r.rows[0].usuario_id]);await cliente.query('COMMIT');res.redirect('/login')}catch(e){await cliente.query('ROLLBACK');next(e)}finally{cliente.release()}});
-router.use((e,req,res,next)=>e instanceof multer.MulterError?res.status(400).send('Imagem muito grande.'):next(e));
+router.get('/recuperar-senha', (req, res) => pagina(res, 'Recuperar senha', 'recuperar'));
+router.post('/recuperar-senha', async (req, res, next) => { try { const email = String(req.body.email || '').trim().toLowerCase(); const u = await Usuario.email(email); if (u) { const token = crypto.randomBytes(32).toString('hex'), hash = crypto.createHash('sha256').update(token).digest('hex'); await pool.query('INSERT INTO recuperacoes_senha(usuario_id,token_hash,expira_em) VALUES($1,$2,NOW()+INTERVAL \'30 minutes\')', [u.id, hash]); if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS && process.env.APP_URL) { const transport = nodemailer.createTransport({ host: process.env.SMTP_HOST, port: Number(process.env.SMTP_PORT || 587), secure: process.env.SMTP_PORT === '465', auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } }); await transport.sendMail({ from: process.env.SMTP_FROM || process.env.SMTP_USER, to: u.email, subject: 'Recuperação de senha Malbi Doll', text: `Acesse ${process.env.APP_URL}/redefinir-senha/${token} (válido por 30 minutos).` }) } else { console.warn('SMTP/APP_URL não configurados: e-mail de recuperação não enviado.') } } res.render('auth/aviso', { mensagem: 'Se o e-mail estiver cadastrado, você receberá instruções para recuperar a senha.' }) } catch (e) { next(e) } });
+router.get('/redefinir-senha/:token', (req, res) => res.render('auth/form', { titulo: 'Nova senha', corpo: 'redefinir', erro: '', token: req.params.token }));
+router.post('/redefinir-senha/:token', async (req, res, next) => { const cliente = await pool.connect(); try { const senha = String(req.body.senha || ''); if (senha.length < 8 || senha.length > 128) return res.render('auth/form', { titulo: 'Nova senha', corpo: 'redefinir', erro: 'A senha deve ter de 8 a 128 caracteres.', token: req.params.token }); const hash = crypto.createHash('sha256').update(req.params.token).digest('hex'); await cliente.query('BEGIN'); const r = await cliente.query('SELECT * FROM recuperacoes_senha WHERE token_hash=$1 AND usado_em IS NULL AND expira_em>NOW() FOR UPDATE', [hash]); if (!r.rows[0]) { await cliente.query('ROLLBACK'); return res.render('auth/form', { titulo: 'Nova senha', corpo: 'redefinir', erro: 'Link inválido ou expirado.', token: req.params.token }) } await cliente.query('UPDATE usuarios SET senha_hash=$1 WHERE id=$2', [await argon2.hash(senha, { type: argon2.argon2id }), r.rows[0].usuario_id]); await cliente.query('UPDATE recuperacoes_senha SET usado_em=NOW() WHERE usuario_id=$1 AND usado_em IS NULL', [r.rows[0].usuario_id]); await cliente.query('COMMIT'); res.redirect('/login') } catch (e) { await cliente.query('ROLLBACK'); next(e) } finally { cliente.release() } });
+router.use((e, req, res, next) => e instanceof multer.MulterError ? res.status(400).send('Imagem muito grande.') : next(e));
 export default router;

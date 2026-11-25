@@ -1,40 +1,29 @@
-(() => {
-    const chave = 'malbidoll-favoritos';
-    const ler = () => {
-        try { return JSON.parse(localStorage.getItem(chave) || '[]'); } catch (_) { return []; }
-    };
-    const salvar = ids => localStorage.setItem(chave, JSON.stringify(ids));
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('[data-favorito-id]').forEach(botao => {
-            const id = String(botao.dataset.favoritoId);
-            const atualizar = () => {
-                const ativo = ler().includes(id);
-                botao.setAttribute('aria-pressed', String(ativo));
-                botao.textContent = ativo ? '♥ Remover dos favoritos' : '♡ Adicionar aos favoritos';
-            };
-            botao.addEventListener('click', () => {
-                const ids = ler();
-                salvar(ids.includes(id) ? ids.filter(item => item !== id) : [...ids, id]);
-                atualizar();
-            });
-            atualizar();
-        });
-        const lista = document.getElementById('listaFavoritos');
-        if (!lista) return;
-        const ids = ler();
-        if (!ids.length) { lista.textContent = 'Você ainda não adicionou bonecas aos favoritos.'; return; }
-        ids.forEach(async id => {
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-favorito-id]').forEach(botao => {
+        const id = botao.dataset.favoritoId;
+        botao.addEventListener('click', async () => {
+            if (botao.dataset.autenticado !== 'true') {
+                window.location.href = `/login?retorno=${encodeURIComponent(window.location.pathname)}`;
+                return;
+            }
+
+            botao.disabled = true;
             try {
-                const resposta = await fetch(`/api/bonecas/${encodeURIComponent(id)}`);
-                if (!resposta.ok) return;
-                const boneca = await resposta.json();
-                const item = document.createElement('p');
-                const link = document.createElement('a');
-                link.href = `/bonecas/${encodeURIComponent(id)}`;
-                link.textContent = boneca.nome;
-                item.append(link);
-                lista.append(item);
-            } catch (_) { /* Produto indisponível. */ }
+                const resposta = await fetch(`/api/favoritos/${encodeURIComponent(id)}`, {
+                    method: 'POST',
+                    headers: { 'x-csrf-token': botao.dataset.csrf }
+                });
+                if (!resposta.ok) throw new Error('Não foi possível atualizar os favoritos.');
+                const { favoritado } = await resposta.json();
+                botao.dataset.favoritado = String(favoritado);
+                botao.setAttribute('aria-pressed', String(favoritado));
+                botao.setAttribute('aria-label', favoritado ? 'Remover dos favoritos' : 'Adicionar aos favoritos');
+                botao.title = botao.getAttribute('aria-label');
+            } catch (erro) {
+                alert(erro.message);
+            } finally {
+                botao.disabled = false;
+            }
         });
     });
-})();
+});

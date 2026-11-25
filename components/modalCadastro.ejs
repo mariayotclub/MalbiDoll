@@ -9,6 +9,7 @@
       </button>
     </div>
     <form id="formCadastrarItem" class="form-pontos" action="/armario/item" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <div class="campos-item">
         <div class="form-group">
           <label for="categoria_select">
@@ -172,7 +173,7 @@
           <div class="ancoras-grupos" aria-label="Tamanhos disponíveis">
           </div>
           <button type="button" class="ancoras-previa-btn">
-            Visualizar encaixe inicial
+            Visualizar adaptação
           </button>
           <small class="ancoras-previa-status" aria-live="polite">
           </small>
@@ -189,7 +190,7 @@
         </section>
         <div class="pontos-visual">
           <img class="ancoras-imagem-corpo" alt="Corpo de referência" hidden />
-          <svg class="ancoras-previa-svg" xmlns="http://www.w3.org/2000/svg" hidden aria-label="Prévia do encaixe inicial">
+          <svg class="ancoras-previa-svg" xmlns="http://www.w3.org/2000/svg" hidden aria-label="Prévia da adaptação">
           </svg>
           <img class="pontos-imagem" alt="Prévia do SVG" />
           <svg class="pontos-camada" xmlns="http://www.w3.org/2000/svg" aria-label="Área de marcação dos pontos">

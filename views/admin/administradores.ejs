@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <%- include('../../components/lojaHead') %>
+    <link rel="stylesheet" href="/styles/temaEscuro.css">
+    <title>Administradores | Malbi Doll</title>
+    <link rel="stylesheet" href="/styles/dashboardNavegacao.css">
+  </head>
+  <body>
+    <%- include('../../components/cabecalho') %>
+    <div class="dashboard-layout">
+      <%- include('../../components/dashboardMenu', { paginaAtual: '/admin/administradores' }) %>
+      <main class="dashboard-conteudo">
+        <span class="etiqueta">GESTÃO</span>
+        <h1>Administradores</h1>
+
+        <% const avisos = {
+          adicionado: 'Conta promovida a administrador.',
+          removido: 'Permissão administrativa removida.',
+          inexistente: 'Nenhuma conta encontrada com esse e-mail.',
+          existente: 'Essa conta já é administradora.',
+          invalido: 'Informe um e-mail válido.',
+          protegido: 'Não é possível remover a própria permissão administrativa.',
+          ultimo: 'A loja deve manter pelo menos um administrador.',
+          nao_encontrado: 'Administrador não encontrado.'
+        }; %>
+        <% if (avisos[mensagem]) { %>
+          <p class="dashboard-aviso" role="status"><%= avisos[mensagem] %></p>
+        <% } %>
+
+        <section class="dashboard-secao">
+          <div class="dashboard-secao-topo">
+            <h2>Adicionar administrador</h2>
+          </div>
+          <form class="dashboard-administrador-form" action="/admin/administradores/adicionar" method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <label for="emailAdministrador">E-mail de uma conta cadastrada</label>
+            <div>
+              <input id="emailAdministrador" type="email" name="email" placeholder="nome@exemplo.com" maxlength="255" required>
+              <button type="submit">Adicionar</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="dashboard-secao">
+          <div class="dashboard-secao-topo">
+            <h2>Contas administrativas</h2>
+            <span class="dashboard-total"><%= administradores.length %> <%= administradores.length === 1 ? 'administrador' : 'administradores' %></span>
+          </div>
+          <div class="dashboard-tabela-rolagem">
+            <table class="dashboard-tabela">
+              <thead>
+                <tr><th>Nome</th><th>E-mail</th><th>Cadastro</th><th>Status</th><th>Ações</th></tr>
+              </thead>
+              <tbody>
+                <% administradores.forEach(admin => { %>
+                  <tr>
+                    <td><strong><%= admin.nome %></strong><% if (admin.id === usuario.id) { %> <small>(você)</small><% } %></td>
+                    <td><%= admin.email %></td>
+                    <td><%= new Date(admin.criado_em).toLocaleDateString('pt-BR') %></td>
+                    <td><%= admin.bloqueado_em ? 'Bloqueado' : 'Ativo' %></td>
+                    <td>
+                      <% if (admin.id !== usuario.id && administradores.length > 1) { %>
+                        <form action="/admin/administradores/<%= admin.id %>/remover" method="post" onsubmit="return confirm('Remover a permissão administrativa desta conta?')">
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                          <button class="dashboard-botao-secundario" type="submit">Remover permissão</button>
+                        </form>
+                      <% } else { %>
+                        <span class="dashboard-indisponivel">—</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }) %>
+                <% if (!administradores.length) { %>
+                  <tr><td colspan="5">Nenhum administrador cadastrado.</td></tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+    <%- include('../../components/carrinho') %>
+  </body>
+</html>
